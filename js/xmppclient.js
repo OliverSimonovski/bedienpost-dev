@@ -71,14 +71,16 @@ function gotModel(newmodel) {
 }
 
 function userToClientModel(user) {
+    var numcalls = Object.keys(user.calls);
+
     var userObj = Object();
-        userObj.id = user.id;
-        userObj.name = user.name;
-        userObj.favorite = false;
-        userObj.ext = userObj.extension;
-        userObj.log = user.loggedIn;
-        userObj.avail = false;
-        return userObj;
+    userObj.id = user.id;
+    userObj.name = user.name;
+    userObj.favorite = false;
+    userObj.ext = userObj.extension;
+    userObj.log = user.loggedIn;
+    userObj.avail = !(numcalls == 0);
+    return ko.mapping.fromJS(userObj);
 }
 
 function refreshModel(model) {
@@ -91,21 +93,13 @@ function refreshModel(model) {
     //var datamodel = Array();
     userListEntries.removeAll();
     for (var userId in model.users) {
-        //addUser(model.users[userId]);
+
         var user = model.users[userId];
+        addUser(user);
+
         var userObj = userToClientModel(user);
         userListEntries.push(userObj);
     }
-    //console.log(datamodel);
-    //console.log(initialLists[0]);
-    //initialLists[0].entries = ko.observableArray(datamodel);
-    //initialLists[0].entries = null;
-    //ko.applyBindings(new ListingsViewModel());
-    
-    // Add queues to interface.
-    /*for (var queueId in model.queues) {
-        addQueue(model.queues[queueId]);
-    }*/
 }
 
 function openUrl(url) {
@@ -155,135 +149,14 @@ function attendedtransferToUser(user) {
 /* Add / Update page for users */
 function addUser(user) {
     console.log("Adding user " + user);
-    var entry = $('#tpl_user').clone().attr('id', 'user_' + user.id);
+    user.observable.addObserver(updateUser);
     
-    // Dial
-    $('#user_list').append(entry);
-    entry.find('.transfer').click(function(event) {
-            event.preventDefault();
-            transferToUser(user);   
-    });
-    entry.find('.atttransfer').click(function(event) {
-            event.preventDefault();
-            attendedtransferToUser(user);   
-    });
-    
-    updateUser(user);
-    
-    // Execute updateUser(user) whenever the user changes.
-    user.observable.addObserver(updateUser); 
 }
 
 // Make-up the user entry.
 function updateUser(user) {
     console.log ("*** Updating user " + user);
-    var entry = $('#user_' + user.id);
     
-    // Name
-    entry.find('.user_name').text(user.name + ((user.extension != "") ? " (" + user.extension + ")" : ""));
-    var ext = user.extension;
-    
-    // Extension
-    //if (ext == '') ext = '[unknown]';
-    //entry.find('.user_ext').text(ext);
-
-    
-    // Set user status based on active calls.
-    var status = '';
-    var calls = Object.keys(user.calls);
-    
-
-    var status_entry = entry.find('.user_status');
-
-    if (user.loggedIn == false) {
-        $(entry).animate({backgroundColor: "white"}, 1000);
-        return;
-    }
-    if (calls.length > 0) {
-            var call = user.calls[calls[0]];
-            if (call.destination && (call.destination != user)) {
-                //status_entry.text('On the phone with ' + call.destination.name);
-            } else if (call.source && (call.source != user)) {
-                //status_entry.text('On the phone with ' + call.source.name);
-            }
-            //entry.css('background-color', "red");
-            $(entry).animate({backgroundColor: "#FF4D4D"}, 1000);
-    } else {
-            status_entry.text('');
-            //entry.css('background-color', 'transparent');
-            //entry.css('background-color', "green");
-            $(entry).animate({backgroundColor: "#66FF66"}, 1000);
-    }
-
-    // Did we get any calls?
-    if (user.id == Lisa.Connection.myUserId) {
-        $('#current-calls').empty();
-
-        for (var callId in me.calls) {
-            var call = user.calls[callId];
-            updateCalls(call);
-        }
-
-
-
-         // Hide transfer elements if there aren't any calls.
-        if (_.size(user.calls) == 0 ) {
-            $('.transfer').hide();
-            $('.atttransfer').hide();
-        } else {
-            //entry.find('.transfer').show();
-            for (var userId in model.users) {
-                if (userId == Lisa.Connection.myUserId) {
-                    continue;
-                }
-
-
-                var transferUser = model.users[userId];
-                console.log("considering user " + transferUser);
-                var transferUserEntry = $('#user_' + transferUser.id);
-                if ((transferUser.extension != "") && (_.size(transferUser.calls) == 0)) {
-                    transferUserEntry.find('.transfer').show();
-                    if (_.toArray(user.calls)[0].state == "ANSWERED") {
-                        transferUserEntry.find('.atttransfer').show();
-                    }
-                } else {
-                    transferUserEntry.find('.transfer').hide();
-                    transferUserEntry.find('.atttransfer').hide();
-                }
-            }
-
-           
-
-            if (_.toArray(user.calls)[0].state == "ANSWERED") {
-                $hangupCall = $("<div><a href=''>Hang up the current call</a></div>");
-                $hangupCall.click(function(event) {
-                    event.preventDefault();
-                    phoneCommand("CANCEL");
-                });
-                $('#current-calls').append($hangupCall);
-
-                if (inAttTransfer) {
-                    $('#current-calls').append("<p/>");
-                    $transferCall = $("<div><a href=''>Finalize attended transfer</a></div>");
-                    $transferCall.click(function(event) {
-                        event.preventDefault();
-                        phoneCommand("TRANSFER");
-                        inAttTransfer = false;
-                    });
-                    $('#current-calls').append($transferCall);          
-                }
-
-            } else {
-                $('#current-calls').append("<p/>");
-                $pickupCall = $("<div><a href=''>Pick up the incoming call</a></div>");
-                $pickupCall.click(function(event) {
-                    event.preventDefault();
-                    phoneCommand("ENTER");
-                });
-                $('#current-calls').append($pickupCall);   
-            }
-        }
-    }
 }
 
 // http://learn.jquery.com/using-jquery-core/faq/how-do-i-select-an-element-by-an-id-that-has-characters-used-in-css-notation/

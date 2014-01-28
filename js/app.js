@@ -68,6 +68,7 @@ var ListingsViewModel = function(){
                 return self.currentList().entries();
             } else {
                 ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
+                     entry = ko.mapping.toJS(entry);
                      entry.name+="";
                      if ((entry.name).indexOf(searchParam) > -1)
                      {
@@ -87,6 +88,7 @@ var ListingsViewModel = function(){
             var filteredEntries = ko.observableArray();
             if(!searchParam || searchParam == "Search here"){
                  ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
+                     entry = ko.mapping.toJS(entry);
                      entry.name+="";
                      if ((entry.favorite))
                      {
@@ -97,6 +99,7 @@ var ListingsViewModel = function(){
                 return filteredEntries();
             } else {
                 ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
+                     entry = ko.mapping.toJS(entry);
                      entry.name+="";
                      if ((entry.name).indexOf(searchParam) > -1 && (entry.favorite))
                      {

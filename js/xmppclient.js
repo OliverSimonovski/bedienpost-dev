@@ -4,6 +4,7 @@ var model;
 var phoneip;
 var inAttTransfer = false;
 var me = null;
+var userIdToUserObservable = Array();
 
 $(document).ready(function () {
 
@@ -80,7 +81,7 @@ function userToClientModel(user) {
     userObj.ext = userObj.extension;
     userObj.log = user.loggedIn;
     userObj.avail = !(numcalls == 0);
-    return ko.mapping.fromJS(userObj);
+    return userObj;
 }
 
 function refreshModel(model) {
@@ -96,9 +97,6 @@ function refreshModel(model) {
 
         var user = model.users[userId];
         addUser(user);
-
-        var userObj = userToClientModel(user);
-        userListEntries.push(userObj);
     }
 }
 
@@ -150,13 +148,22 @@ function attendedtransferToUser(user) {
 function addUser(user) {
     console.log("Adding user " + user);
     user.observable.addObserver(updateUser);
+
+    var userObj = userToClientModel(user);
+    var userObjObservable = ko.mapping.fromJS(userObj);
+
+    userListEntries.push(userObjObservable);
+    userIdToUserObservable[user.id] = userObjObservable;
     
 }
 
 // Make-up the user entry.
-function updateUser(user) {
-    console.log ("*** Updating user " + user);
-    
+function updateUser(user, userKoObservable) {
+    console.log("Updating user " + user);
+    var userObj = userToClientModel(user);
+    var userObjObservable = userIdToUserObservable[user.id];
+
+    ko.mapping.fromJS(userObj, userObjObservable);
 }
 
 // http://learn.jquery.com/using-jquery-core/faq/how-do-i-select-an-element-by-an-id-that-has-characters-used-in-css-notation/

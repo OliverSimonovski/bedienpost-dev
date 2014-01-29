@@ -1,7 +1,4 @@
 // Overall viewmodel for this screen, along with initial state
-var initialCallList = [
-    
-];
 
 var initialWaitingQueueList = [
     { name: "WaitingQueue List", entries: ko.observableArray( [
@@ -16,6 +13,9 @@ var initialWaitingQueueList = [
         { id: 1.9, name: "Wachtrij 9", waitingAmount:true }] )
     }
 ];
+
+var userListEntries = ko.observableArray();
+var initialLists = [{ name: "Call List", entries: userListEntries }];
 
 var initialLists = [
     { name: "Call List", entries: ko.observableArray( [
@@ -36,29 +36,6 @@ var initialLists = [
         { id: 1.7, name: "Roland", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
         { id: 1.8, name: "Wim", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" }] )
     }
-    /*,
-    { name: "Favorites", entries: ko.observableArray( [
-        { id: 2.1, name: "Tijs", favorite:true, ext:"264,254", log:true, avail:true  },
-        { id: 2.2, name: "Robert", favorite:false, ext:"130,140", log:true, avail:false },
-        { id: 2.3, name: "Michiel", favorite:true, ext:"130,140", log:false, avail:false },
-        { id: 2.4, name: "Maurice", favorite:false, ext:"130,140", log:true,  avail:false },
-        { id: 2.5, name: "Pascal", favorite:false, ext:"130,140", log:true, avail:false },
-        { id: 2.6, name: "Roland", favorite:false, ext:"130,140", log:true, avail:false },
-        { id: 2.7, name: "Wim", favorite:false, ext:"130,140", log:true, avail:false },
-        { id: 2.8, name: "2.Eight", favorite:false, ext:"130,140", log:true, avail:false }] )
-    }
-    ,
-    { name: "Active Transfers", entries: ko.observableArray( [
-        { name: "3.One", value: 3.1 },
-        { name: "3.Two", value: 3.2 },
-        { name: "3.Three", value: 3.3 },
-        { name: "3.Four", value: 3.4 },
-        { name: "3.Five", value: 3.5 },
-        { name: "3.Six", value:  3.6 },
-        { name: "3.Seven", value: 3.7 },
-        { name: "3.Eight", value: 3.8 }] )
-    }
-    */
 ];
 
 var ListingsViewModel = function(){
@@ -83,10 +60,13 @@ var ListingsViewModel = function(){
             searchParam +="";
             searchParam = searchParam.toLowerCase();
             var filteredEntries = ko.observableArray();
-            if(!searchParam || searchParam == "search here"){
-                return self.currentList().entries();
+
+            if(!searchParam || searchParam == "Search here"){
+                return ko.mapping.toJS(self.currentList().entries());
+                
             } else {
                 ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
+                     entry = ko.mapping.toJS(entry);
                      entry.name+="";
                      if ((entry.name.toLowerCase()).indexOf(searchParam) > -1)
                      {
@@ -105,6 +85,7 @@ var ListingsViewModel = function(){
             var filteredEntries = ko.observableArray();
             
                  ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
+                     entry = ko.mapping.toJS(entry);
                      entry.name+="";
                      if ((entry.favorite))
                      {

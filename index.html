@@ -22,13 +22,13 @@
     <div id="wrap">
         <!-- Begin page content -->
         <div class="container">
-           <div class='row'>
-               
-                <div class='col-md-12 offset-6'>
+           <div class='row nopadding'>
+
+                <div class='col-md-7 offset-5 nopadding-left'>
                   <div class="header">
                         <h4>Incoming Calls</h4>
                     </div>
-                    <div class='col-md-6 offset-6'>
+                    <div class='col-md-12'>
                   <div class="carousel slide" data-ride="carousel" id="quote-carousel">
                     <!-- Bottom Carousel Indicators -->
                     <!--
@@ -91,61 +91,66 @@
                     -->
 
                   </div>
-                  </div>
-                </div>
 
+
+                        </div>
+                </div>
+            <div class='col-md-5 offset-1 nopadding-right'>
+                    <div class="header">
+                        <h4>Waiting Queue</h4>
+                    </div>
+                    <div class="col-sm-12 nopadding-left">
+                    <div class="list-group queuelist">
+                         <ul data-bind="foreach: { data:  filterWaitingQueue, as: 'entry' },
+                                        css: { 'queue':true }">
+
+                                 <li class="list-group-item">
+                                    <div  class="col-sm-5 text-left nopadding-left">
+                                        <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
+                                     </div>
+                                    
+                                </li>
+
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <input type="text" data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" placeholder="Search here!">
-                <div class='row'>
-                <div class='col-md-6'>
-                    <div class="header">
-                        <h4>Call List</h4>
-                    </div>
+                <div class='col-sm-6 nopadding-left'>
+                    <div class="row nopadding">
+                        <div class="header">
+                            <h4>Call List</h4>
+                        </div>
+                            <div class="col-sm-1 text-left"></div>
+                            <div class="col-sm-7 text-left">Name</div>
+                            <div class="col-sm-4 text-right">Shortcut</div>
+                     </div>
+                     <div class ='col-sm-12 nopadding'>
+
                     <div class="list-group list">
                          <ul data-bind="foreach: { data:  filteredItems, as: 'entry' },
                                         css: { 'curl':true }">
 
                                  <li class="list-group-item"
                                      data-bind="style: { backgroundColor: entry.log == true ? '#fff' : '#fff', color: entry.log == true ? '#000' : '#000' } ">
-                                     <div class="col-sm-1 text_left"  data-bind="style: { backgroundColor: entry.log == true ? '#801c78' : '#801c78' } ">                                                   <span class="image_container">
-                                            <i data-bind=   "attr: { class: $root.favCssClass(entry.log)  },
-                                                            style: { color: entry.avail == true ? 'red' : 'green' }"></i>
+                                     <div class="col-sm-1 text_left"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
+                                            <i data-bind=   "attr: { class: $root.logCssClass(entry.log)  },
+                                                            style: { color: $root.colorClass(entry.avail, entry.log) }"></i>
                                          </span>
                                      </div>
                                     <div  class="col-sm-3 text-left">
-                                        <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
+                                       <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
                                         <p class="list-group-item-text" data-bind="text: entry.ext"></p>
                                      </div>
-                                     <div class="col-sm-4 text-left"> 
+                                     <div class="col-sm-3 text-right">
+                                          <p class="list-group-item-text" data-bind="text: entry.connectedWith"></p>
+                                    </div>
+                                     <div class="col-sm-3 text-right">
                                         <a id="go" rel="leanModal" name="signup" href="#signup">onClickActionHandler</a>
                                     </div>
-                                </li>
-
-                        </ul>
-                    </div>
-                    </div>
-                  <div class='col-md-6'>
-                    <div class="header">
-                        <h4>Favorite List</h4>
-                    </div>
-                    <div class="list-group list">
-                         <ul data-bind="foreach: { data:  favFilteredItems, as: 'entry' },
-                                        css: { 'curl':true }">
-
-                                <li class="list-group-item"
-                                     data-bind="style: { backgroundColor: entry.log == true ? '#fff' : '#fff', color: entry.log == true ? '#000' : '#000' } ">
-                                     <div class="col-sm-1 text_left"  data-bind="style: { backgroundColor: entry.log == true ? '#801c78' : '#801c78' } ">                                                   <span class="image_container">
-                                             <i data-bind=   "attr: { class: $root.favCssClass(entry.log)  },
-                                                            style: { color: entry.avail == true ? 'red' : 'green' }"></i>
-                                         </span>
-                                     </div>
-                                    <div  class="col-sm-6 text-left">
-                                        <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
-                                        <p class="list-group-item-text" data-bind="text: entry.ext"></p>
-                                     </div>
-                                    <div class="col-sm-4 text-left"> 
-                                        <a id="go" rel="leanModal" name="signup" href="#signup">onClickActionHandler</a>
+                                     <div class="col-sm-2 text-center">
+                                          <p class="list-group-item-text" data-bind="text: entry.id"></p>
                                     </div>
                                 </li>
 
@@ -153,58 +158,67 @@
                     </div>
                     </div>
                 </div>
+                 <div class='col-sm-6 nopadding-right'>
+                    <div class ='row nopadding'>
+                        <div class="header">
+                            <h4>Favorite List</h4>
+                        </div>
+                            <div class="col-sm-1 text-left"></div>
+                            <div class="col-sm-7 text-left">Name</div>
+                            <div class="col-sm-4 text-right">Shortcut</div>
+                     </div>
+                     <div class ='col-md-12 nopadding'>
+                        <div class="list-group list">
+                             <ul data-bind="foreach: { data:  favoriteList, as: 'entry' },
+                                            css: { 'curl':true }">
+
+                                    <li class="list-group-item"
+                                         data-bind="style: { backgroundColor: entry.log == true ? '#fff' : '#fff', color: entry.log == true ? '#000' : '#000' } ">
+
+                                             <div class="col-sm-1 text-left"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
+                                                     <i data-bind=   "attr: { class: $root.logCssClass(entry.log)  },
+                                                                    style: { color: $root.colorClass(entry.avail, entry.log) }"></i>
+                                                 </span>
+                                             </div>
+                                            <div  class="col-sm-2 text-left">
+                                                <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
+                                                <p class="list-group-item-text" data-bind="text: entry.ext"></p>
+                                            </div>
+                                            <div class="col-sm-2 text-left">
+                                                <p class="list-group-item-text" >calling with:</p>
+                                            </div>
+                                            <div class="col-sm-3 text-right">
+                                                <p class="list-group-item-text" data-bind="text: entry.connectedWith"></p>
+                                            </div>
+                                            <div class="col-sm-2 text-right">
+                                                <a id="go" rel="leanModal" name="signup" href="#signup">onClick</a>
+                                            </div>
+                                            <div class="col-sm-2 text-center">
+                                                <p class="list-group-item-text" data-bind="text: entry.id"></p>
+                                            </div>
+
+                                    </li>
+
+                            </ul>
+                        </div>
+                        </div>
+                    </div>
                 </div>
-       </div>
-    </div>
-   
+
     <!-- user input dialog -->
-    <div id="signup">
-			<div id="signup-ct">
-				<div id="signup-header">
-					<h2>Wat word u actie?</h2>
-					<a class="modal_close" href="#"></a>
-				</div>
-                 <div class="col-sm-12 text_left">Bellen</div>
-                <div class="col-sm-12 text_left">Doorverbinden</div>
-                <div class="col-sm-12 text_left"></div>
-			</div>
-		</div>
-    <!--
-    <div id="footer">
-        <div class="container">
-
-            <ul class="pager">
-                <div class="btn-group btn-justified">
-                    <div data-bind="foreach: availableLists" class="btn-group btn-justified">
-                        <button type="button" class="btn btn-default" data-bind="text: name, click: $root.currentList, css: { active: $root.currentList() == $data }"></button>
-                    </div>
-                    -->
-                     <!--
-                    <button id="calllistBtn" type="button" class="btn btn-default btn-xs">
-                        <span class="glyphicon glyphicon-list-alt"></span> Call list
-                    </button>
-
-                    <button id= "favoritesBtn" type="button" class="btn btn-default btn-xs">
-                        <span class="glyphicon glyphicon-star"></span> Favorites
-                    </button>
-
-                    <button id="activetransfersBtn" type="button" class="btn btn-default btn-xs">
-                            <span class="glyphicon glyphicon-transfer"></span> Active Transfers
-                        </button>
-
-                    <button type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-star"></span> Star
-                        </button>
-                    -->
-                    <!--
-                </div>
-            </ul>
-
+    <div id="signup" class="panel panel-default">
+        <a class="modal_close" href="#"></a>
+        <div class="panel-body">
+            <div class="col-sm-12 text-center">
+                <a class="btn btn-primary btn-lg" role="button">Bellen</a>
+            </div>
+            <div class="col-sm-12 text-center">
+                <a class="btn btn-primary btn-lg" role="button">Doorverbinden</a>
+            </div>
+            <div class="col-sm-12 text_left"></div>
         </div>
     </div>
--->
-
-
+            
     </body>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>

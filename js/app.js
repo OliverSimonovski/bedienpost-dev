@@ -20,21 +20,21 @@ var initialWaitingQueueList = [
 var initialLists = [
     { name: "Call List", entries: ko.observableArray( [
         { id: 1.1, name: "Richard", favorite:true, ext:"264,254", log:true, avail:true , connectedWith:"070123456789" },
-        { id: 1.2, name: "Tijs", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.3, name: "Jeroen", favorite:true, ext:"130,140", log:false, avail:false, connectedWith:"070123456789" },
-        { id: 1.4, name: "Robert", favorite:false, ext:"130,140", log:true,  avail:false, connectedWith:"070123456789" },
+        { id: 1.2, name: "Tijs", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
+        { id: 1.3, name: "Jeroen", favorite:true, ext:"130,140", log:false, avail:false, connectedWith:"" },
+        { id: 1.4, name: "Robert", favorite:false, ext:"130,140", log:true,  avail:false, connectedWith:"" },
         { id: 1.5, name: "Paul", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.6, name: "Laszlo", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.7, name: "Nathan", favorite:true, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.8, name: "Steve", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
+        { id: 1.6, name: "Laszlo", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
+        { id: 1.7, name: "Nathan", favorite:true, ext:"130,140", log:true, avail:false, connectedWith:"" },
+        { id: 1.8, name: "Steve", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
         { id: 1.9, name: "Helga", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.10, name: "Michiel", favorite:true, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
+        { id: 1.10, name: "Michiel", favorite:true, ext:"130,140", log:true, avail:false, connectedWith:"" },
         { id: 1.11, name: "Christian", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.12, name: "Peter", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.13, name: "Maurice", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.1, name: "Pascal", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.7, name: "Roland", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.8, name: "Wim", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" }] )
+        { id: 1.12, name: "Peter", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
+        { id: 1.13, name: "Maurice", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
+        { id: 1.1, name: "Pascal", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
+        { id: 1.7, name: "Roland", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
+        { id: 1.8, name: "Wim", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" }] )
     }
     /*,
     { name: "Favorites", entries: ko.observableArray( [

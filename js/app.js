@@ -65,7 +65,7 @@ var ListingsViewModel = function(){
             searchParam +="";
             var filteredEntries = ko.observableArray();
             if(!searchParam || searchParam == "Search here"){
-                return self.currentList().entries();
+                return ko.mapping.toJS(self.currentList().entries());
             } else {
                 ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
                      entry = ko.mapping.toJS(entry);

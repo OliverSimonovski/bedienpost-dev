@@ -77,7 +77,7 @@ function userToClientModel(user) {
     var userObj = Object();
     userObj.id = user.id;
     userObj.name = user.name;
-    userObj.favorite = false;
+    userObj.favorite = true;
     userObj.ext = userObj.extension;
     userObj.log = user.loggedIn;
     userObj.avail = !(numcalls == 0);

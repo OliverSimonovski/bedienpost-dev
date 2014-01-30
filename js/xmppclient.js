@@ -82,6 +82,35 @@ function userToClientModel(user) {
     userObj.log = user.loggedIn;
     userObj.avail = (numcalls == 0);
 
+    /*
+    if (numcalls > 0) {
+        userObj.connectedNr = "070-2040167";
+        userObj.connectedName = "Test";   
+    } else {
+         userObj.connectedNr = "";
+         userObj.connectedName = "";    
+    }*/
+    
+    if (numcalls > 0) {
+        var call = user.calls[Object.keys(user.calls)[0]]; // Ugh.
+        console.log(call);
+
+        if ((call.sourceUser) && (call.sourceUser == user)) {
+            if (call.destinationUser) {
+                userObj.connectedNr = call.destinationUser.extension;
+                userObj.connectedName = call.destinationUser.name;
+            }
+        } else {
+            if (call.sourceUser) {
+                userObj.connectedNr = call.sourceUser.extension;
+                userObj.connectedName = call.sourceUser.name;
+            }
+        }
+    } else {
+         userObj.connectedNr = "";
+         userObj.connectedName = "";    
+    }
+
     return userObj;
 }
 

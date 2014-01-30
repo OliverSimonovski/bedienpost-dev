@@ -72,16 +72,26 @@ function gotModel(newmodel) {
 }
 
 function userToClientModel(user) {
-    var numcalls = Object.keys(user.calls);
+    var numcalls = _.size(user.calls);
 
     var userObj = Object();
     userObj.id = user.id;
     userObj.name = user.name;
-    userObj.favorite = true;
+    userObj.favorite = ( Math.floor(Math.random()*100) < 5);
     userObj.ext = userObj.extension;
     userObj.log = user.loggedIn;
-    userObj.avail = !(numcalls == 0);
+    userObj.avail = (numcalls == 0);
+
     return userObj;
+}
+
+function queueToClientModel(queue) {
+    var numcalls = _.size(queue.calls);
+
+    var queueObj = Object();
+    queueObj.name = queue.name;
+
+    return queueObj;
 }
 
 function refreshModel(model) {
@@ -162,6 +172,8 @@ function updateUser(user, userKoObservable) {
     console.log("Updating user " + user);
     var userObj = userToClientModel(user);
     var userObjObservable = userIdToUserObservable[user.id];
+
+    userObj.favorite = userObjObservable.favorite();
 
     ko.mapping.fromJS(userObj, userObjObservable);
 }

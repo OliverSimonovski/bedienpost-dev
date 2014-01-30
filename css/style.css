@@ -122,8 +122,8 @@ body {
 .curl li:hover
 {
     -moz-box-shadow: inset 0 0 1px #2d2f31;
--webkit-box-shadow: inset 0 0 1px #2d2f31;
-box-shadow: inner 0 0 1px #2d2f31;
+    -webkit-box-shadow: inset 0 0 1px #2d2f31;
+    box-shadow: inner 0 0 1px #2d2f31;
     cursor:pointer;
 }
 
@@ -140,11 +140,23 @@ box-shadow: inner 0 0 1px #2d2f31;
     border: 1px solid #ffffff;
 }
 
-.fa { font-size: 24px; position: absolute;outline: none; margin-top:8px; color:#fff }
-li  { transition: all .3s ease;-webkit-transition: all .3s ease;-moz-transition: all .3s ease;-o-transition: all .3s ease; }
+.fa { 
+    font-size: 24px; 
+    position: absolute;
+    outline: none; 
+    margin-top:8px; 
+    color:#fff 
+}
+
+li  { 
+    transition: all .3s ease;
+    -webkit-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+    -o-transition: all .3s ease; 
+}
 
 /* Facebook */
-li .fa-check-square i { color:#2d2f31; }
+li .fa-phone-square i { color:#2d2f31; }
 
 .image_container
 {  
@@ -169,7 +181,6 @@ li .fa-check-square i { color:#2d2f31; }
     border-bottom:1px solid #468847;
     padding:0px;  
 }
-
 
 .badge {
   font-size: 12.025px;

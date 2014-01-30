@@ -73,7 +73,7 @@
                 <div class='col-sm-6 nopadding-left'>
                     <div class="row nopadding">
                         <div class="header">
-                            <h4>Call List</h4>
+                            <h4>Contact / User List</h4>
                         </div>
                             <div class="col-sm-1 text-left"></div>
                             <div class="col-sm-5 text-left">Name</div>
@@ -88,28 +88,29 @@
 
                                  <li class="list-group-item"
                                      data-bind="click: $root.clickItem">
-                                     <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
-                                            <i data-bind=   "attr: { class: $root.logCssClass(entry.log)  },
-                                                            style: { color: $root.colorClass(entry.avail, entry.log) }"></i>
-                                         </span>
-                                     </div>
-                                    <div  class="col-sm-5 text-left fixed-height">
-                                        <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
-                                        <p class="list-group-item-text" data-bind="text: entry.ext"></p>
-                                    </div>
-                                     <!--
+                                     <div class="row nopadding">
+                                         <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
+                                                <i data-bind=   "attr: { class: $root.logCssClass(entry.log)  },
+                                                                style: { color: $root.colorClass(entry.avail, entry.log, entry.ringing) }"></i>
+                                             </span>
+                                         </div>
+                                        <div  class="col-sm-5 text-left fixed-height">
+                                            <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
+                                            <p class="list-group-item-text" data-bind="text: entry.ext"></p>
+                                        </div>
+                                         <!--
                                             <div class="col-sm-1 text-center fixed-height">
-                                                <p class="list-group-item-text" >calling with:</p>
+                                                <i class="fa fa-phone-square"></i>
                                             </div>
-                                            !-->
-                                    <div class="col-sm-5 text-left fixed-height">
-                                        <h4 class="list-group-item-heading" data-bind="text: entry.connectedName"></h4>
-                                        <p class="list-group-item-text" data-bind="text: entry.connectedNr"></p>
+                                            -->
+                                        <div class="col-sm-5 text-left fixed-height">
+                                            <h4 class="list-group-item-heading" data-bind="text: entry.connectedName"></h4>
+                                            <p class="list-group-item-text" data-bind="text: entry.connectedNr"></p>
+                                        </div>
+                                        <div class="col-sm-1 text-right fixed-height">
+                                            <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></h5>
+                                        </div>
                                     </div>
-                                    <div class="col-sm-1 text-right fixed-height">
-                                        <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></h5>
-                                    </div>
-
                                 </li>
 
                         </ul>
@@ -133,10 +134,11 @@
 
                                     <li class="list-group-item"
                                          data-bind="click: $root.clickItem">
+                                        <div class="row nopadding">
                                             <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                  
                                                  <span class="image_container">
                                                      <i data-bind="attr: { class: $root.logCssClass(entry.log)  },
-                                                                   style: { color: $root.colorClass(entry.avail, entry.log) }"></i>
+                                                                   style: { color: $root.colorClass(entry.avail, entry.log, entry.ringing) }"></i>
                                                  </span>
                                              </div>
                                             <div  class="col-sm-5 text-left fixed-height">
@@ -145,9 +147,9 @@
                                             </div>
                                             <!--
                                             <div class="col-sm-1 text-center fixed-height">
-                                                <p class="list-group-item-text" >calling with:</p>
+                                                <i class="fa fa-phone-square"></i>
                                             </div>
-                                            !-->
+                                            -->
                                             <div class="col-sm-5 text-left fixed-height">
                                                 <h4 class="list-group-item-heading" data-bind="text: entry.connectedName"></h4>
                                                 <p class="list-group-item-text" data-bind="text: entry.connectedNr"></p>
@@ -155,6 +157,7 @@
                                             <div class="col-sm-1 text-right fixed-height">
                                                 <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></h5>
                                             </div>
+                                         </div>
                                     </li>
 
                             </ul>
@@ -215,11 +218,11 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">How to connect with <span data-bind="text: $root.clickedListItem().name"></span>?</h4>
+            <h4 class="modal-title" id="myModalLabel">How to connect with <span data-bind="text: $root.clickedListItemName"></span>?</h4>
           </div>
           <div class="modal-body">
-                <a class="btn btn-primary btn-lg btn-block" role="button">Bellen</a>
-                <a class="btn btn-primary btn-lg btn-block" role="button">Doorverbinden</a>
+                <button class="btn btn-primary btn-lg btn-block" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Bellen</button>
+                <button class="btn btn-primary btn-lg btn-block" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Doorverbinden</button>
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->

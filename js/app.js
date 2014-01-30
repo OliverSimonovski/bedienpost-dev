@@ -34,22 +34,22 @@ var initialLists = [{ name: "Call List", entries: userListEntries }];
 
 var initialLists = [
     { name: "Call List", entries: ko.observableArray( [
-        { id: 1, name: "Receptie Draadloos", shortcut:"", favorite:true, ext:"264,254", log:true, avail:true, connectedName:"Lambert Storingsdienst", connectedNr:"070123456789" },
-        { id: 2, name: "Thomas Winkelman", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
-        { id: 3, name: "Joop Aanstoot", shortcut:"", favorite:true, ext:"130,140", log:false, avail:false, connectedName:"", connectedNr:"" },
-        { id: 4, name: "Bart Meijerink", shortcut:"", favorite:false, ext:"130,140", log:true,  avail:false, connectedName:"", connectedNr:"" },
-        { id: 5, name: "Patrick Van der Veen", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"Richard Kamphuis", connectedNr:"070123456789" },
-        { id: 6, name: "Nicole Roskamp", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
-        { id: 7, name: "Remko Uland", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
-        { id: 8, name: "Richard Kamphuis", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
-        { id: 9, name: "Tom Waanders", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"070123456789", connectedNr:"" },
-        { id: 10, name: "Martin Kamphuis", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
-        { id: 11, name: "Support 1e Lijns", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"070123456789", connectedNr:"" },
-        { id: 12, name: "Lambert Storingsdienst", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
-        { id: 13, name: "Maurice", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
-        { id: 14, name: "Pascal", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
-        { id: 15, name: "Roland", shortcut:"",  favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
-        { id: 16, name: "Wim", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:""}] )
+        { id: 1, name: "Receptie DraadloosDraadloosDraadloos", shortcut:"", favorite:true, ext:"264,254", log:true, avail:true, ringing:true, connectedName:"Lambert Storingsdienst", connectedNr:"070123456789" },
+        { id: 2, name: "Thomas Winkelman", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 3, name: "Joop Aanstoot", shortcut:"", favorite:true, ext:"130,140", log:false, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 4, name: "Bart Meijerink", shortcut:"", favorite:false, ext:"130,140", log:true,  avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 5, name: "Patrick Van der Veen", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"Richard Kamphuis", connectedNr:"070123456789" },
+        { id: 6, name: "Nicole Roskamp", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 7, name: "Remko Uland", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 8, name: "Richard Kamphuis", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 9, name: "Tom Waanders", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"070123456789", connectedNr:"" },
+        { id: 10, name: "Martin Kamphuis", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 11, name: "Support 1e Lijns", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"070123456789", connectedNr:"" },
+        { id: 12, name: "Lambert Storingsdienst", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 13, name: "Maurice", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 14, name: "Pascal", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 15, name: "Roland", shortcut:"",  favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 16, name: "Wim", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:""}] )
     }
 ];
 
@@ -65,9 +65,10 @@ var ListingsViewModel = function(){
     self.incomingCallList = ko.observable();
     
     self.clickedListItem = ko.observable();
-    
+    self.clickedListItemName = ko.observable();
     self.search = ko.observable();
-    self.currentList.subscribe(function(){
+    self.currentList.subscribe(function()
+    {
         self.search(""); 
     });
 
@@ -203,10 +204,22 @@ var ListingsViewModel = function(){
     self.clickItem = function(clickedItem) 
     {
        self.clickedListItem(clickedItem);
-       //alert(self.clickedListItem().id);
+        var name = clickedItem.name;
+        name += "";
+       self.clickedListItemName(clickedItem.name);
        $('#myModal').modal({
             keyboard: true
        })
+    }
+    
+    self.actionCalling = function()
+    {
+        alert("Calling");
+    }
+    
+    self.actionConnectThrough = function()
+    {
+        alert("actionCallingThrough");
     }
 
     self.logCssClass = function(logged)
@@ -218,13 +231,15 @@ var ListingsViewModel = function(){
         }                                       
     };
     
-    self.colorClass = function(avail, logged)
+    self.colorClass = function(avail, logged, ringing)
     {
         if (logged == true) {
             if (avail == true){
                  return 'green';
+            } else if(ringing == true) {
+                return 'yellow';
             } else {
-                return 'red';
+                return 'red'
             }
         } else {
             return 'white';
@@ -240,8 +255,6 @@ var ListingsViewModel = function(){
     self.favoriteList( self.favFilteredItems() ) ;
     self.waitingQueueList( initialWaitingQueueList[0] );
     self.incomingCallList( initialIncomingCallList[0] );
-    ///self.waitingQueueList( self.filterWaitingQueue() );
-    
     self.setSearch("");
 }
 

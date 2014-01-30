@@ -1,5 +1,6 @@
 // Overall viewmodel for this screen, along with initial state
 
+var demoData = false;
 var incomingCallEntries = ko.observableArray();
 var initialIncomingCallList = [{ name: "Incoming CallList", entries: incomingCallEntries }];
 
@@ -30,9 +31,9 @@ var initialWaitingQueueList = [
 ];
 
 var userListEntries = ko.observableArray();
-var initialLists = [{ name: "Call List", entries: userListEntries }];
+var xmppUserLists = [{ name: "Call List", entries: userListEntries }];
 
-var initialLists = [
+var demoUserLists = [
     { name: "Call List", entries: ko.observableArray( [
         { id: 1, name: "Receptie DraadloosDraadloosDraadloos", shortcut:"", favorite:true, ext:"264,254", log:true, avail:true, ringing:true, connectedName:"Lambert Storingsdienst", connectedNr:"070123456789" },
         { id: 2, name: "Thomas Winkelman", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
@@ -56,7 +57,7 @@ var initialLists = [
 var ListingsViewModel = function(){
     var self = this;
     
-    self.availableLists = ko.observableArray(initialLists);
+    //self.availableLists = ko.observableArray(initialLists);
     self.availableWaitingList = ko.observableArray(initialWaitingQueueList);
     
     self.currentList = ko.observable();
@@ -251,7 +252,13 @@ var ListingsViewModel = function(){
         self.search(searchParam);
     }
     
-    self.currentList( initialLists[0] );
+
+    if (demoData) {
+        self.currentList( demoUserLists[0] );
+    } else {
+        self.currentList( xmppUserLists[0] );
+    }
+
     self.favoriteList( self.favFilteredItems() ) ;
     self.waitingQueueList( initialWaitingQueueList[0] );
     self.incomingCallList( initialIncomingCallList[0] );

@@ -4,12 +4,13 @@
     </head>
     <title>PC Bedienpost</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    	<meta name="viewport" content="width=1080" />
+	    <meta name="MobileOptimized" content="1080" />
         <!-- Bootstrap core CSS -->
         <link rel="stylesheet/less" type="text/css" href="bootstrap-3.0.3/less/bootstrap.less">
         <link href="css/sticky-footer-navbar.css" rel="stylesheet">
         <link href="css/bootstrap.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
-        <link href="css/carousel.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -20,101 +21,53 @@
     </head>
   <body >
     <div id="wrap">
-        <!-- Begin page content -->
         <div class="container">
            <div class='row nopadding'>
-
-                <div class='col-md-7 offset-5 nopadding-left'>
+            
+            <div class='col-md-7 offset-5 nopadding-left'>
                   <div class="header">
                         <h4>Incoming Calls</h4>
                     </div>
-                    <div class='col-md-12'>
-                  <div class="carousel slide" data-ride="carousel" id="quote-carousel">
-                    <!-- Bottom Carousel Indicators -->
-                    <!--
-                    <ol class="carousel-indicators">
-                      <li data-target="#quote-carousel" data-slide-to="0" class="active"></li>
-                      <li data-target="#quote-carousel" data-slide-to="1"></li>
-                      <li data-target="#quote-carousel" data-slide-to="2"></li>
-                    </ol>
-                    -->
-                    <!-- Carousel Slides / Quotes -->
-                    <div class="carousel-inner">
-                      <!-- Quote 1 -->
-                      <div class="item active">
-                        <blockquote>
-                          <div class="row">
-                            <div class="col-sm-3 text-center">
-                              <img class="img-circle" src="http://placehold.it/250x250" style="width: 100px;height:100px;">
+                    <div class="col-sm-12 nopadding-left">
+                            <div class="list-group queuelist">
+                                 <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
+                                                css: { 'queue':true }">
+        
+                                         <li class="list-group-item">
+                                            <div  class="col-sm-10 text-left nopadding-left">
+                                                <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
+                                             </div>
+                                            <div class="col-sm-2 text-right">
+                                                <h5 class="list-group-item-heading"><span class="badge pull-right" data-bind="text: entry.timeConnected"></span></h5>
+                                             </div>
+                                        </li>
+        
+                                </ul>
                             </div>
-                            <div class="col-sm-9">
-                              <p>Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit!</p>
-                              <small>Someone famous</small>
-                            </div>
-                          </div>
-                        </blockquote>
-                      </div>
-                      <!-- Quote 2 -->
-                      <div class="item">
-                        <blockquote>
-                          <div class="row">
-                            <div class="col-sm-3 text-center">
-                              <img class="img-circle" src="http://placehold.it/250x250" style="width: 100px;height:100px;">
-                            </div>
-                            <div class="col-sm-9">
-                              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam auctor nec lacus ut tempor. Mauris.</p>
-                              <small>Someone famous</small>
-                            </div>
-                          </div>
-                        </blockquote>
-                      </div>
-                      <!-- Quote 3 -->
-                      <div class="item">
-                        <blockquote>
-                          <div class="row">
-                            <div class="col-sm-3 text-center">
-                              <img class="img-circle" src="http://placehold.it/250x250" style="width: 100px;height:100px;">
-                            </div>
-                            <div class="col-sm-9">
-                              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut rutrum elit in arcu blandit, eget pretium nisl accumsan. Sed ultricies</p>
-                              <small>Someone famous</small>
-                            </div>
-                          </div>
-                        </blockquote>
-                      </div>
-                    </div>
-
-                    <!-- Carousel Buttons Next/Prev -->
-                    <!--
-                    <a data-slide="prev" href="#quote-carousel" class="left carousel-control"><i class="fa fa-chevron-left"></i></a>
-                    <a data-slide="next" href="#quote-carousel" class="right carousel-control"><i class="fa fa-chevron-right"></i></a>
-                    -->
-
-                  </div>
-
-
                         </div>
                 </div>
-            <div class='col-md-5 offset-1 nopadding-right'>
-                    <div class="header">
-                        <h4>Waiting Queue</h4>
-                    </div>
-                    <div class="col-sm-12 nopadding-left">
-                    <div class="list-group queuelist">
-                         <ul data-bind="foreach: { data:  filterWaitingQueue, as: 'entry' },
-                                        css: { 'queue':true }">
-
-                                 <li class="list-group-item">
-                                    <div  class="col-sm-5 text-left nopadding-left">
-                                        <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
-                                     </div>
-                                    
-                                </li>
-
-                        </ul>
-                    </div>
-                </div>
-            </div>
+                <div class='col-md-5 offset-1 nopadding-right'>
+                        <div class="header">
+                            <h4>Waiting Queue</h4>
+                        </div>
+                        <div class="col-sm-12 nopadding">
+                            <div class="list-group queuelist">
+                                 <ul data-bind="foreach: { data:  filterWaitingQueue, as: 'entry' },
+                                                css: { 'queue':true }">
+        
+                                         <li class="list-group-item">
+                                            <div class="col-sm-10 text-left nopadding">
+                                                <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
+                                             </div>
+                                             <div  class="col-sm-2 text-right ">
+                                                <h5 class="list-group-item-heading"><span class="badge pull-right" data-bind="text: entry.waitingAmount"></span></h5>
+                                             </div>
+                                        </li>
+        
+                                </ul>
+                            </div>
+                        </div>
+                    </div>  
 
             <input type="text" data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" placeholder="Search here!">
                 <div class='col-sm-6 nopadding-left'>
@@ -123,8 +76,9 @@
                             <h4>Call List</h4>
                         </div>
                             <div class="col-sm-1 text-left"></div>
-                            <div class="col-sm-7 text-left">Name</div>
-                            <div class="col-sm-4 text-right">Shortcut</div>
+                            <div class="col-sm-5 text-left">Name</div>
+                            <div class="col-sm-4 text-left">Calling with</div>
+                            <div class="col-sm-2 text-right">Shortcut</div>
                      </div>
                      <div class ='col-sm-12 nopadding'>
 
@@ -133,25 +87,29 @@
                                         css: { 'curl':true }">
 
                                  <li class="list-group-item"
-                                     data-bind="style: { backgroundColor: entry.log == true ? '#fff' : '#fff', color: entry.log == true ? '#000' : '#000' } ">
-                                     <div class="col-sm-1 text_left"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
+                                     data-bind="click: $root.clickItem">
+                                     <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
                                             <i data-bind=   "attr: { class: $root.logCssClass(entry.log)  },
                                                             style: { color: $root.colorClass(entry.avail, entry.log) }"></i>
                                          </span>
                                      </div>
-                                    <div  class="col-sm-3 text-left">
-                                       <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
+                                    <div  class="col-sm-5 text-left fixed-height">
+                                        <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
                                         <p class="list-group-item-text" data-bind="text: entry.ext"></p>
-                                     </div>
-                                     <div class="col-sm-3 text-right">
-                                          <p class="list-group-item-text" data-bind="text: entry.connectedWith"></p>
                                     </div>
-                                     <div class="col-sm-3 text-right">
-                                        <a id="go" rel="leanModal" name="signup" href="#signup">onClickActionHandler</a>
+                                     <!--
+                                            <div class="col-sm-1 text-center fixed-height">
+                                                <p class="list-group-item-text" >calling with:</p>
+                                            </div>
+                                            !-->
+                                    <div class="col-sm-5 text-left fixed-height">
+                                        <h4 class="list-group-item-heading" data-bind="text: entry.connectedName"></h4>
+                                        <p class="list-group-item-text" data-bind="text: entry.connectedNr"></p>
                                     </div>
-                                     <div class="col-sm-2 text-center">
-                                          <p class="list-group-item-text" data-bind="text: entry.id"></p>
+                                    <div class="col-sm-1 text-right fixed-height">
+                                        <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></h5>
                                     </div>
+
                                 </li>
 
                         </ul>
@@ -164,60 +122,109 @@
                             <h4>Favorite List</h4>
                         </div>
                             <div class="col-sm-1 text-left"></div>
-                            <div class="col-sm-7 text-left">Name</div>
-                            <div class="col-sm-4 text-right">Shortcut</div>
-                     </div>
+                            <div class="col-sm-5 text-left">Name</div>
+                            <div class="col-sm-4 text-left">Calling with</div>
+                            <div class="col-sm-2 text-right">Shortcut</div>
+                        </div>
                      <div class ='col-md-12 nopadding'>
                         <div class="list-group list">
-                             <ul data-bind="foreach: { data:  favoriteList, as: 'entry' },
+                             <ul data-bind="foreach: { data:  favFilteredItems, as: 'entry' },
                                             css: { 'curl':true }">
 
                                     <li class="list-group-item"
-                                         data-bind="style: { backgroundColor: entry.log == true ? '#fff' : '#fff', color: entry.log == true ? '#000' : '#000' } ">
-
-                                             <div class="col-sm-1 text-left"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
-                                                     <i data-bind=   "attr: { class: $root.logCssClass(entry.log)  },
-                                                                    style: { color: $root.colorClass(entry.avail, entry.log) }"></i>
+                                         data-bind="click: $root.clickItem">
+                                            <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                  
+                                                 <span class="image_container">
+                                                     <i data-bind="attr: { class: $root.logCssClass(entry.log)  },
+                                                                   style: { color: $root.colorClass(entry.avail, entry.log) }"></i>
                                                  </span>
                                              </div>
-                                            <div  class="col-sm-2 text-left">
+                                            <div  class="col-sm-5 text-left fixed-height">
                                                 <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
                                                 <p class="list-group-item-text" data-bind="text: entry.ext"></p>
                                             </div>
-                                            <div class="col-sm-2 text-left">
+                                            <!--
+                                            <div class="col-sm-1 text-center fixed-height">
                                                 <p class="list-group-item-text" >calling with:</p>
                                             </div>
-                                            <div class="col-sm-3 text-right">
-                                                <p class="list-group-item-text" data-bind="text: entry.connectedWith"></p>
+                                            !-->
+                                            <div class="col-sm-5 text-left fixed-height">
+                                                <h4 class="list-group-item-heading" data-bind="text: entry.connectedName"></h4>
+                                                <p class="list-group-item-text" data-bind="text: entry.connectedNr"></p>
                                             </div>
-                                            <div class="col-sm-2 text-right">
-                                                <a id="go" rel="leanModal" name="signup" href="#signup">onClick</a>
+                                            <div class="col-sm-1 text-right fixed-height">
+                                                <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></h5>
                                             </div>
-                                            <div class="col-sm-2 text-center">
-                                                <p class="list-group-item-text" data-bind="text: entry.id"></p>
-                                            </div>
-
                                     </li>
 
                             </ul>
                         </div>
                         </div>
                     </div>
+               <!--
+               <div class='col-md-7 offset-5 nopadding-left'>
+                  <div class="header">
+                        <h4>Incoming Calls</h4>
+                    </div>
+                    <div class="col-sm-12 nopadding-left">
+                            <div class="list-group queuelist">
+                                 <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
+                                                css: { 'queue':true }">
+        
+                                         <li class="list-group-item">
+                                            <div  class="col-sm-10 text-left nopadding-left">
+                                                <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
+                                             </div>
+                                            <div class="col-sm-2 text-right">
+                                                <h5 class="list-group-item-heading"><span class="badge pull-right" data-bind="text: entry.timeConnected"></span></h5>
+                                             </div>
+                                        </li>
+        
+                                </ul>
+                            </div>
+                        </div>
+                </div>
+                <div class='col-md-5 offset-1 nopadding-right'>
+                        <div class="header">
+                            <h4>Waiting Queue</h4>
+                        </div>
+                        <div class="col-sm-12 nopadding">
+                            <div class="list-group queuelist">
+                                 <ul data-bind="foreach: { data:  filterWaitingQueue, as: 'entry' },
+                                                css: { 'queue':true }">
+        
+                                         <li class="list-group-item">
+                                            <div class="col-sm-10 text-left nopadding">
+                                                <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
+                                             </div>
+                                             <div  class="col-sm-2 text-right ">
+                                                <h5 class="list-group-item-heading"><span class="badge pull-right" data-bind="text: entry.waitingAmount"></span></h5>
+                                             </div>
+                                        </li>
+        
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    !-->
                 </div>
 
-    <!-- user input dialog -->
-    <div id="signup" class="panel panel-default">
-        <a class="modal_close" href="#"></a>
-        <div class="panel-body">
-            <div class="col-sm-12 text-center">
-                <a class="btn btn-primary btn-lg" role="button">Bellen</a>
-            </div>
-            <div class="col-sm-12 text-center">
-                <a class="btn btn-primary btn-lg" role="button">Doorverbinden</a>
-            </div>
-            <div class="col-sm-12 text_left"></div>
-        </div>
-    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">How to connect with <span data-bind="text: $root.clickedListItem().name"></span>?</h4>
+          </div>
+          <div class="modal-body">
+                <a class="btn btn-primary btn-lg btn-block" role="button">Bellen</a>
+                <a class="btn btn-primary btn-lg btn-block" role="button">Doorverbinden</a>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+      
             
     </body>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -228,8 +235,6 @@
     <script type='text/javascript' src='js/knockout-3.0.0.js'></script>
     <script type='text/javascript' src='js/lib/knockout.mapping.js'></script>
     <script type='text/javascript' src='js/app.js'></script>
-    <script type="text/javascript" src="js/stroll.js"></script>
-    <script type="text/javascript" src="js/jquery.leanModal.min.js"></script>
     <script src='js/lib/underscore.js'></script>
     <script src='js/lib/backbone.js'></script>
     <script src='js/lib/base64.js'></script>
@@ -239,9 +244,6 @@
     <script src='js/lib/strophe.pubsub.js'></script>
     <script src="js/LisaApi/LisaApi.js"></script>
     <script src="js/xmppclient.js"></script>
-    <script  type="text/javascript">
-        stroll.bind( '#list ul' );
-      </script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="bootstrap-3.0.3/dist/js/bootstrap.min.js"></script>
 

@@ -1,16 +1,31 @@
 // Overall viewmodel for this screen, along with initial state
 
+var incomingCallEntries = ko.observableArray();
+var initialIncomingCallList = [{ name: "Incoming CallList", entries: incomingCallEntries }];
+
+var initialIncomingCallList = [
+    { name: "Incoming CallList", entries: ko.observableArray( [
+        { id: 1, name: "Incoming Call 1", timeConnected:"4:50" },
+        { id: 2, name: "Incoming Call 2", timeConnected:"2:40" },
+        { id: 3, name: "Incoming Call 3", timeConnected:"2:12" },
+        { id: 4, name: "Incoming Call 4", timeConnected:"0:56" }] )        
+    }
+];
+
+var waitingListEntries = ko.observableArray();
+var initialWaitingQueueList = [{ name: "Call List", entries: waitingListEntries }];
+
 var initialWaitingQueueList = [
     { name: "WaitingQueue List", entries: ko.observableArray( [
-        { id: 1.1, name: "Wachtrij 1", waitingAmount:"3" },
-        { id: 1.2, name: "Wachtrij 2", waitingAmount:"4" },
-        { id: 1.3, name: "Wachtrij 3", waitingAmount:true },
-        { id: 1.4, name: "Wachtrij 4", waitingAmount:true },
-        { id: 1.5, name: "Wachtrij 5", waitingAmount:true },
-        { id: 1.6, name: "Wachtrij 6", waitingAmount:true },
-        { id: 1.7, name: "Wachtrij 7", waitingAmount:true },
-        { id: 1.8, name: "Wachtrij 8", waitingAmount:true },
-        { id: 1.9, name: "Wachtrij 9", waitingAmount:true }] )
+        { id: 1, name: "Wachtrij 1", waitingAmount:3 },
+        { id: 2, name: "Wachtrij 2", waitingAmount:7 },
+        { id: 3, name: "Wachtrij 3", waitingAmount:4 },
+        { id: 4, name: "Wachtrij 4", waitingAmount:12 },
+        { id: 5, name: "Wachtrij 5", waitingAmount:23 },
+        { id: 6, name: "Wachtrij 6", waitingAmount:1 },
+        { id: 7, name: "Wachtrij 7", waitingAmount:0 },
+        { id: 8, name: "Wachtrij 8", waitingAmount:0 },
+        { id: 9, name: "Wachtrij 9", waitingAmount:3 }] )
     }
 ];
 
@@ -19,22 +34,22 @@ var initialLists = [{ name: "Call List", entries: userListEntries }];
 
 var initialLists = [
     { name: "Call List", entries: ko.observableArray( [
-        { id: 1.1, name: "Richard", favorite:true, ext:"264,254", log:true, avail:true , connectedWith:"070123456789" },
-        { id: 1.2, name: "Tijs", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
-        { id: 1.3, name: "Jeroen", favorite:true, ext:"130,140", log:false, avail:false, connectedWith:"" },
-        { id: 1.4, name: "Robert", favorite:false, ext:"130,140", log:true,  avail:false, connectedWith:"" },
-        { id: 1.5, name: "Paul", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.6, name: "Laszlo", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
-        { id: 1.7, name: "Nathan", favorite:true, ext:"130,140", log:true, avail:false, connectedWith:"" },
-        { id: 1.8, name: "Steve", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
-        { id: 1.9, name: "Helga", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.10, name: "Michiel", favorite:true, ext:"130,140", log:true, avail:false, connectedWith:"" },
-        { id: 1.11, name: "Christian", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"070123456789" },
-        { id: 1.12, name: "Peter", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
-        { id: 1.13, name: "Maurice", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
-        { id: 1.1, name: "Pascal", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
-        { id: 1.7, name: "Roland", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" },
-        { id: 1.8, name: "Wim", favorite:false, ext:"130,140", log:true, avail:false, connectedWith:"" }] )
+        { id: 1, name: "Receptie Draadloos", shortcut:"", favorite:true, ext:"264,254", log:true, avail:true, connectedName:"Lambert Storingsdienst", connectedNr:"070123456789" },
+        { id: 2, name: "Thomas Winkelman", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
+        { id: 3, name: "Joop Aanstoot", shortcut:"", favorite:true, ext:"130,140", log:false, avail:false, connectedName:"", connectedNr:"" },
+        { id: 4, name: "Bart Meijerink", shortcut:"", favorite:false, ext:"130,140", log:true,  avail:false, connectedName:"", connectedNr:"" },
+        { id: 5, name: "Patrick Van der Veen", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"Richard Kamphuis", connectedNr:"070123456789" },
+        { id: 6, name: "Nicole Roskamp", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
+        { id: 7, name: "Remko Uland", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
+        { id: 8, name: "Richard Kamphuis", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
+        { id: 9, name: "Tom Waanders", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"070123456789", connectedNr:"" },
+        { id: 10, name: "Martin Kamphuis", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
+        { id: 11, name: "Support 1e Lijns", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"070123456789", connectedNr:"" },
+        { id: 12, name: "Lambert Storingsdienst", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
+        { id: 13, name: "Maurice", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
+        { id: 14, name: "Pascal", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
+        { id: 15, name: "Roland", shortcut:"",  favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:"" },
+        { id: 16, name: "Wim", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, connectedName:"", connectedNr:""}] )
     }
 ];
 
@@ -47,6 +62,9 @@ var ListingsViewModel = function(){
     self.currentList = ko.observable();
     self.favoriteList = ko.observable();
     self.waitingQueueList = ko.observable();
+    self.incomingCallList = ko.observable();
+    
+    self.clickedListItem = ko.observable();
     
     self.search = ko.observable();
     self.currentList.subscribe(function(){
@@ -65,11 +83,16 @@ var ListingsViewModel = function(){
                 return ko.mapping.toJS(self.currentList().entries());
                 
             } else {
+                var shortcutCounter = 0;
                 ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
                      entry = ko.mapping.toJS(entry);
                      entry.name+="";
                      if ((entry.name.toLowerCase()).indexOf(searchParam) > -1)
                      {
+                         if (shortcutCounter < 10){
+                            entry.shortcut = shortcutCounter;
+                            shortcutCounter++;
+                         }
                          console.log(entry.name);
                          filteredEntries.push(entry);
                      }
@@ -77,24 +100,68 @@ var ListingsViewModel = function(){
                 return filteredEntries();
             }
         }
+        
     }, self);
     
     self.favFilteredItems = ko.computed(function() 
     {
         if (self.currentList()){
+            var searchParam = self.search();
+            searchParam +="";
+            searchParam = searchParam.toLowerCase();
             var filteredEntries = ko.observableArray();
             
+            if(!searchParam || searchParam == "Search here"){
+                var shortcutCounter = 0;
                  ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
                      entry = ko.mapping.toJS(entry);
                      entry.name+="";
                      if ((entry.favorite))
                      {
+                        if (shortcutCounter < 10){
+                            entry.shortcut = shortcutCounter;
+                            shortcutCounter++;
+                         }
                          console.log(entry.name);
                          filteredEntries.push(entry);
                      }
                  });
                 return filteredEntries();
+            } else {
+                ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
+                     entry = ko.mapping.toJS(entry);
+                     entry.name+="";
+                     if ((entry.name.toLowerCase()).indexOf(searchParam) > -1 && (entry.favorite))
+                     {
+                         entry.shortcut = "";
+                         console.log(entry.name);
+                         filteredEntries.push(entry);
+                     }
+                 });
+                return filteredEntries();
+            }
         }
+        /*
+        if (self.currentList()){
+            var filteredEntries = ko.observableArray();
+            var shortcutCounter = 0;    
+             ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
+                 entry = ko.mapping.toJS(entry);
+                 entry.name+="";
+                 
+                 if ((entry.favorite))
+                 {
+                     if (shortcutCounter < 10){
+                        entry.shortcut= shortcutCounter;
+                        shortcutCounter++;
+                     }
+                     console.log(entry.name);
+                     filteredEntries.push(entry);
+                 }
+             });
+            return filteredEntries();
+        }
+        */
     }, self);
     
     self.filterWaitingQueue = ko.computed(function()
@@ -115,6 +182,33 @@ var ListingsViewModel = function(){
         }                                 
     }, self);
     
+    self.incomingCallQueue = ko.computed(function()
+    {
+         if (self.incomingCallList()){
+            var filteredEntries = ko.observableArray();
+            
+                 ko.utils.arrayForEach(self.incomingCallList().entries(), function(entry) {
+                     entry.name+="";
+                     if ((entry.waitingAmunt))
+                     {  
+                        console.log(entry.name);
+                     }
+                     
+                     filteredEntries.push(entry);
+                 });
+                return filteredEntries();
+        }                                 
+    }, self);
+    
+    self.clickItem = function(clickedItem) 
+    {
+       self.clickedListItem(clickedItem);
+       //alert(self.clickedListItem().id);
+       $('#myModal').modal({
+            keyboard: true
+       })
+    }
+
     self.logCssClass = function(logged)
     {
         if (logged == true) {
@@ -145,6 +239,7 @@ var ListingsViewModel = function(){
     self.currentList( initialLists[0] );
     self.favoriteList( self.favFilteredItems() ) ;
     self.waitingQueueList( initialWaitingQueueList[0] );
+    self.incomingCallList( initialIncomingCallList[0] );
     ///self.waitingQueueList( self.filterWaitingQueue() );
     
     self.setSearch("");
@@ -152,6 +247,8 @@ var ListingsViewModel = function(){
 
 ko.applyBindings(new ListingsViewModel());
 
+/*
 $(function() {
     $('a[rel*=leanModal]').leanModal({ top : 200, closeButton: ".modal_close" });		
 });
+*/

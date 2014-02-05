@@ -4,18 +4,17 @@
 // It handles events for users, calls and queues.
 // The Compass data model, codenamed Lisa, is internally represented
 // by Javascript objects. 
-//
-// Version: __VERSION__
 
 // JS namespace declaration
 var Lisa = {};
 
 // XML Namespaces
-Strophe.addNamespace('LISA_REQUESTS', 
-		'http://talkto.nl/lisa/requests');
-Strophe.addNamespace('LISA_NOTIFICATIONS',
-		'http://talkto.nl/lisa/notifications');
+Strophe.addNamespace('LISA_REQUESTS', 'http://iperity.com/compass');
+Strophe.addNamespace('LISA_NOTIFICATIONS', 'http://iperity.com/compass');
 
+/*
+ * Observer - Observable pattern 
+ */
 Lisa.Observable = function() {
 	this.observers = [];
 
@@ -42,7 +41,9 @@ Lisa.Observable = function() {
 	}
 }
 
-/* Bare minimum - we might want to store more data */
+/*
+ * User object
+ */
 Lisa.User = function() {
 	this.id = "";
 	this.name = "";
@@ -52,6 +53,31 @@ Lisa.User = function() {
 	this.queues = {};
 	this.loggedIn = false;
 
+	this.addQueue = function(queue) {
+		if (!queue) {
+			Lisa.Connection.logging.warn("Tried to add queue, but queue is NULL");
+			return;	
+		}
+		this.queues[queue.id] = queue;
+		this.observable.notify(this);
+		queue.observable.notify(queue);
+	}
+
+	this.removeQueue = function(queue) {
+		if (!queue) {
+			Lisa.Connection.logging.warn("Tried to remove queue, but queue is NULL");
+			return;	
+		} else if (!this.queues[queue.id]) {
+			Lisa.Connection.logging.warn("Tried to remove queue, but queue " + 
+										 queue + " not present in model " + this);	
+			return;
+		}
+
+		delete this.queues[queue.id];
+		this.observable.notify(this);
+		queue.observable.notify(queue);
+	}
+
 	this.toString = function() {
 		return "(User:" + this.id + ":" + this.name + ",l:" + this.loggedIn
 				+ ")";
@@ -59,6 +85,9 @@ Lisa.User = function() {
 	this.observable = new Lisa.Observable();
 }
 
+/*
+ * Queue object
+ */
 Lisa.Queue = function() {
 	this.id = "";
 	this.name = "";
@@ -70,12 +99,72 @@ Lisa.Queue = function() {
 	this.handledCalls = 0;
 	this.totalCalls = 0;
 
+	this.addUser = function(user) {
+		if (!user) {
+			Lisa.Connection.logging.warn("Tried to add user, but user is NULL");
+			return;
+		}
+
+		this.users[user.id] = user;
+		this.observable.notify(this);
+		user.observable.notify(user);
+	}
+
+	this.removeUser = function(user) {
+		if (!user) {
+			Lisa.Connection.logging.warn("Tried to remove user, but user is NULL");
+			return;	
+		} else if (!this.users[user.id]) {
+			Lisa.Connection.logging.warn("Tried to remove user, but user " + 
+										user + " not present in model " + this);	
+			return;
+		}
+
+		delete this.users[user.id];
+		this.observable.notify(this);
+		user.observable.notify(user);
+	}
+
+	this.addCall = function(call) {
+		if (!call) {
+			Lisa.Connection.logging.warn("Tried to add call, but call is NULL");
+			return;
+		}
+		Lisa.Connection.logging.log("Adding call " + call + " to queue " + this);
+
+		this.calls[call.id] = call;
+		call.queue = this;
+		this.observable.notify(this);
+		call.observable.notify(call);
+	}
+
+	this.removeCall = function(call) {
+		if (!call) {
+			Lisa.Connection.logging.warn("Tried to remove call, but call is NULL");
+			return;	
+		} else if (!this.calls[call.id]) {
+			Lisa.Connection.logging.warn("Tried to remove call, but call " + 
+										call + " not present in model " + this);	
+			return;
+		}
+
+		Lisa.Connection.logging.log("Removing call " + call + " from queue " + this);
+		call.queue = null;
+		delete this.calls[call.id];
+		this.observable.notify(this);
+		call.observable.notify(call);
+	}
+
 	this.toString = function() {
 		return "(Queue:" + this.id + ":" + this.name + ")";
 	}
 	this.observable = new Lisa.Observable();
 }
 
+
+/*
+ * Call object
+ */
 Lisa.Call = function() {
 	this.id = "";
 	this.queue = null;
@@ -91,7 +180,12 @@ Lisa.Call = function() {
 	}
 }
 
-// FIXME: Fit nicely in a class somewhere.
+/**
+ * The Lisa Model object.
+ *
+ * The library gives access to an instance of this object through the getModel() call,
+ * and constantly keeps it updated with the the state of the platform.
+ */
 Lisa.Model = function() {
 
 	this.users = {}; // Array of users, keyed by id.
@@ -112,9 +206,7 @@ Lisa.Model = function() {
 			call.observable.notify(call);
 		}
 		
-		// If the call contains users, attach them to the right user-objects in
-		// the data model.
-		// FIXME: Maybe the connector should be doing this.
+		// Attach the call to any involved users.
 		if (call.sourceUser) {
 			call.sourceUser.calls[call.id] = call;
 			call.sourceUser.observable.notify(call.sourceUser);
@@ -125,9 +217,9 @@ Lisa.Model = function() {
 		}
 	}
 
-	this.removeCall = function(call) {
-		var foundCall = this.calls[call.id];
-		if (foundCall == null) {
+	this.removeCall = function(theCall) {
+		var call = this.calls[theCall.id];
+		if (call == null) {
 			Lisa.Connection.logging
 					.log("MODEL: WARNING: Request to remove call, but call not in data model."
 							+ call);
@@ -135,20 +227,19 @@ Lisa.Model = function() {
 		}
 
 		// Delete the call.
-		delete this.calls[foundCall.id];
+		delete this.calls[call.id];
 
 		// Delete the call from all objects that might refer to it.
-		if (foundCall.sourceUser) {
-			delete foundCall.sourceUser.calls[foundCall.id];
-			foundCall.sourceUser.observable.notify(foundCall.sourceUser);
+		if (call.sourceUser) {
+			delete call.sourceUser.calls[call.id];
+			call.sourceUser.observable.notify(call.sourceUser);
 		}
-		if (foundCall.destinationUser) {
-			delete foundCall.destinationUser.calls[foundCall.id];
-			foundCall.destinationUser.observable.notify(foundCall.destinationUser);
+		if (call.destinationUser) {
+			delete call.destinationUser.calls[call.id];
+			call.destinationUser.observable.notify(call.destinationUser);
 		}
-		if (foundCall.queue) {
-			delete foundCall.queue.calls[foundCall.id];
-			foundCall.queue.observable.notify(foundCall.queue);
+		if (call.queue) {
+			call.queue.removeCall(call);
 		}
 
 		Lisa.Connection.logging.log("MODEL: Removed call " + call);
@@ -173,10 +264,6 @@ Lisa.Model = function() {
 			this.queueListObservable.notify(this, queue);
 	}
 
-	/*
-	 * this.removeQueue = function(queue){ }
-	 */
-
 	this.addUser = function(user) {
 		if (user == null) {
 			return;
@@ -186,7 +273,8 @@ Lisa.Model = function() {
 		var newUser = (this.users[user.id] == null);
 		this.users[user.id] = user;
 
-		// Notifications
+		// --- Send Notifications ---
+
 		user.observable.notify(user);
 
 		for ( var queueId in user.queues) {
@@ -205,15 +293,15 @@ Lisa.Model = function() {
 		delete this.users[id];
 
 		if (user) {
-			Lisa.Connection.logging.log("queues for this user: " + user.queues);
 			for ( var queueId in user.queues) {
+
 				// Delete user from queue as well.
 				var queue = this.queues[queueId];
 				delete queue.users[user.id];
 				Lisa.Connection.logging.log("Deleted user " + user
 						+ "from queue" + queue);
 
-				// Notify any queues this user might be in.
+				// Notify any queues that the user used to be in
 				queue.observable.notify(queue);
 			}
 		}
@@ -223,11 +311,15 @@ Lisa.Model = function() {
 	
 	this.getUser = function(id) {
 		return this.users[id];
-	};
+	}
 	
 	this.getQueue = function(id) {
 		return this.queues[id];
-	};
+	}
+
+	this.getCall = function(id) {
+		return this.calls[id];
+	}
 }
 
 function randomstring(L) {
@@ -245,66 +337,46 @@ function randomstring(L) {
 	return s;
 }
 
+/**
+ * The Lisa Connection object.
+ *
+ * This is the main interface to the library.
+ */
 Lisa.Connection = function() {
 
+	// === Static variables
+	Lisa.Connection.connectionStatusObservable = new Lisa.Observable();
+	Lisa.Connection.model = new Lisa.Model();
+	Lisa.Connection.myUserId = 0;
+	Lisa.Connection.userName = "";
+
+	// === Local variables
+	var self = this;
 	var connection;
 	var companyId;
 	var initDeferred = $.Deferred();
 	var modelCompleteDeferred = $.Deferred();
 	var usersDone = false;
 	var queuesDone = false;
-
-	this.bosh_port = 5281;
-	this.use_ssl = true;
-	this.log_xmpp = false;
-
-	Lisa.Connection.connectionStatusObservable = new Lisa.Observable();
-	this.connectionStatusObservable = Lisa.Connection.connectionStatusObservable;
-
-	Lisa.Connection.model = new Lisa.Model();
-	this.model = Lisa.Connection.Model;
-
-	Lisa.Connection.myUserId = 0;
-	Lisa.Connection.userName = "";
 	var myUserId = Lisa.Connection.myUserId;
 	var userName = Lisa.Connection.userName;
 
-	this.setupConnection = function(server, username) {
-		// configuration
-		Lisa.Connection.server = server;
-		Lisa.Connection.userName = username;
-		Lisa.Connection.logging.log("My username: " + Lisa.Connection.userName);
+	// === Public members
+	
+	/*
+     * Connecting without SSL makes you vulnerable for eavesdropping and connection hijacking. 
+     * Please look up the port-number for you Compass environment in the documentation,
+     * set bosh_port to this value, and set use_ssl to true using your client.
+     */
+	this.bosh_port = 5280;
+	this.use_ssl = false;
 
-		// Setup strophe connection
-		var protocol = this.use_ssl ? 'https' : 'http';
-		var bosh_service = protocol + '://' + server + ':' + this.bosh_port
-				+ '/http-bind';
-		connection = new Strophe.Connection(bosh_service);
-		if (this.log_xmpp) {
-			connection.rawInput = this.logging.logInput;
-			connection.rawOutput = this.logging.logOutput;
-		}
-
-		// Attach callbacks...
-		connection.addHandler(callback(function(stanza) {
-			onMessageReceived(stanza);
-			return true;
-		}), null, 'message', null, null, null);
-		connection.addHandler(callback(function(stanza) {
-			onPubsubReceived(stanza);
-			return true;
-		}), null, 'message', null, null, connection.PubSub.service);
-
-		// create jQuery deferred to communicate initialisation success or
-		// error.
-		initDeferred.fail(Lisa.Connection.logging.log);
-		initDeferred.fail(function() {
-			modelCompleteDeferred.reject();
-		});
-		return initDeferred;
-	}
-
-	/* Connect to the XMPP server through BOSH */
+	this.retrieve_model = true;
+	this.log_xmpp = false;
+	this.connectionStatusObservable = Lisa.Connection.connectionStatusObservable;
+	this.model = Lisa.Connection.Model;
+	
+	/** Connect to the XMPP server through BOSH */
 	this.connect = function(server, username, password, resource) {
 
 		this.setupConnection(server, username);
@@ -340,10 +412,12 @@ Lisa.Connection = function() {
 		connectionStatusChanged(Strophe.Status.CONNECTED);
 	}
 
+	/** Disconnect from the server. */
 	this.disconnect = function() {
-		// Switch to using synchronous requests
-		// since this is typically called
-		// onUnload.
+		/* Switch to using synchronous requests
+		 * since this is typically called
+		 * onUnload.
+		 */
 		this.connection.sync = true;
 		this.connection.flush();
 		this.connection.disconnect();
@@ -361,62 +435,132 @@ Lisa.Connection = function() {
 		return deferred;
 	},
 
-	/* Actions */
+	this.setupConnection = function(server, username) {
+		// configuration
+		Lisa.Connection.server = server;
+		Lisa.Connection.userName = username;
+		Lisa.Connection.logging.log("My username: " + Lisa.Connection.userName);
 
+		// Setup strophe connection
+		var protocol = this.use_ssl ? 'https' : 'http';
+		var bosh_service = protocol + '://' + server + ':' + this.bosh_port
+				+ '/http-bind';
+		connection = new Strophe.Connection(bosh_service);
+		if (this.log_xmpp) {
+			connection.rawInput = this.logging.logInput;
+			connection.rawOutput = this.logging.logOutput;
+		}
+
+		// Attach callbacks...
+		connection.addHandler(callback(function(stanza) {
+			onMessageReceived(stanza);
+			return true;
+		}), null, 'message', null, null, null);
+		// If pubsub plugin loaded
+		if (connection.PubSub) {
+			connection.addHandler(callback(function(stanza) {
+				onPubsubReceived(stanza);
+				return true;
+			}), null, 'message', null, null, connection.PubSub.service);
+		}
+
+		// create jQuery deferred to communicate initialisation success or
+		// error.
+		initDeferred.fail(Lisa.Connection.logging.log);
+		initDeferred.fail(function() {
+			modelCompleteDeferred.reject.apply(this, arguments);
+		});
+		return initDeferred;
+	};
+
+	this.getStropheConnection = function() {
+		return connection;
+	};
+
+	/*
+	 * Actions
+	 *
+	 * BEWARE: Each of these functions is UNSUPPORTED, and might disappear or stop working
+	 * at any moment, without prior notice.
+	 */
+
+	/** Have the current user dial a phone-numer. -UNSUPPORTED- */
 	this.dialNumber = function(number) {
 		var iq = $iq({
 			to : 'phone.' + Lisa.Connection.server,
 			type : 'set',
 			id : connection.getUniqueId('lisa')
-		}).c('action', {
+		}).c('request', {
 			xmlns : Strophe.NS.LISA_REQUESTS,
+			type: 'ACTION',
+		}).c('action', {
 			name : 'dial'
-		}).c('dial').c('destinationNumber').t(number);
+		}).c('destinationNumber').t(number);
 		return this.sendIQ(iq);
 	}
 
+	/** Have the current user dial another user -UNSUPPORTED- */
 	this.dialUser = function(user) { // user-object.
 		var iq = $iq({
 			to : 'phone.' + Lisa.Connection.server,
 			type : 'set',
 			id : connection.getUniqueId('lisa')
-		}).c('action', {
+		}).c('request', {
 			xmlns : Strophe.NS.LISA_REQUESTS,
+			type: 'ACTION',
+		}).c('action', {
 			name : 'dial'
-		}).c('dial').c('destinationUserId').t(user.id);
+		}).c('destinationUserId').t(user.id);
 		return this.sendIQ(iq);
 	}
 
-	this.queueLogin = function(queue, user) { // queue-object.
+	/** Have the current user logon to a queue -UNSUPPORTED- */
+	this.queueLogin = function(queue, user) {
 		var userId = user ? user.userId : Lisa.Connection.myUserId;
 
 		var iq = $iq({
 			to : 'phone.' + Lisa.Connection.server,
 			type : 'set',
 			id : connection.getUniqueId('lisa')
-		}).c('action', {
+		}).c('request', {
 			xmlns : Strophe.NS.LISA_REQUESTS,
-			name : 'queuelogin'
-		}).c('queuelogin').c('userId').t(userId).up().c('queueId').t(queue.id);
+			type : 'ACTION',
+		}).c('action', {
+			name : 'queue-login',
+		}).c('userId').t(userId).up().c('queueId').t(queue.id);
 		return this.sendIQ(iq);
 	}
 
-	this.queueLogout = function(queue, user) { // queue-object.
+	/** Have the current user log out of a queue -UNSUPPORTED- */
+	this.queueLogout = function(queue, user) {
 		var userId = user ? user.userId : Lisa.Connection.myUserId;
 
-		var deferred = $.Deferred();
 		var iq = $iq({
 			to : 'phone.' + Lisa.Connection.server,
 			type : 'set',
 			id : connection.getUniqueId('lisa')
-		}).c('action', {
+		}).c('request', {
 			xmlns : Strophe.NS.LISA_REQUESTS,
-			name : 'queuelogout'
-		}).c('queuelogout').c('userId').t(userId).up().c('queueId').t(queue.id);
+			type : 'ACTION',
+		}).c('action', {
+			name : 'queue-logout',
+		}).c('userId').t(userId).up().c('queueId').t(queue.id);
 		return this.sendIQ(iq);
 	}
 
-	/* One-off getters */
+	/*
+	 * One-off getters
+	 *
+	 * Each of these functions returns a JQuery.deferred()
+	 * http://api.jquery.com/category/deferred-object/
+	 */
+
+	/**
+	 * get the current company-id.
+	 *
+	 * @returns a JQuery.deferred that will resolve to the 
+	 * company-id of the current user when available. 
+	 */
 	this.getCompanyId = function() {
 		var deferred = $.Deferred();
 		initDeferred.done(function(deferred) {
@@ -428,6 +572,12 @@ Lisa.Connection = function() {
 		return deferred;
 	}
 
+	/**
+	 * get the current company-name.
+	 *
+	 * @returns a JQuery.deferred that will resolve to the 
+	 * company-name of the current user when available. 
+	 */
 	this.getCompanyName = function() {
 		var deferred = $.Deferred();
 		initDeferred.done(function(deferred) {
@@ -439,17 +589,30 @@ Lisa.Connection = function() {
 		return deferred;
 	}
 
+	/**
+	 * get the current data-model.
+	 *
+	 * The data-model is automatically kept up-to-date with the
+	 * state of the platform.
+	 *
+	 * @returns a JQuery.deferred that will resolve to the 
+	 * Lisa Api data model when available. 
+	 */
 	this.getModel = function() {
 		var deferred = $.Deferred();
+
 		modelCompleteDeferred.done(function(deferred) {
 			return function() {
 				deferred.resolve(Lisa.Connection.model);
 			};
-		}(deferred)); // Use closure to bring local var (deferred) into
-		// callback.
-		modelCompleteDeferred.fail(function() {
-			deferred.reject();
-		});
+		}(deferred)); 
+
+		modelCompleteDeferred.fail(function(deferred) {
+			return function() {
+				deferred.reject.apply(this, arguments);
+			};
+		}(deferred));
+
 		return deferred;
 	}
 
@@ -466,6 +629,7 @@ Lisa.Connection = function() {
 		} else if (status == Strophe.Status.CONNFAIL) {
 			Lisa.Connection.logging.log('STATUS: Strophe failed to connect.');
 			Lisa.Connection.logging.status('Connection failed.');
+			initDeferred.reject("Connection failed.");
 		} else if (status == Strophe.Status.DISCONNECTING) {
 			Lisa.Connection.logging.log('STATUS: Strophe is disconnecting.');
 			Lisa.Connection.logging.status('Disconnecting...');
@@ -479,62 +643,79 @@ Lisa.Connection = function() {
 		} else if (status == Strophe.Status.AUTHFAIL) {
 			Lisa.Connection.logging.log('STATUS: authentication failed');
 			Lisa.Connection.logging.status('Authentication Failed.');
+			initDeferred.reject("Authentication Failed.");
 		}
 
 		Lisa.Connection.connectionStatusObservable.notify(status);
 	}
 
 	function onConnected() {
-		// set invisible, we don't want our user to get online
-		setInvisible();
+		
+		if (!self.retrieve_model)
+			return;
 
-		// get company
-		// $('#status').text('Getting company info...');
+		// set invisible, we don't want our user to get online
+		self.setInvisible();
+		self.sendInitialPresence();
+
+		// Get company
 		var iq = $iq({
 			to : 'phone.' + Lisa.Connection.server,
 			type : 'get',
 			id : connection.getUniqueId('lisa')
-		}).c('getcompany', {
-			xmlns : Strophe.NS.LISA_REQUESTS
+		}).c('request', {
+			xmlns : Strophe.NS.LISA_REQUESTS,
+			type: 'GET_COMPANY',
 		});
 		connection.sendIQ(iq, callback(onGetCompany), function() {
-			initDeferred.reject("Lisa is down.");
+			initDeferred.reject("Service is down.");
 		});
 
-		// retrieve userlist
+		// Get users
 		iq = $iq({
 			to : 'phone.' + Lisa.Connection.server,
 			type : 'get',
 			id : connection.getUniqueId('lisa')
-		}).c('get', {
-			xmlns : Strophe.NS.LISA_REQUESTS
-		}).c('user', {});
+		}).c('request', {
+			xmlns : Strophe.NS.LISA_REQUESTS,
+			type: "GET"
+		}).c('filter', {
+			type: "user"
+		});
 		connection.sendIQ(iq, callback(processUser), function() {
 			initDeferred.reject("get user failed - Lisa problem?");
 		});
 
-		// retrieve queuelist
+		// Get queues
 		iq = $iq({
 			to : 'phone.' + Lisa.Connection.server,
 			type : 'get',
 			id : connection.getUniqueId('lisa')
-		}).c('get', {
-			xmlns : Strophe.NS.LISA_REQUESTS
-		}).c('queue', {});
+		}).c('request', {
+			xmlns : Strophe.NS.LISA_REQUESTS,
+			type: "GET"
+		}).c('filter', {
+			type: "queue"
+		});
 		connection.sendIQ(iq, callback(processQueue), function() {
 			initDeferred.reject("get queue failed - Lisa problem?");
 		});
 
-		    // retrieve call-list
-    	iq = $iq({
-    		to: 'phone.' + Lisa.Connection.server,
-    		type: 'get', id: connection.getUniqueId('lisa')
-    	}).c('get', {
-    		xmlns: Strophe.NS.LISA_REQUESTS
-    	}).c('call', {});
-    	connection.sendIQ(iq, callback(processCall), function() {
-    		initDeferred.reject("get calls failed - Lisa problem?");
-    	});
+		// Get queues
+		iq = $iq({
+			to : 'phone.' + Lisa.Connection.server,
+			type : 'get',
+			id : connection.getUniqueId('lisa')
+		}).c('request', {
+			xmlns : Strophe.NS.LISA_REQUESTS,
+			type: "GET"
+		}).c('filter', {
+			type: "call"
+		});
+		connection.sendIQ(iq, callback(processCall), function() {
+			initDeferred.reject("get call failed - Lisa problem?");
+		});
+
 	}
 
 	function processUser(xml) {
@@ -553,17 +734,16 @@ Lisa.Connection = function() {
 					}
 				});
 		usersDone = true;
-		isModelComplete(); // FIXME: After one user? Ofcourse not.
+		isModelComplete();
 	}
 
 	function processQueue(xml) {
 		$(xml).find('result').children().each(function(idx, queue) {
 			var queueModel = xmlToQueue($(queue))
 			Lisa.Connection.model.addQueue(queueModel);
-			// add_queue(queue); // TODO
 		});
 		queuesDone = true;
-		isModelComplete(); // FIXME: After one user? Ofcourse not.
+		isModelComplete();
 	}
 
 	function processCall(xml) {
@@ -571,10 +751,9 @@ Lisa.Connection = function() {
             var callModel = xmlToCall($(call), true)
             if (callModel)
                 Lisa.Connection.model.addCall(callModel);
-            //add_queue(queue); // TODO
     });
          callsDone = true;
-         isModelComplete(); // FIXME: After one user? Ofcourse not.
+         isModelComplete();
     }
 
 	function isModelComplete() {
@@ -606,7 +785,6 @@ Lisa.Connection = function() {
 			onSubscribe(stanza);
 		}
 
-		// TODO: filter on pubsub namespace
 		$('item', stanza).each(
 				function(idx, item) {
 					item = $(item).children(":first");
@@ -622,15 +800,15 @@ Lisa.Connection = function() {
 	function onGetCompany(stanza) {
 		Lisa.Connection.logging.log("INFO: Get Company Received;")
 		Lisa.Connection.logging.status("Subscribing...")
-
-		// Subscribe to company pubsub stream
+		
+		// Retrieve company id and name
 		companyId = $(stanza).find('result').find('id').text();
 		companyName = $(stanza).find('result').find('name').text();
 		
+		// Subscribe to company pubsub stream
 		// NOTE: not using strophe's subscribe here; we want to subscribe using
 		// our full jid, not bare jid
 		var node = companyId;
-		
 		var iq = $iq({
 			to : connection.PubSub.service,
 			type : 'set',
@@ -647,12 +825,11 @@ Lisa.Connection = function() {
 		}).c('field', {
 			var: 'FORM_TYPE',
 			type: 'hidden'
-		}).c('value', {}, 'http://jabber.org/protocol/pubsub#subscribe_options');
-		/*
+		}).c('value', {}, 'http://jabber.org/protocol/pubsub#subscribe_options')
 		.up().c('field', {
 			var: 'pubsub#expire',
 			type: 'text-single'
-		}).c('value', {}, 'presence');*/
+		}).c('value', {}, 'presence');
 		
 		
 		connection.sendIQ(iq, onSubscribe, callback(function() {
@@ -664,7 +841,7 @@ Lisa.Connection = function() {
 	function onSubscribe(stanza) {
 		var state = $(stanza).find('subscription').attr('subscription');
 		if (state == 'pending') {
-			// Wait some more...
+			// Waiting for 'subscribed'.
 		} else if (state == 'subscribed') {
 			onSubscribed();
 		} else {
@@ -681,23 +858,27 @@ Lisa.Connection = function() {
 	function onReceiveNotification(msg) {
 		Lisa.Connection.logging.log("INFO: Notification Received;");
 		var type = msg.attr('type');
-
 		if (type.indexOf('notification.call') == 0) {
-			var call = msg.find('call');
-			var callModel = xmlToCall(call);
-			if (callModel) {
-                if (type == 'notification.call.start') {
-                    Lisa.Connection.model.addCall(callModel);
-                } else if (type == 'notification.call.update') {
-                     Lisa.Connection.model.addCall(callModel);
-                } else if (type == 'notification.call.end') {
-                    Lisa.Connection.model.removeCall(callModel);
-                }
+			if (type == 'notification.call.end') {
+				var callId = msg.find("callId").text();
+				var call = findOrCreateCall(callId);
+				Lisa.Connection.model.removeCall(call);
+			} else if (type == 'notification.call.start') {
+				var call = msg.find('call');
+				var callModel = xmlToCall(call);
+				Lisa.Connection.model.addCall(callModel);
+			} else if (type == 'notification.call.update') {
+				var call = msg.find('call');
+				var callModel = xmlToCall(call);
+                Lisa.Connection.model.addCall(callModel);
             }
-		} else if (type.indexOf('notification.queue') == 0) {
-			var queueXml = msg.find('queue');
-			var queue = xmlToQueue(queueXml);
-			Lisa.Connection.model.addQueue(queue);
+		} else if (type.indexOf('notification.queueMember') == 0) {
+			var member = msg.find('member');
+			xmlToQueueMember(type, member);
+		} else if (type.indexOf('notification.queue.call') == 0) {
+			xmlToQueueCall(type, msg);
+		} else if (type.indexOf('notification.queue.update') == 0) {
+			xmlQueueUpdate(msg);
 		} else if (type.indexOf('notification.user.status') == 0) {
 			var userXml = msg.find('user');
 			var user = xmlToUser(userXml);
@@ -722,7 +903,8 @@ Lisa.Connection = function() {
 		};
 	}
 
-	function setInvisible() {
+	// Set ourselves to invisible mode.
+	this.setInvisible = function() {
 
 		var iq1 = $iq({
 			type : 'set',
@@ -743,31 +925,75 @@ Lisa.Connection = function() {
 		}).c('active', {
 			name : 'invisible'
 		});
-		var pres = $pres().c('priority').t('1');
 
 		connection.send(iq1);
 		connection.send(iq2);
+	};
+
+	this.sendInitialPresence = function() {
+		var pres = $pres().c('priority').t('1');
+
 		connection.send(pres);
 	}
 
-	/* Private utility functions */
 	function xmlToUser(user) {
 		var id = user.attr('id');
 		var userModel = findOrCreateUser(id);
 		userModel.name = user.find('name').text();
 		userModel.loggedIn = (user.find('loggedIn').text() == "true");
-		userModel.extension = user.find('properties').find('extension').text();
-		userModel.jid = user.find('identifiers').find('xmppjid').text();
+		// assume just 1 extension, for now
+		userModel.extension = user.find('extensions').text();
+		userModel.jid = user.find('identifiers').find('xmppJid').text();
 		return userModel;
 	}
 
 	function findOrCreateUser(id) {
-		var userModel = Lisa.Connection.model.users[id];// new Lisa.User();
+		var userModel = Lisa.Connection.model.users[id];
 		if (userModel == null) {
 			userModel = new Lisa.User();
 		}
 		userModel.id = id;
 		return userModel;
+	}
+
+	function xmlToQueueMember(type, member) {
+		var queueId = member.find('queueId').text();
+		var queue = Lisa.Connection.model.getQueue(queueId);
+		var userId = member.find('userId').text();
+		var user = Lisa.Connection.model.getUser(userId);
+
+		if (user && queue) {
+			if (type.indexOf('notification.queueMember.enter') == 0) {
+				queue.addUser(user);
+				user.addQueue(queue);
+				Lisa.Connection.logging.log("Added user " + user + 
+											" to queue " + queue);
+			} else if (type.indexOf('notification.queueMember.leave') == 0) {
+				queue.removeUser(user);
+				user.removeQueue(queue);
+				Lisa.Connection.logging.log("Removed user " + user +
+									 		" from queue " + queue);
+			}
+		}
+	}
+
+	function xmlToQueueCall(type, notification) {
+		var queueId = notification.find('queueId').text();
+		var queue = Lisa.Connection.model.getQueue(queueId);
+		var queueCall = notification.find('queueCall');
+		var callId = queueCall.find('callId').text();
+		var call = Lisa.Connection.model.getCall(callId);
+
+		if (queue && call) {
+			if (type.indexOf('notification.queue.call.enter') == 0) {
+				queue.addCall(call);
+			} else if (type.indexOf('notification.queue.call.leave') == 0) {
+				queue.removeCall(call);
+			}
+		} else {
+			Lisa.Connection.logging.warn("Couldn't find queue " + queue +
+										 " or call " + call + " " + callId);	
+		}
 	}
 
 	function xmlToQueue(queue) {
@@ -785,11 +1011,8 @@ Lisa.Connection = function() {
 						var userId = $(child).find('userId').text();
 						var user = Lisa.Connection.model.users[userId];
 						if (user) {
-							queueModel.users[userId] = user; // Only count
-							// users that
-							// exist in the
-							// model.
-							user.queues[queueModel.id] = queueModel;
+							queueModel.addUser(user);
+							user.addQueue(queueModel);
 							Lisa.Connection.logging.log("Added user " + user
 									+ " to queue " + queueModel);
 						}
@@ -808,17 +1031,41 @@ Lisa.Connection = function() {
 		}(queueModel));
 
 		// Statistics     
-		queueModel.maxWait = getStatistic(queue, "maxwait");
-		queueModel.averageWait = getStatistic(queue, "averagewait");
-		queueModel.totalWait = getStatistic(queue, "totalwait");
-		queueModel.handledCalls = getStatistic(queue, "handledcalls");
-		queueModel.totalCalls = getStatistic(queue, "totalcalls");
+		queueModel.maxWait = getStatistic(queue, "maxWait");
+		queueModel.averageWait = getStatistic(queue, "averageWait");
+		queueModel.totalWait = getStatistic(queue, "totalWait");
+		queueModel.handledCalls = getStatistic(queue, "handledCalls");
+		queueModel.totalCalls = getStatistic(queue, "totalCalls");
 
 		return queueModel;
 	}
 
+	function xmlQueueUpdate(notification) {
+		var queueId = notification.find('queueId').text();
+		var queue = Lisa.Connection.model.getQueue(queueId);
+		if (queue == null) {
+			Lisa.Connection.logging.warn("Received notification for unknown queue id " + queueId);
+			return;	
+		}
+
+		statisticsUpdate(notification, queue);
+	}
+
+	function statisticsUpdate(notificationXml, queueModel) {
+		notificationXml.children().each(function(queueModel) {
+			return function (idx, child) {
+				if (child.nodeName == "propertyChange") {
+					var statistic = $(child).find("name").text();
+					var statValue = $(child).find("newValue").text();
+					queueModel[statistic] = statValue;
+					queueModel.observable.notify(queueModel);
+				}
+			}
+		}(queueModel));		
+	}
+
 	function getStatistic(queueXml, elementName) {
-		var statistic = queueXml.find('properties').find(elementName).text();
+		var statistic = queueXml.find(elementName).text();
 		return (statistic == '') ? 0 : parseInt(statistic);
 	}
 
@@ -841,12 +1088,12 @@ Lisa.Connection = function() {
 	}
 
 	function xmlToCall(call, initialData) {
-
+		
 		initialData = initialData || false;
 
 		var id = call.attr('id');
 		var callModel = findOrCreateCall(id);
-		
+
 		// Source
 		var src = call.find('source');
 		if (initialData && src.find('timeEnd').length != 0) {
@@ -854,46 +1101,28 @@ Lisa.Connection = function() {
             	                        " already ended source. Not adding to model.");
             return null;
         }
-        callModel.source = src;
-        if (callModel.source.attr('type') == 'User') {
-                // Outgoing call.
-                var userId = src.find('userId').text();
-                var user = findOrCreateUser(userId);
-                callModel.sourceUser = user;
-        }
+		callModel.source = src;
+		if (src.attr('type') == 'User') {
+			var userId = src.find('userId').text();
+			var user = findOrCreateUser(userId);
+			callModel.sourceUser = user;
+		}
 
 		// Destination
 		var dst = call.find('destination');
-        if (initialData && dst.find('timeEnd').length != 0) {
+		if (initialData && dst.find('timeEnd').length != 0) {
             Lisa.Connection.logging.log("Call " + callModel.id + 
             						    " already ended destination. Not adding to model.");
             return null;
         }
-        callModel.destination = dst;
-        if (callModel.destination.attr('type') == 'User') {
-                // Outgoing call.
-                var userId = dst.find('userId').text();
-                 var user = findOrCreateUser(userId);
-                user.id = userId;
-                callModel.destinationUser = user;
-        }
+		callModel.destination = dst;
+		if (dst.attr('type') == 'User') {
+			var userId = dst.find('userId').text();
+			var user = findOrCreateUser(userId);
+			callModel.destinationUser = user;
+		}
 
-
-        var state = call.find('properties').find('compass__callstate').text();
-        switch (state) {
-        	case "ring":
-        		 callModel.state = "RINGING";
-        		 break;
-        	case "answered":
-        		 callModel.state = "ANSWERED";
-        		 break;
-        	case "conn":
-        		 callModel.state = "CONNECTING";
-        		 break;
-        	default:
-        		 callModel.state = "UNKNOWN";
-        		 break;
-        }
+        callModel.state = call.find('state').text();
 
 		return callModel;
 	}
@@ -901,14 +1130,11 @@ Lisa.Connection = function() {
 }
 
 /* Logging functionality */
-
-// Since callbacks change the contents of 'this', assign statically.
 Lisa.Connection.logging = new function() {
 	this.cb = undefined;
 	this.statusCb = undefined;
 	this.loggingObservable = new Lisa.Observable();
 	this.statusObservable = new Lisa.Observable();
-	Strophe.error = this.log;
 
 	this.setCallback = function(callback) {
 		this.loggingObservable.addObserver(callback);
@@ -922,6 +1148,10 @@ Lisa.Connection.logging = new function() {
 		Lisa.Connection.logging.loggingObservable.notify(logMsg);
 	}
 
+	this.warn = function(logMsg) {
+		Lisa.Connection.logging.log("WARNING: " + logMsg);
+	}
+
 	this.status = function(statusMsg) {
 		Lisa.Connection.logging.statusObservable.notify(statusMsg);
 	}
@@ -933,5 +1163,7 @@ Lisa.Connection.logging = new function() {
 	this.logOutput = function(data) {
 		Lisa.Connection.logging.log("SENT: " + data);
 	}
+
+	Strophe.error = this.log;
 
 }();

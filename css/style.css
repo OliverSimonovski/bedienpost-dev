@@ -1,6 +1,12 @@
 
 @import url("http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css");
 
+@media (max-width: 767px) {
+  .modal-dialog {
+    width: 100%;
+  }
+} 
+
 body {  
     font-family: Helvetica, Arial;
     background-color:#ffffff; 
@@ -15,6 +21,32 @@ body {
 {
     display:none;
     content:"";
+}
+
+
+#loginModal .modal-dialog
+{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:25%;
+}
+
+#connectModal .modal-dialog
+{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:35%;
+}
+
+.modal-body {
+    overflow-y: auto;
+}
+.modal-footer {
+    margin-top: 0;
 }
 
 .form-control {
@@ -119,11 +151,12 @@ body {
   height:42px;
   border:1px solid #ffffff;
 }
+
 .curl li:hover
 {
     -moz-box-shadow: inset 0 0 1px #2d2f31;
--webkit-box-shadow: inset 0 0 1px #2d2f31;
-box-shadow: inner 0 0 1px #2d2f31;
+    -webkit-box-shadow: inset 0 0 1px #2d2f31;
+    box-shadow: inner 0 0 1px #2d2f31;
     cursor:pointer;
 }
 
@@ -135,16 +168,82 @@ box-shadow: inner 0 0 1px #2d2f31;
     table-layout: fixed;
 }
 
-.queue li {
+.queue li 
+{
     height: 30px;
     border: 1px solid #ffffff;
 }
 
-.fa { font-size: 24px; position: absolute;outline: none; margin-top:8px; color:#fff }
-li  { transition: all .3s ease;-webkit-transition: all .3s ease;-moz-transition: all .3s ease;-o-transition: all .3s ease; }
+.fa 
+{ 
+    font-size: 24px; 
+    position: absolute;
+    outline: none; 
+    margin-top:8px; 
+}
 
-/* Facebook */
-li .fa-check-square i { color:#2d2f31; }
+.fa-sort-asc
+{
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:0px;
+
+}
+
+.fa-sort-desc
+{
+    cursor:pointer;
+    font-size: 18px;
+     margin-top:0px; 
+
+}
+
+.fa-star 
+{
+    cursor:pointer;
+   font-size: 18px;
+    margin-top:0px; 
+
+}
+
+.fa-star-o
+{
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:0px; 
+}
+
+.fa-sign-in
+{
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:0px; 
+}
+
+.fa-sign-out
+{
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:0px; 
+
+}
+
+.logged-in-color
+{
+    color:#2d2f31;
+}
+
+.logged-out-color
+{
+    color:#afafaf;
+}
+
+li  { 
+    transition: all .3s ease;
+    -webkit-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+    -o-transition: all .3s ease; 
+}
 
 .image_container
 {  
@@ -170,15 +269,29 @@ li .fa-check-square i { color:#2d2f31; }
     padding:0px;  
 }
 
+.connect
+{
+    width:49%;
+}
 
 .badge {
   font-size: 12.025px;
   font-weight: bold;
   white-space: nowrap;
-  color: #ffffff;
+
   -webkit-border-radius: 9px;
   -moz-border-radius: 9px;
   border-radius: 9px;
+}
+
+.badge logged-in-color
+{
+      background-color::#2d2f31;
+}
+
+.badge logged-out-color
+{
+      background-color::#afafaf;
 }
 
 .badge-avail {

@@ -77,7 +77,7 @@ function userToClientModel(user) {
     var userObj = Object();
     userObj.id = user.id;
     userObj.name = user.name;
-    userObj.favorite = ( Math.floor(Math.random()*100) < 5);
+    userObj.favorite = ( Math.floor(Math.random()*100) < 8);
     userObj.ext = userObj.extension;
     userObj.log = user.loggedIn;
     userObj.avail = (numcalls == 0);
@@ -93,15 +93,14 @@ function userToClientModel(user) {
                 userObj.connectedNr = call.destinationUser.extension;
                 userObj.connectedName = call.destinationUser.name;
             } else {
-                userObj.connectedNr = call.destination.find('number').text();
+                userObj.connectedName = call.destination.find('number').text();
             }
         } else {
             if (call.sourceUser) {
                 userObj.connectedNr = call.sourceUser.extension;
                 userObj.connectedName = call.sourceUser.name;
-                userObj.connectedNr = call.source.find('number').text();
             } else {
-
+                userObj.connectedName = call.source.find('number').text();
             }
         }
     } else {

@@ -1,6 +1,12 @@
 
 @import url("http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css");
 
+@media (max-width: 767px) {
+  .modal-dialog {
+    width: 100%;
+  }
+} 
+
 body {  
     font-family: Helvetica, Arial;
     background-color:#ffffff; 
@@ -15,6 +21,32 @@ body {
 {
     display:none;
     content:"";
+}
+
+
+#loginModal .modal-dialog
+{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:25%;
+}
+
+#connectModal .modal-dialog
+{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:35%;
+}
+
+.modal-body {
+    overflow-y: auto;
+}
+.modal-footer {
+    margin-top: 0;
 }
 
 .form-control {
@@ -235,6 +267,11 @@ li  {
 {
     border-bottom:1px solid #468847;
     padding:0px;  
+}
+
+.connect
+{
+    width:49%;
 }
 
 .badge {

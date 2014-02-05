@@ -325,7 +325,43 @@ var ListingsViewModel = function(){
     $('#loginModal').modal({
             keyboard: true
     })
-}
+    
+    function adjustModalMaxHeightAndPosition(){
+        $('.modal').each(function(){
+            if($(this).hasClass('in') == false){
+                $(this).show(); /* Need this to get modal dimensions */
+            };
+            var contentHeight = $(window).height() - 60;
+            var headerHeight = $(this).find('.modal-header').outerHeight() || 0;
+            var footerHeight = $(this).find('.modal-footer').outerHeight() || 0;
+    
+            $(this).find('.modal-content').css({
+                'max-height': function () {
+                    return contentHeight;
+                }
+            });
+    
+            $(this).find('.modal-body').css({
+                'max-height': function () {
+                    return (contentHeight - (headerHeight + footerHeight));
+                }
+            });
+    
+            $(this).find('.modal-dialog').css({
+                'margin-top': function () {
+                    return -($(this).outerHeight() / 2);
+                },
+                'margin-left': function () {
+                    return -($(this).outerWidth() / 2);
+                }
+            });
+            if($(this).hasClass('in') == false){
+                $(this).hide(); /* Hide modal */
+            };
+        });
+    };
+    $(window).resize(adjustModalMaxHeightAndPosition).trigger("resize");
+    }
 
 ko.applyBindings(new ListingsViewModel());
 

@@ -182,52 +182,6 @@
                         </div>
                         </div>
                     </div>
-               <!--
-               <div class='col-md-7 offset-5 nopadding-left'>
-                  <div class="header">
-                        <h4>Incoming Calls</h4>
-                    </div>
-                    <div class="col-sm-12 nopadding-left">
-                            <div class="list-group queuelist">
-                                 <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
-                                                css: { 'queue':true }">
-        
-                                         <li class="list-group-item">
-                                            <div  class="col-sm-10 text-left nopadding-left">
-                                                <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
-                                             </div>
-                                            <div class="col-sm-2 text-right">
-                                                <h5 class="list-group-item-heading"><span class="badge pull-right" data-bind="text: entry.timeConnected"></span></h5>
-                                             </div>
-                                        </li>
-        
-                                </ul>
-                            </div>
-                        </div>
-                </div>
-                <div class='col-md-5 offset-1 nopadding-right'>
-                        <div class="header">
-                            <h4>Waiting Queue</h4>
-                        </div>
-                        <div class="col-sm-12 nopadding">
-                            <div class="list-group queuelist">
-                                 <ul data-bind="foreach: { data:  filterWaitingQueue, as: 'entry' },
-                                                css: { 'queue':true }">
-        
-                                         <li class="list-group-item">
-                                            <div class="col-sm-10 text-left nopadding">
-                                                <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
-                                             </div>
-                                             <div  class="col-sm-2 text-right ">
-                                                <h5 class="list-group-item-heading"><span class="badge pull-right" data-bind="text: entry.waitingAmount"></span></h5>
-                                             </div>
-                                        </li>
-        
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    !-->
                 </div>
             
     <!-- Modal -->
@@ -239,8 +193,11 @@
             <h4 class="modal-title" id="myModalLabel">How to connect with <span data-bind="text: $root.clickedListItemName"></span>?</h4>
           </div>
           <div class="modal-body">
-                <button class="btn btn-primary btn-lg btn-block" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Bellen</button>
-                <button class="btn btn-primary btn-lg btn-block" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Doorverbinden</button>
+                <div class="span3">
+                 <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Bellen</button>
+                <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Doorverbinden</button>
+               
+            </div>
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
@@ -250,14 +207,26 @@
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">Login</h4>
-          </div>
-          <div class="modal-body">
-                <button class="btn btn-primary btn-lg btn-block" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Bellen</button>
-                <button class="btn btn-primary btn-lg btn-block" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Doorverbinden</button>
-          </div>
+             <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Login</h4>
+        </div>
+        <div class="modal-body">
+           <div class="form-group "> <!--has-success -->
+              <label class="control-label" for="inputSuccess1">Name:</label>
+              <input type="text"  data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" id="inputSuccess">
+            </div>
+            <div class="form-group"><!--has-error -->
+              <label class="control-label" for="inputError1">Password:</label>
+              <input type="text"  data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" id="inputError">
+            </div>
+              
+        </div>
+        <div class="modal-footer">
+          <a href="#" data-dismiss="modal" class="btn">Cancel</a></a>
+          <a href="#" class="btn btn-primary">Submit</a>
+        </div>
+         
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->

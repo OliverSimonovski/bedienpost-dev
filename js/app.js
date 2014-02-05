@@ -1,6 +1,6 @@
 // Overall viewmodel for this screen, along with initial state
 
-var demoData = false;
+var demoData = true;
 var incomingCallEntries = ko.observableArray();
 var initialIncomingCallList = [{ name: "Incoming CallList", entries: incomingCallEntries }];
 
@@ -18,15 +18,15 @@ var initialWaitingQueueList = [{ name: "Call List", entries: waitingListEntries 
 
 var initialWaitingQueueList = [
     { name: "WaitingQueue List", entries: ko.observableArray( [
-        { id: 1, name: "Wachtrij 1", waitingAmount:3 },
-        { id: 2, name: "Wachtrij 2", waitingAmount:7 },
-        { id: 3, name: "Wachtrij 3", waitingAmount:4 },
-        { id: 4, name: "Wachtrij 4", waitingAmount:12 },
-        { id: 5, name: "Wachtrij 5", waitingAmount:23 },
-        { id: 6, name: "Wachtrij 6", waitingAmount:1 },
-        { id: 7, name: "Wachtrij 7", waitingAmount:0 },
-        { id: 8, name: "Wachtrij 8", waitingAmount:0 },
-        { id: 9, name: "Wachtrij 9", waitingAmount:3 }] )
+        { id: 1, name: "Wachtrij 1", favorite:false, orderNr:"", signInOut:true, waitingAmount:3 },
+        { id: 2, name: "Wachtrij 2", favorite:true, orderNr:"", signInOut:false, waitingAmount:7 },
+        { id: 3, name: "Wachtrij 3", favorite:true, orderNr:"", signInOut:true, waitingAmount:4 },
+        { id: 4, name: "Wachtrij 4", favorite:false, orderNr:"", signInOut:true, waitingAmount:12 },
+        { id: 5, name: "Wachtrij 5", favorite:true, orderNr:"", signInOut:false, waitingAmount:23 },
+        { id: 6, name: "Wachtrij 6", favorite:true, orderNr:"", signInOut:false, waitingAmount:1 },
+        { id: 7, name: "Wachtrij 7", favorite:false,orderNr:"", signInOut:false, waitingAmount:0 },
+        { id: 8, name: "Wachtrij 8", favorite:true, orderNr:"", signInOut:true, waitingAmount:0 },
+        { id: 9, name: "Wachtrij 9", favorite:true, orderNr:"", signInOut:false, waitingAmount:3 }] )
     }
 ];
 
@@ -39,15 +39,15 @@ var demoUserLists = [
         { id: 2, name: "Thomas Winkelman", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
         { id: 3, name: "Joop Aanstoot", shortcut:"", favorite:true, ext:"130,140", log:false, avail:false, ringing:true, connectedName:"", connectedNr:"" },
         { id: 4, name: "Bart Meijerink", shortcut:"", favorite:false, ext:"130,140", log:true,  avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 5, name: "Patrick Van der Veen", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"Richard Kamphuis", connectedNr:"070123456789" },
-        { id: 6, name: "Nicole Roskamp", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 7, name: "Remko Uland", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 5, name: "Patrick Van der Veen", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"Richard Kamphuis", connectedNr:"070123456789" },
+        { id: 6, name: "Nicole Roskamp", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"", connectedNr:"" },
+        { id: 7, name: "Remko Uland", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"", connectedNr:"" },
         { id: 8, name: "Richard Kamphuis", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
         { id: 9, name: "Tom Waanders", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"070123456789", connectedNr:"" },
         { id: 10, name: "Martin Kamphuis", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 11, name: "Support 1e Lijns", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"070123456789", connectedNr:"" },
+        { id: 11, name: "Support 1e Lijns", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"070123456789", connectedNr:"" },
         { id: 12, name: "Lambert Storingsdienst", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 13, name: "Maurice", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
+        { id: 13, name: "Maurice", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"", connectedNr:"" },
         { id: 14, name: "Pascal", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
         { id: 15, name: "Roland", shortcut:"",  favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
         { id: 16, name: "Wim", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:""}] )
@@ -68,6 +68,7 @@ var ListingsViewModel = function(){
     self.clickedListItem = ko.observable();
     self.clickedListItemName = ko.observable();
     self.search = ko.observable();
+    
     self.currentList.subscribe(function()
     {
         self.search(""); 
@@ -207,20 +208,68 @@ var ListingsViewModel = function(){
        self.clickedListItem(clickedItem);
         var name = clickedItem.name;
         name += "";
-       self.clickedListItemName(clickedItem.name);
-       $('#myModal').modal({
+        self.clickedListItemName(name);
+       
+       $('#connectModal').modal({
             keyboard: true
        })
     }
     
+    self.orderQueueUp = function()
+    {   
+        alert("QueueUp");
+    }
+    
+    self.orderQueueDown = function()
+    {
+        alert("Queue Down");
+    }
+    
+    self.markFavorite = function()
+    {
+        alert("Mark Favorite");
+    }
+    
+    self.signInOut = function()
+    {
+        alert("signInOut")
+    }
+    
     self.actionCalling = function()
     {
-        alert("Calling");
+        //alert("Calling");
     }
     
     self.actionConnectThrough = function()
     {
-        alert("actionCallingThrough");
+        //alert("actionCallingThrough");
+    }
+    
+    self.favoriteCssClass = function(fav)
+    {
+        if (fav == true) {
+            return 'fa fa-star';
+        } else {
+            return 'fa fa-star-o';
+        }    
+    }
+    
+    self.signInOutCssClass = function(signInOut)
+    {
+        if (signInOut == true){
+            return 'fa fa-sign-in';
+        } else {
+            return 'fa fa-sign-out';
+        }
+    }
+    
+    self.signInOutColor = function(signInOut)
+    {
+         if (signInOut == true){
+            return 'logged-in-color';
+        } else {
+            return 'logged-out-color';
+        }
     }
 
     self.logCssClass = function(logged)
@@ -240,10 +289,10 @@ var ListingsViewModel = function(){
             } else if(ringing == true) {
                 return 'yellow';
             } else {
-                return 'red'
+                return 'orange'
             }
         } else {
-            return 'white';
+            return 'red';
         }  
     }
     
@@ -263,11 +312,31 @@ var ListingsViewModel = function(){
     self.waitingQueueList( initialWaitingQueueList[0] );
     self.incomingCallList( initialIncomingCallList[0] );
     self.setSearch("");
+    
+    $( "#inputField" ).keydown(function(event)
+    {
+       if (event.which == 49){
+            event.preventDefault();
+           self.clickItem;
+           alert("Keydown");
+       } 
+    });
+    
+    $('#loginModal').modal({
+            keyboard: true
+    })
 }
 
 ko.applyBindings(new ListingsViewModel());
 
+
 /*
+id="#sortable"
+ $(function() {
+    $( "#sortable" ).sortable();
+    $( "#sortable" ).disableSelection();
+  });
+
 $(function() {
     $('a[rel*=leanModal]').leanModal({ top : 200, closeButton: ".modal_close" });		
 });

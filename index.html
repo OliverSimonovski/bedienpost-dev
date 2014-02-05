@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    </head>
     <title>PC Bedienpost</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     	<meta name="viewport" content="width=1080" />
@@ -11,6 +10,8 @@
         <link href="css/sticky-footer-navbar.css" rel="stylesheet">
         <link href="css/bootstrap.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -52,15 +53,32 @@
                         </div>
                         <div class="col-sm-12 nopadding">
                             <div class="list-group queuelist">
-                                 <ul data-bind="foreach: { data:  filterWaitingQueue, as: 'entry' },
+                                 <ul data-bind="foreach: { data: filterWaitingQueue, as: 'entry' },
                                                 css: { 'queue':true }">
         
-                                         <li class="list-group-item">
-                                            <div class="col-sm-10 text-left nopadding">
+                                         <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut) }"> 
+                                            <div class="col-sm-8 text-left nopadding">
                                                 <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
                                              </div>
-                                             <div  class="col-sm-2 text-right ">
-                                                <h5 class="list-group-item-heading"><span class="badge pull-right" data-bind="text: entry.waitingAmount"></span></h5>
+                                              
+                                             <div class="col-sm-1 text-left nopadding" >
+                                                <i data-bind="attr: { class: $root.signInOutCssClass(entry.signInOut) }, 
+                                                              click: $root.signInOut"></i>
+                                             </div>
+                                    
+                                             
+                                             <div class="col-sm-1 text-left nopadding" >
+                                                <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite) },
+                                                              click: $root.markFavorite"></i>
+                                             </div>
+            
+                                             <div class="col-sm-1 text-left nopadding">
+                                                 <span  class="list-group-item-heading" data-bind="click: $root.orderQueueUp"><i class="fa fa-sort-desc"></i></span>
+                                                  <span  class="list-group-item-text" data-bind="click: $root.orderQueueDown"><i class="fa fa-sort-asc"></i></span>
+                                             </div>
+                                            
+                                             <div  class="col-sm-1 text-right ">
+                                                <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
                                              </div>
                                         </li>
         
@@ -69,7 +87,7 @@
                         </div>
                     </div>  
 
-            <input type="text" data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" placeholder="Search here!">
+            <input id="inputField" type="text" data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" placeholder="Search here!">
                 <div class='col-sm-6 nopadding-left'>
                     <div class="row nopadding">
                         <div class="header">
@@ -83,7 +101,7 @@
                      <div class ='col-sm-12 nopadding'>
 
                     <div class="list-group list">
-                         <ul data-bind="foreach: { data:  filteredItems, as: 'entry' },
+                         <ul id="sortable" data-bind="foreach: { data:  filteredItems, as: 'entry' },
                                         css: { 'curl':true }">
 
                                  <li class="list-group-item"
@@ -108,7 +126,7 @@
                                             <p class="list-group-item-text" data-bind="text: entry.connectedNr"></p>
                                         </div>
                                         <div class="col-sm-1 text-right fixed-height">
-                                            <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></h5>
+                                            <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></span></h5>
                                         </div>
                                     </div>
                                 </li>
@@ -129,7 +147,7 @@
                         </div>
                      <div class ='col-md-12 nopadding'>
                         <div class="list-group list">
-                             <ul data-bind="foreach: { data:  favFilteredItems, as: 'entry' },
+                             <ul id="sortable" data-bind="foreach: { data:  favFilteredItems, as: 'entry' },
                                             css: { 'curl':true }">
 
                                     <li class="list-group-item"
@@ -155,7 +173,7 @@
                                                 <p class="list-group-item-text" data-bind="text: entry.connectedNr"></p>
                                             </div>
                                             <div class="col-sm-1 text-right fixed-height">
-                                                <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></h5>
+                                                <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></span></h5>
                                             </div>
                                          </div>
                                     </li>
@@ -211,9 +229,9 @@
                     </div>
                     !-->
                 </div>
-
+            
     <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="connectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -227,13 +245,33 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-      
             
+    <!-- Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">Login</h4>
+          </div>
+          <div class="modal-body">
+                <button class="btn btn-primary btn-lg btn-block" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Bellen</button>
+                <button class="btn btn-primary btn-lg btn-block" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Doorverbinden</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+           
+      
+        </div>    
+        </div>
     </body>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
     <script type='text/javascript' src="js/less-1.6.1.min.js"></script>
     <script type='text/javascript' src='js/knockout-3.0.0.js'></script>
     <script type='text/javascript' src='js/lib/knockout.mapping.js'></script>
@@ -247,6 +285,15 @@
     <script src='js/lib/strophe.pubsub.js'></script>
     <script src="js/LisaApi/LisaApi.js"></script>
     <script src="js/xmppclient.js"></script>
+        
+        <script>
+          $(function() {
+            $( "#sortable" ).sortable();
+            $( "#sortable" ).disableSelection();
+          });
+          
+  </script>
+    
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="bootstrap-3.0.3/dist/js/bootstrap.min.js"></script>
 

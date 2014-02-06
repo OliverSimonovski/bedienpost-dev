@@ -19,14 +19,14 @@ var initialWaitingQueueList = [{ name: "Call List", entries: waitingListEntries 
 var initialWaitingQueueList = [
     { name: "WaitingQueue List", entries: ko.observableArray( [
         { id: 1, name: "Wachtrij 1", favorite:false, orderNr:"", signInOut:true, waitingAmount:3 },
-        { id: 2, name: "Wachtrij 2", favorite:true, orderNr:"", signInOut:false, waitingAmount:7 },
-        { id: 3, name: "Wachtrij 3", favorite:true, orderNr:"", signInOut:true, waitingAmount:4 },
+        { id: 2, name: "Wachtrij 2", favorite:false, orderNr:"", signInOut:false, waitingAmount:7 },
+        { id: 3, name: "Wachtrij 3", favorite:false, orderNr:"", signInOut:true, waitingAmount:4 },
         { id: 4, name: "Wachtrij 4", favorite:false, orderNr:"", signInOut:true, waitingAmount:12 },
-        { id: 5, name: "Wachtrij 5", favorite:true, orderNr:"", signInOut:false, waitingAmount:23 },
-        { id: 6, name: "Wachtrij 6", favorite:true, orderNr:"", signInOut:false, waitingAmount:1 },
-        { id: 7, name: "Wachtrij 7", favorite:false,orderNr:"", signInOut:false, waitingAmount:0 },
-        { id: 8, name: "Wachtrij 8", favorite:true, orderNr:"", signInOut:true, waitingAmount:0 },
-        { id: 9, name: "Wachtrij 9", favorite:true, orderNr:"", signInOut:false, waitingAmount:3 }] )
+        { id: 5, name: "Wachtrij 5", favorite:false, orderNr:"", signInOut:false, waitingAmount:23 },
+        { id: 6, name: "Wachtrij 6", favorite:false, orderNr:"", signInOut:false, waitingAmount:1 },
+        { id: 7, name: "Wachtrij 7", favorite:false, orderNr:"", signInOut:false, waitingAmount:0 },
+        { id: 8, name: "Wachtrij 8", favorite:false, orderNr:"", signInOut:true, waitingAmount:0 },
+        { id: 9, name: "Wachtrij 9", favorite:false, orderNr:"", signInOut:false, waitingAmount:3 }] )
     }
 ];
 
@@ -57,6 +57,7 @@ var demoUserLists = [
 var ListingsViewModel = function(){
     var self = this;
     
+    self.hasFocus = ko.observable();
     //self.availableLists = ko.observableArray(initialLists);
     self.availableWaitingList = ko.observableArray(initialWaitingQueueList);
     
@@ -68,6 +69,7 @@ var ListingsViewModel = function(){
     self.clickedListItem = ko.observable();
     self.clickedListItemName = ko.observable();
     self.search = ko.observable();
+    self.shortcutKey = ko.observable();
     
     self.currentList.subscribe(function()
     {
@@ -96,7 +98,7 @@ var ListingsViewModel = function(){
                             entry.shortcut = shortcutCounter;
                             shortcutCounter++;
                          }
-                         console.log(entry.name);
+                        // console.log(entry.name);
                          filteredEntries.push(entry);
                      }
                  });
@@ -125,7 +127,6 @@ var ListingsViewModel = function(){
                             entry.shortcut = shortcutCounter;
                             shortcutCounter++;
                          }
-                         console.log(entry.name);
                          filteredEntries.push(entry);
                      }
                  });
@@ -137,34 +138,12 @@ var ListingsViewModel = function(){
                      if ((entry.name.toLowerCase()).indexOf(searchParam) > -1 && (entry.favorite))
                      {
                          entry.shortcut = "";
-                         console.log(entry.name);
                          filteredEntries.push(entry);
                      }
                  });
                 return filteredEntries();
             }
         }
-        /*
-        if (self.currentList()){
-            var filteredEntries = ko.observableArray();
-            var shortcutCounter = 0;    
-             ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
-                 entry = ko.mapping.toJS(entry);
-                 entry.name+="";
-                 
-                 if ((entry.favorite))
-                 {
-                     if (shortcutCounter < 10){
-                        entry.shortcut= shortcutCounter;
-                        shortcutCounter++;
-                     }
-                     console.log(entry.name);
-                     filteredEntries.push(entry);
-                 }
-             });
-            return filteredEntries();
-        }
-        */
     }, self);
     
     self.filterWaitingQueue = ko.computed(function()
@@ -173,10 +152,9 @@ var ListingsViewModel = function(){
             var filteredEntries = ko.observableArray();
             
                  ko.utils.arrayForEach(self.waitingQueueList().entries(), function(entry) {
-                     entry.name+="";
-                     if ((entry.waitingAmunt))
+                     if ((entry.favorite))
                      {  
-                        console.log(entry.name);
+                        //console.log(entry.name);
                      }
                      
                      filteredEntries.push(entry);
@@ -194,7 +172,7 @@ var ListingsViewModel = function(){
                      entry.name+="";
                      if ((entry.waitingAmunt))
                      {  
-                        console.log(entry.name);
+                        //console.log(entry.name);
                      }
                      
                      filteredEntries.push(entry);
@@ -214,24 +192,17 @@ var ListingsViewModel = function(){
             keyboard: true
        })
     }
+
     
-    self.orderQueueUp = function()
-    {   
-        alert("QueueUp");
-    }
-    
-    self.orderQueueDown = function()
+    self.markFavorite = function(favorite)
     {
-        alert("Queue Down");
-    }
-    
-    self.markFavorite = function()
-    {
+        console.log(favorite);
         alert("Mark Favorite");
     }
     
-    self.signInOut = function()
+    self.signInOut = function(signinout)
     {
+        console.log(signinout);
         alert("signInOut")
     }
     
@@ -257,9 +228,10 @@ var ListingsViewModel = function(){
     self.signInOutCssClass = function(signInOut)
     {
         if (signInOut == true){
-            return 'fa fa-sign-in';
-        } else {
             return 'fa fa-sign-out';
+            
+        } else {
+            return 'fa fa-sign-in';
         }
     }
     
@@ -287,12 +259,12 @@ var ListingsViewModel = function(){
             if (avail == true){
                  return 'green';
             } else if(ringing == true) {
-                return 'yellow';
+                return 'orange';
             } else {
-                return 'orange'
+                return 'red'
             }
         } else {
-            return 'red';
+            return 'white';
         }  
     }
     
@@ -313,17 +285,52 @@ var ListingsViewModel = function(){
     self.incomingCallList( initialIncomingCallList[0] );
     self.setSearch("");
     
-    $( "#inputField" ).keydown(function(event)
+    $( "#inputField" ).keypress(function(e)
     {
-       if (event.which == 49){
-            event.preventDefault();
-           self.clickItem;
-           alert("Keydown");
-       } 
+            var searchParam = self.search();
+            if(!searchParam || searchParam == "Search here"){
+               if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
+                   var shortcutKey = (e.which%48);
+                   if (e.ctrlKey){
+                      event.preventDefault();
+                      var itemToClick = self.filteredItems()[shortcutKey];
+                      if (itemToClick != null)
+                       {
+                           self.clickItem(itemToClick);
+                       }
+                   }
+               } 
+            }
+        
+    });
+    
+    $( 'document' ).keypress(function(e)
+    {
+           if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
+               var shortcutKey = (e.which%48);
+               if (e.ctrlKey){
+                  event.preventDefault();
+                  var itemToClick = self.filteredItems()[shortcutKey];
+                  if (itemToClick != null)
+                   {
+                       self.clickItem(itemToClick);
+                   }
+               }
+           } 
+    });
+    
+
+    $( "#inputField" ).focusin(function() {
+         console.log("in");
+    });
+    
+    $( "#inputField" ).focusout(function() {
+         console.log("out");
     });
     
     $('#loginModal').modal({
-            keyboard: true
+            keyboard: false
+        
     })
     
     function adjustModalMaxHeightAndPosition(){

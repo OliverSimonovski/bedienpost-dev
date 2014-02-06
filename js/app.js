@@ -29,6 +29,9 @@ var initialWaitingQueueList = [
         { id: 9, name: "Wachtrij 9", favorite:false, orderNr:"", signInOut:false, waitingAmount:3 }] )
     }
 ];
+var xmppWaitingQueueList = [
+    { name: "WaitingQueue List", entries: ko.observableArray()}
+];
 
 var userListEntries = ko.observableArray();
 var xmppUserLists = [{ name: "Call List", entries: userListEntries }];
@@ -276,12 +279,14 @@ var ListingsViewModel = function(){
 
     if (demoData) {
         self.currentList( demoUserLists[0] );
+        self.waitingQueueList( initialWaitingQueueList[0] );
     } else {
         self.currentList( xmppUserLists[0] );
+        self.waitingQueueList( xmppWaitingQueueList[0] );
     }
 
     self.favoriteList( self.favFilteredItems() ) ;
-    self.waitingQueueList( initialWaitingQueueList[0] );
+    
     self.incomingCallList( initialIncomingCallList[0] );
     self.setSearch("");
     

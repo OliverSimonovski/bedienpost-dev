@@ -25,7 +25,7 @@
         <div class="container">
            <div class='row nopadding'>
             
-            <div class='col-md-7 offset-5 nopadding-left'>
+            <div class='col-md-6 offset-6 nopadding'>
                   <div class="header">
                         <h4>Incoming Calls</h4>
                     </div>
@@ -47,7 +47,7 @@
                             </div>
                         </div>
                 </div>
-                <div class='col-md-5 offset-1 nopadding-right'>
+                <div class='col-md-6 offset-1 nopadding'>
                         <div class="header">
                             <h4>Waiting Queue</h4>
                         </div>
@@ -57,7 +57,7 @@
                                                 css: { 'queue':true }">
         
                                          <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut) }"> 
-                                            <div class="col-sm-8 text-left nopadding">
+                                            <div class="col-sm-9 text-left nopadding">
                                                 <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
                                              </div>
                                               
@@ -71,11 +71,6 @@
                                                 <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite) },
                                                               click: $root.markFavorite"></i>
                                              </div>
-            
-                                             <div class="col-sm-1 text-left nopadding">
-                                                 <span  class="list-group-item-heading" data-bind="click: $root.orderQueueUp"><i class="fa fa-sort-desc"></i></span>
-                                                  <span  class="list-group-item-text" data-bind="click: $root.orderQueueDown"><i class="fa fa-sort-asc"></i></span>
-                                             </div>
                                             
                                              <div  class="col-sm-1 text-right ">
                                                 <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
@@ -85,10 +80,12 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>  
-
-            <input id="inputField" type="text" data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" placeholder="Search here!">
-                <div class='col-sm-6 nopadding-left'>
+                    </div> 
+               </div>
+            <div class='col-sm-12 nopadding'>
+                <input id="inputField" type="text" data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" placeholder="Search here!">
+            </div>
+                <div class='col-sm-6 nopadding'>
                     <div class="row nopadding">
                         <div class="header">
                             <h4>Contact / User List</h4>
@@ -98,7 +95,7 @@
                             <div class="col-sm-4 text-left">Calling with</div>
                             <div class="col-sm-2 text-right">Shortcut</div>
                      </div>
-                     <div class ='col-sm-12 nopadding'>
+                     <div class ='col-sm-12 nopadding-left'>
 
                     <div class="list-group list">
                          <ul id="sortable" data-bind="foreach: { data:  filteredItems, as: 'entry' },
@@ -135,7 +132,7 @@
                     </div>
                     </div>
                 </div>
-                 <div class='col-sm-6 nopadding-right'>
+                 <div class='col-sm-6 nopadding'>
                     <div class ='row nopadding'>
                         <div class="header">
                             <h4>Favorite List</h4>
@@ -194,8 +191,8 @@
           </div>
           <div class="modal-body">
                 <div class="span3">
-                 <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Bellen</button>
-                <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Doorverbinden</button>
+                 <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Doorverbinden</button>
+                <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Bellen</button>
                
             </div>
           </div>
@@ -208,23 +205,23 @@
       <div class="modal-dialog">
         <div class="modal-content">
              <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h4 class="modal-title">Login</h4>
         </div>
         <div class="modal-body">
            <div class="form-group "> <!--has-success -->
               <label class="control-label" for="inputSuccess1">Name:</label>
-              <input type="text"  data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" id="inputSuccess">
+              <input type="text"  data-bind="value: loginName, valueUpdate: 'afterkeydown'"  class="form-control" id="inputSuccess">
             </div>
             <div class="form-group"><!--has-error -->
               <label class="control-label" for="inputError1">Password:</label>
-              <input type="text"  data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" id="inputError">
+              <input type="text"  data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control" id="inputError">
             </div>
-              
+   
         </div>
         <div class="modal-footer">
-          <a href="#" data-dismiss="modal" class="btn">Cancel</a></a>
-          <a href="#" class="btn btn-primary">Submit</a>
+          <button class="btn" type="button" data-dismiss="modal"  data-bind="click: $root.cancelLogin">Cancel</button>
+          <button class="btn btn-primary"  type="button" data-bind="click: $root.doLogin">Submit</button>
         </div>
          
         </div><!-- /.modal-content -->

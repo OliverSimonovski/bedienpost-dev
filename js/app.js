@@ -18,15 +18,15 @@ var initialWaitingQueueList = [{ name: "Call List", entries: waitingListEntries 
 
 var initialWaitingQueueList = [
     { name: "WaitingQueue List", entries: ko.observableArray( [
-        { id: 1, name: "Wachtrij 1", favorite:false, orderNr:"", signInOut:true, waitingAmount:3 },
-        { id: 2, name: "Wachtrij 2", favorite:true, orderNr:"", signInOut:false, waitingAmount:7 },
-        { id: 3, name: "Wachtrij 3", favorite:true, orderNr:"", signInOut:true, waitingAmount:4 },
+        { id: 1, name: "Wachtrij 1", favorite:true, orderNr:"", signInOut:true, waitingAmount:3 },
+        { id: 2, name: "Wachtrij 2", favorite:false, orderNr:"", signInOut:false, waitingAmount:7 },
+        { id: 3, name: "Wachtrij 3", favorite:false, orderNr:"", signInOut:true, waitingAmount:4 },
         { id: 4, name: "Wachtrij 4", favorite:false, orderNr:"", signInOut:true, waitingAmount:12 },
-        { id: 5, name: "Wachtrij 5", favorite:true, orderNr:"", signInOut:false, waitingAmount:23 },
+        { id: 5, name: "Wachtrij 5", favorite:false, orderNr:"", signInOut:false, waitingAmount:23 },
         { id: 6, name: "Wachtrij 6", favorite:true, orderNr:"", signInOut:false, waitingAmount:1 },
-        { id: 7, name: "Wachtrij 7", favorite:false,orderNr:"", signInOut:false, waitingAmount:0 },
-        { id: 8, name: "Wachtrij 8", favorite:true, orderNr:"", signInOut:true, waitingAmount:0 },
-        { id: 9, name: "Wachtrij 9", favorite:true, orderNr:"", signInOut:false, waitingAmount:3 }] )
+        { id: 7, name: "Wachtrij 7", favorite:false, orderNr:"", signInOut:false, waitingAmount:0 },
+        { id: 8, name: "Wachtrij 8", favorite:false, orderNr:"", signInOut:true, waitingAmount:0 },
+        { id: 9, name: "Wachtrij 9", favorite:false, orderNr:"", signInOut:false, waitingAmount:3 }] )
     }
 ];
 var xmppWaitingQueueList = [
@@ -60,7 +60,6 @@ var demoUserLists = [
 var ListingsViewModel = function(){
     var self = this;
     
-    //self.availableLists = ko.observableArray(initialLists);
     self.availableWaitingList = ko.observableArray(initialWaitingQueueList);
     
     self.currentList = ko.observable();
@@ -70,7 +69,14 @@ var ListingsViewModel = function(){
     
     self.clickedListItem = ko.observable();
     self.clickedListItemName = ko.observable();
+    self.waitingQueueItemToSignInOut = ko.observable();
+    self.waitingQueueItemToMarkFavorite = ko.observable();
+    
+    self.loginName = ko.observable();
+    self.loginPass = ko.observable();
     self.search = ko.observable();
+    self.shortcutKey = ko.observable();
+    
     
     self.currentList.subscribe(function()
     {
@@ -85,9 +91,9 @@ var ListingsViewModel = function(){
             searchParam = searchParam.toLowerCase();
             var filteredEntries = ko.observableArray();
 
-            if(!searchParam || searchParam == "Search here"){
+            console.log(self.hasFocus);
+            if(!searchParam ){
                 return ko.mapping.toJS(self.currentList().entries());
-                
             } else {
                 var shortcutCounter = 0;
                 ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
@@ -99,7 +105,6 @@ var ListingsViewModel = function(){
                             entry.shortcut = shortcutCounter;
                             shortcutCounter++;
                          }
-                         console.log(entry.name);
                          filteredEntries.push(entry);
                      }
                  });
@@ -117,7 +122,7 @@ var ListingsViewModel = function(){
             searchParam = searchParam.toLowerCase();
             var filteredEntries = ko.observableArray();
             
-            if(!searchParam || searchParam == "Search here"){
+            if(!searchParam){
                 var shortcutCounter = 0;
                  ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
                      entry = ko.mapping.toJS(entry);
@@ -128,7 +133,6 @@ var ListingsViewModel = function(){
                             entry.shortcut = shortcutCounter;
                             shortcutCounter++;
                          }
-                         console.log(entry.name);
                          filteredEntries.push(entry);
                      }
                  });
@@ -140,112 +144,102 @@ var ListingsViewModel = function(){
                      if ((entry.name.toLowerCase()).indexOf(searchParam) > -1 && (entry.favorite))
                      {
                          entry.shortcut = "";
-                         console.log(entry.name);
                          filteredEntries.push(entry);
                      }
                  });
                 return filteredEntries();
             }
         }
-        /*
-        if (self.currentList()){
-            var filteredEntries = ko.observableArray();
-            var shortcutCounter = 0;    
-             ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
-                 entry = ko.mapping.toJS(entry);
-                 entry.name+="";
-                 
-                 if ((entry.favorite))
-                 {
-                     if (shortcutCounter < 10){
-                        entry.shortcut= shortcutCounter;
-                        shortcutCounter++;
-                     }
-                     console.log(entry.name);
-                     filteredEntries.push(entry);
-                 }
-             });
-            return filteredEntries();
-        }
-        */
     }, self);
     
     self.filterWaitingQueue = ko.computed(function()
     {
          if (self.waitingQueueList()){
-            var filteredEntries = ko.observableArray();
-            
-                 ko.utils.arrayForEach(self.waitingQueueList().entries(), function(entry) {
-                     entry.name+="";
-                     if ((entry.waitingAmunt))
-                     {  
-                        console.log(entry.name);
-                     }
-                     
-                     filteredEntries.push(entry);
-                 });
-                return filteredEntries();
+            var favoriteEntries = ko.observableArray();
+             self.sortItemsAscending();
+             favoriteEntries = self.waitingQueueList().entries();
+             return favoriteEntries;
         }                                 
     }, self);
+ 
+    self.sortItemsAscending = function() {
+        self.waitingQueueList().entries(self.waitingQueueList().entries().sort(function(a, b) { return a.favorite < b.favorite;}));                                    };
     
+    // Pretty useless to have it computed... Nothing changes with the currentIncomingList
     self.incomingCallQueue = ko.computed(function()
     {
          if (self.incomingCallList()){
             var filteredEntries = ko.observableArray();
             
-                 ko.utils.arrayForEach(self.incomingCallList().entries(), function(entry) {
-                     entry.name+="";
-                     if ((entry.waitingAmunt))
-                     {  
-                        console.log(entry.name);
-                     }
-                     
-                     filteredEntries.push(entry);
-                 });
-                return filteredEntries();
+             ko.utils.arrayForEach(self.incomingCallList().entries(), function(entry) {
+                 filteredEntries.push(entry);
+             });
+             return filteredEntries();
         }                                 
     }, self);
     
     self.clickItem = function(clickedItem) 
     {
-       self.clickedListItem(clickedItem);
+        self.clickedListItem(clickedItem);
         var name = clickedItem.name;
         name += "";
         self.clickedListItemName(name);
        
-       $('#connectModal').modal({
+        $('#connectModal').modal({
             keyboard: true
-       })
+        })
     }
-    
-    self.orderQueueUp = function()
-    {   
-        alert("QueueUp");
-    }
-    
-    self.orderQueueDown = function()
+
+    // no updating appearing in the UI .. omehow the values do seem to update in the array.. is the accoring value missing bindings?
+    // another question: should you be able to mark the ones you aren't logged into as favorite?
+    self.markFavorite = function(favorite)
     {
-        alert("Queue Down");
+        self.waitingQueueItemToMarkFavorite(favorite);
+        
+        var indexVal = self.waitingQueueList().entries().indexOf(favorite);
+        var markFavoriteFlag = self.waitingQueueList().entries()[indexVal].favorite;
+        var tobeShifted = self.waitingQueueList().entries().splice(indexVal,1);
+        if (markFavoriteFlag){
+            tobeShifted[0].favorite = false;
+            self.waitingQueueList().entries().push(tobeShifted[0]);
+        } else if (!markFavoriteFlag) {
+            tobeShifted[0].favorite = true;
+            self.waitingQueueList().entries().unshift(tobeShifted[0]);
+        }        
+        self.sortItemsAscending();
     }
     
-    self.markFavorite = function()
+    // no updating appearing in the UI.. somehow the values do seem to update in the array.. is the accoring value missing bindings?
+    self.signInOut = function(signinout)
     {
-        alert("Mark Favorite");
-    }
-    
-    self.signInOut = function()
-    {
-        alert("signInOut")
+        self.waitingQueueItemToSignInOut(signinout);
+        
+        var indexVal = self.waitingQueueList().entries().indexOf(signinout);
+        self.waitingQueueList().entries()[indexVal].signInOut = !self.waitingQueueList().entries()[indexVal].signInOut;
     }
     
     self.actionCalling = function()
     {
         //alert("Calling");
+        // use self.clickItem ... as the reference to really call.
     }
     
     self.actionConnectThrough = function()
     {
         //alert("actionCallingThrough");
+        // use self.clickItem ... as the reference to really callthrough
+    }
+    
+    self.cancelLogin = function()
+    {
+        //alert("cancelLogin");
+    }
+    
+    self.doLogin = function()
+    {
+        //alert("doLogin");
+        console.log(self.loginName() + " " + self.loginPass());
+        $('#loginModal').modal('hide');
     }
     
     self.favoriteCssClass = function(fav)
@@ -260,9 +254,10 @@ var ListingsViewModel = function(){
     self.signInOutCssClass = function(signInOut)
     {
         if (signInOut == true){
-            return 'fa fa-sign-in';
-        } else {
             return 'fa fa-sign-out';
+            
+        } else {
+            return 'fa fa-sign-in';
         }
     }
     
@@ -290,12 +285,12 @@ var ListingsViewModel = function(){
             if (avail == true){
                  return 'green';
             } else if(ringing == true) {
-                return 'yellow';
+                return 'orange';
             } else {
-                return 'orange'
+                return 'red'
             }
         } else {
-            return 'red';
+            return 'white';
         }  
     }
     
@@ -303,8 +298,11 @@ var ListingsViewModel = function(){
     {
         self.search(searchParam);
     }
-    
 
+    self.favoriteList( self.favFilteredItems()) ;
+    self.incomingCallList( initialIncomingCallList[0] );  //Not sure if this is correctly working out of the box
+    self.setSearch("");
+    
     if (demoData) {
         self.currentList( demoUserLists[0] );
         self.waitingQueueList( initialWaitingQueueList[0] );
@@ -312,25 +310,79 @@ var ListingsViewModel = function(){
         self.currentList( xmppUserLists[0] );
         self.waitingQueueList( xmppWaitingQueueList[0] );
     }
-
-    self.favoriteList( self.favFilteredItems() ) ;
     
-    self.incomingCallList( initialIncomingCallList[0] );
-    self.setSearch("");
-    
-    $( "#inputField" ).keydown(function(event)
+    $( "#inputField" ).keypress(function(e)
     {
-       if (event.which == 49){
-            event.preventDefault();
-           self.clickItem;
-           alert("Keydown");
-       } 
+        var searchParam = self.search();
+        if(searchParam){
+           if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
+               var shortcutKey = (e.which%48);
+               if (e.ctrlKey){
+                  
+                  var itemToClick = self.filteredItems()[shortcutKey];
+                  if (itemToClick != null)
+                   {
+                       self.clickItem(itemToClick);
+                   }
+                   event.preventDefault();
+               }
+           } 
+        }
     });
     
+    $( document ).keypress(function(e)
+    {
+        // ugly code ... should be a better way... for later to cleanup -> might make a keyFunction..
+        var searchParam = self.search();
+        searchParam +="";
+        searchParam = searchParam.toLowerCase();
+        if (!searchParam){
+           if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
+               var shortcutKey = (e.which%48);
+               if (e.ctrlKey){
+                  
+                  var itemToClick = self.favFilteredItems()[shortcutKey];
+                  if (itemToClick != null)
+                   {
+                       self.clickItem(itemToClick);
+                   }
+                   event.preventDefault();
+               }
+           }
+        } else {
+            if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
+               var shortcutKey = (e.which%48);
+               if (e.ctrlKey){
+                  
+                  var itemToClick = self.filteredItems()[shortcutKey];
+                  if (itemToClick != null)
+                   {
+                       self.clickItem(itemToClick);
+                   }
+                   event.preventDefault();
+               }
+           }
+        }
+    });
+    
+    
     $('#loginModal').modal({
-            keyboard: true
+            keyboard: false
     })
     
+    /*
+    $( "#inputField" ).focusin(function() {
+         console.log("in");
+        self.hasFocus = true;
+    });
+    
+    $( "#inputField" ).focusout(function() {
+         console.log("out");
+        self.hasFocus = false;
+    });
+    */
+    
+    //Modal positioning for screen and resizing
     function adjustModalMaxHeightAndPosition(){
         $('.modal').each(function(){
             if($(this).hasClass('in') == false){
@@ -369,16 +421,3 @@ var ListingsViewModel = function(){
     }
 
 ko.applyBindings(new ListingsViewModel());
-
-
-/*
-id="#sortable"
- $(function() {
-    $( "#sortable" ).sortable();
-    $( "#sortable" ).disableSelection();
-  });
-
-$(function() {
-    $('a[rel*=leanModal]').leanModal({ top : 200, closeButton: ".modal_close" });		
-});
-*/

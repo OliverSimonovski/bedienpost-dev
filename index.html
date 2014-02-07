@@ -56,19 +56,19 @@
                                  <ul data-bind="foreach: { data: filterWaitingQueue, as: 'entry' },
                                                 css: { 'queue':true }">
         
-                                         <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut) }"> 
+                                         <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut()) }"> 
                                             <div class="col-sm-9 text-left nopadding">
                                                 <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
                                              </div>
                                               
                                              <div class="col-sm-1 text-left nopadding" >
-                                                <i data-bind="attr: { class: $root.signInOutCssClass(entry.signInOut) }, 
+                                                <i data-bind="attr: { class: $root.signInOutCssClass(entry.signInOut()) }, 
                                                               click: $root.signInOut"></i>
                                              </div>
                                     
                                              
                                              <div class="col-sm-1 text-left nopadding" >
-                                                <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite) },
+                                                <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite()) },
                                                               click: $root.markFavorite"></i>
                                              </div>
                                             

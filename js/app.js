@@ -18,15 +18,15 @@ var initialWaitingQueueList = [{ name: "Call List", entries: waitingListEntries 
 
 var initialWaitingQueueList = [
     { name: "WaitingQueue List", entries: ko.observableArray( [
-        { id: 1, name: "Wachtrij 1", favorite:true, orderNr:"", signInOut:true, waitingAmount:3 },
-        { id: 2, name: "Wachtrij 2", favorite:false, orderNr:"", signInOut:false, waitingAmount:7 },
-        { id: 3, name: "Wachtrij 3", favorite:false, orderNr:"", signInOut:true, waitingAmount:4 },
-        { id: 4, name: "Wachtrij 4", favorite:false, orderNr:"", signInOut:true, waitingAmount:12 },
-        { id: 5, name: "Wachtrij 5", favorite:false, orderNr:"", signInOut:false, waitingAmount:23 },
-        { id: 6, name: "Wachtrij 6", favorite:true, orderNr:"", signInOut:false, waitingAmount:1 },
-        { id: 7, name: "Wachtrij 7", favorite:false, orderNr:"", signInOut:false, waitingAmount:0 },
-        { id: 8, name: "Wachtrij 8", favorite:false, orderNr:"", signInOut:true, waitingAmount:0 },
-        { id: 9, name: "Wachtrij 9", favorite:false, orderNr:"", signInOut:false, waitingAmount:3 }] )
+        { id: 1, name: "Wachtrij 1", favorite:ko.observable(true), orderNr:"", signInOut:ko.observable(true), waitingAmount:3 },
+        { id: 2, name: "Wachtrij 2", favorite:ko.observable(true), orderNr:"", signInOut:ko.observable(false), waitingAmount:7 },
+        { id: 3, name: "Wachtrij 3", favorite:ko.observable(false), orderNr:"", signInOut:ko.observable(true), waitingAmount:4 },
+        { id: 4, name: "Wachtrij 4", favorite:ko.observable(false), orderNr:"", signInOut:ko.observable(true), waitingAmount:12 },
+        { id: 5, name: "Wachtrij 5", favorite:ko.observable(false), orderNr:"", signInOut:ko.observable(false), waitingAmount:23 },
+        { id: 6, name: "Wachtrij 6", favorite:ko.observable(true), orderNr:"", signInOut:ko.observable(false), waitingAmount:1 },
+        { id: 7, name: "Wachtrij 7", favorite:ko.observable(false), orderNr:"", signInOut:ko.observable(false), waitingAmount:0 },
+        { id: 8, name: "Wachtrij 8", favorite:ko.observable(true), orderNr:"", signInOut:ko.observable(true), waitingAmount:0 },
+        { id: 9, name: "Wachtrij 9", favorite:ko.observable(true), orderNr:"", signInOut:ko.observable(false), waitingAmount:3 }] )
     }
 ];
 var xmppWaitingQueueList = [
@@ -197,13 +197,13 @@ var ListingsViewModel = function(){
         self.waitingQueueItemToMarkFavorite(favorite);
         
         var indexVal = self.waitingQueueList().entries().indexOf(favorite);
-        var markFavoriteFlag = self.waitingQueueList().entries()[indexVal].favorite;
+        var markFavoriteFlag = self.waitingQueueList().entries()[indexVal].favorite();
         var tobeShifted = self.waitingQueueList().entries().splice(indexVal,1);
         if (markFavoriteFlag){
-            tobeShifted[0].favorite = false;
+            tobeShifted[0].favorite(false);
             self.waitingQueueList().entries().push(tobeShifted[0]);
         } else if (!markFavoriteFlag) {
-            tobeShifted[0].favorite = true;
+            tobeShifted[0].favorite(true);
             self.waitingQueueList().entries().unshift(tobeShifted[0]);
         }        
         self.sortItemsAscending();
@@ -215,7 +215,8 @@ var ListingsViewModel = function(){
         self.waitingQueueItemToSignInOut(signinout);
         
         var indexVal = self.waitingQueueList().entries().indexOf(signinout);
-        self.waitingQueueList().entries()[indexVal].signInOut = !self.waitingQueueList().entries()[indexVal].signInOut;
+        var signInOutFlag = self.waitingQueueList().entries()[indexVal].signInOut();
+            self.waitingQueueList().entries()[indexVal].signInOut(!signInOutFlag);
     }
     
     self.actionCalling = function()

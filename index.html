@@ -190,8 +190,8 @@
           </div>
           <div class="modal-body">
                 <div class="span3">
-                 <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Doorverbinden</button>
-                <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Bellen</button>
+                 <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Doorverbinden</button>
+                <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Bellen</button>
                
             </div>
           </div>
@@ -219,8 +219,8 @@
    
         </div>
         <div class="modal-footer">
-          <a href="#" data-dismiss="modal" class="btn">Cancel</a></a>
-          <a href="#" class="btn btn-primary">Submit</a>
+          <button class="btn" type="button" data-dismiss="modal"  data-bind="click: $root.cancelLogin">Cancel</button>
+          <button class="btn btn-primary"  type="button" data-bind="click: $root.doLogin">Submit</button>
         </div>
          
         </div><!-- /.modal-content -->

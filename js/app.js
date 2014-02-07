@@ -318,12 +318,13 @@ var ListingsViewModel = function(){
            if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
                var shortcutKey = (e.which%48);
                if (e.ctrlKey){
-                  event.preventDefault();
+                  
                   var itemToClick = self.filteredItems()[shortcutKey];
                   if (itemToClick != null)
                    {
                        self.clickItem(itemToClick);
                    }
+                   event.preventDefault();
                }
            } 
         }
@@ -339,24 +340,26 @@ var ListingsViewModel = function(){
            if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
                var shortcutKey = (e.which%48);
                if (e.ctrlKey){
-                  event.preventDefault();
+                  
                   var itemToClick = self.favFilteredItems()[shortcutKey];
                   if (itemToClick != null)
                    {
                        self.clickItem(itemToClick);
                    }
+                   event.preventDefault();
                }
            }
         } else {
             if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
                var shortcutKey = (e.which%48);
                if (e.ctrlKey){
-                  event.preventDefault();
+                  
                   var itemToClick = self.filteredItems()[shortcutKey];
                   if (itemToClick != null)
                    {
                        self.clickItem(itemToClick);
                    }
+                   event.preventDefault();
                }
            }
         }

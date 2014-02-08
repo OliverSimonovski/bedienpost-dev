@@ -74,6 +74,7 @@ var ListingsViewModel = function(){
     
     self.loginName = ko.observable();
     self.loginPass = ko.observable();
+    self.incomingCallMailTo = ko.observable();
     self.search = ko.observable();
     self.shortcutKey = ko.observable();
     
@@ -188,6 +189,12 @@ var ListingsViewModel = function(){
         $('#connectModal').modal({
             keyboard: true
         })
+    }
+    
+    self.mailTo = function(incomingCall)
+    {
+        self.incomingCallMailTo(incomingCall);
+        //perform mailto functionality upon this object.
     }
 
     // no updating appearing in the UI .. omehow the values do seem to update in the array.. is the accoring value missing bindings?

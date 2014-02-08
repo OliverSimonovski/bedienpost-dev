@@ -182,20 +182,11 @@ body {
     margin-top:8px; 
 }
 
-.fa-sort-asc
+.fa-pencil-square-o
 {
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px;
-
-}
-
-.fa-sort-desc
-{
-    cursor:pointer;
-    font-size: 18px;
-     margin-top:0px; 
-
+    margin-top:0px; 
 }
 
 .fa-star 

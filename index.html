@@ -38,7 +38,10 @@
                                             <div  class="col-sm-10 text-left nopadding-left">
                                                 <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
                                              </div>
-                                            <div class="col-sm-2 text-right">
+                                             <div class="col-sm-1 text-left nopadding" >
+                                                <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
+                                             </div>
+                                            <div class="col-sm-1 text-right">
                                                 <h5 class="list-group-item-heading"><span class="badge pull-right" data-bind="text: entry.timeConnected"></span></h5>
                                              </div>
                                         </li>

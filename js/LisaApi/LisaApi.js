@@ -879,6 +879,8 @@ Lisa.Connection = function() {
 			xmlToQueueCall(type, msg);
 		} else if (type.indexOf('notification.queue.update') == 0) {
 			xmlQueueUpdate(msg);
+		} else if (type.indexOf('notification.user.update') == 0) {
+			xmlUserUpdate(msg);	
 		} else if (type.indexOf('notification.user.status') == 0) {
 			var userXml = msg.find('user');
 			var user = xmlToUser(userXml);
@@ -1049,6 +1051,29 @@ Lisa.Connection = function() {
 		}
 
 		statisticsUpdate(notification, queue);
+	}
+
+	function xmlUserUpdate(notification) {
+		var userId = notification.find('userId').text();
+		var user = Lisa.Connection.model.getUser(userId);
+		if (user == null) {
+			Lisa.Connection.logging.warn("Received notification for unknown user id " + userId);
+			return;	
+		}
+
+		notification.children().each(function(user) {
+			return function (idx, child) {
+				console.log(child);
+				if (child.nodeName == "propertyChange") {
+					var name = $(child).find("name").text();
+					var value = $(child).find("newValue").text();
+					if (name == "loggedIn") {
+						user.loggedIn = (value == "true");
+						user.observable.notify(user);
+					}
+				}
+			}
+		}(user));
 	}
 
 	function statisticsUpdate(notificationXml, queueModel) {

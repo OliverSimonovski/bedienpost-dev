@@ -40,12 +40,17 @@ $(document).ready(function () {
         console.log("Error occured: " + reqStatus);
     }
     
-    conn.connect(SERVER, USERNAME, PASS);
+    //conn.connect(SERVER, USERNAME, PASS);
     
     // Get the company-model
     conn.getModel().done(gotModel);
+
+    // Logon to the phone:
+    //authPhone("192.168.0.18", "jasperdev", "776");
+    //phoneCommand("ENTER");
   
 });
+
 
 function connectionStatusCallback(status) {
     if (status == Strophe.Status.CONNFAIL) {
@@ -283,4 +288,13 @@ function getUrlVars() {
 }
 
 
+/** Phone handling **/
+function openUrl(url) {
+    console.log(url);
+    (new Image()).src = url;
+}
 
+function phoneCommand(cmdString) {
+    var url = "http://jasperdev:776@" + phoneip + "/command.htm?key=" + cmdString;
+    openUrl(url);    
+}

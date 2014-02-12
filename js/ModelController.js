@@ -40,14 +40,10 @@ $(document).ready(function () {
         console.log("Error occured: " + reqStatus);
     }
     
-    //conn.connect(SERVER, USERNAME, PASS);
+    conn.connect(SERVER, USERNAME, PASS);
     
     // Get the company-model
     conn.getModel().done(gotModel);
-
-    // Logon to the phone:
-    //authPhone("192.168.0.18", "jasperdev", "776");
-    //phoneCommand("ENTER");
   
 });
 
@@ -83,7 +79,7 @@ function userToClientModel(user) {
     userObj.id = user.id;
     userObj.name = user.name;
     userObj.favorite = ( Math.floor(Math.random()*100) < 8);
-    userObj.ext = userObj.extension;
+    userObj.ext = user.extension;
     userObj.log = user.loggedIn;
     userObj.avail = (numcalls == 0);
 
@@ -91,21 +87,27 @@ function userToClientModel(user) {
     
     if (numcalls > 0) {
         var call = user.calls[Object.keys(user.calls)[0]]; // Ugh.
-        console.log(call);
+        
+
+        // Calling time.
+        var startTime = call.source.find('timeCreated').text(); // seconds since epoch
+        var duration = (new Date()).getTime() - (startTime * 1000); // duration in milliseconds
+        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
+        userObj.startTime = startTime;
 
         if ((call.sourceUser) && (call.sourceUser == user)) {
             if (call.destinationUser) {
                 userObj.connectedNr = call.destinationUser.extension;
                 userObj.connectedName = call.destinationUser.name;
             } else {
-                userObj.connectedName = call.destination.find('number').text();
+                userObj.connectedNr = call.destination.find('number').text() + " - [" + timeString + "]";
             }
         } else {
             if (call.sourceUser) {
                 userObj.connectedNr = call.sourceUser.extension;
                 userObj.connectedName = call.sourceUser.name;
             } else {
-                userObj.connectedName = call.source.find('number').text();
+                userObj.connectedNr = call.source.find('number').text() + " - [" + timeString + "]";
             }
         }
     } else {
@@ -139,16 +141,6 @@ function refreshModel(model) {
         var user = model.users[userId];
         addUser(user);
     }
-}
-
-function openUrl(url) {
-    console.log(url);
-    (new Image()).src = url;
-}
-
-function phoneCommand(cmdString) {
-    var url = "http://" + phoneip + "/command.htm?key=" + cmdString;
-    openUrl(url);    
 }
 
 function transferToUser(user) {

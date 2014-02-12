@@ -1,6 +1,6 @@
 // Overall viewmodel for this screen, along with initial state
 
-var demoData = true;
+var demoData = false;
 var incomingCallEntries = ko.observableArray();
 var initialIncomingCallList = [{ name: "Incoming CallList", entries: incomingCallEntries }];
 

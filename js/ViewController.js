@@ -103,8 +103,7 @@ var ListingsViewModel = function(){
        ko.utils.arrayForEach(list, function(entry) {
         console.log(entry.name());  
          if ((entry.name().toLowerCase()).indexOf(searchParam) > -1) {
-           filteredEntries.push(entry);
-           //console.log(entry);
+           filteredEntries.push(entry); 
          }  
        });
  
@@ -116,7 +115,6 @@ var ListingsViewModel = function(){
     {
         if (self.currentList()){
             var searchParam = self.search();
-            searchParam +="";
             
             var result = filterListByName(self.currentList().entries(), searchParam);
             result = ko.mapping.toJS(result);
@@ -127,40 +125,9 @@ var ListingsViewModel = function(){
     
     self.favFilteredItems = ko.computed(function() 
     {
-        if (self.currentList()){
-            var searchParam = self.search();
-            searchParam +="";
-            searchParam = searchParam.toLowerCase();
-            var filteredEntries = ko.observableArray();
-            
-            if(!searchParam){
-                var shortcutCounter = 0;
-                 ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
-                     entry = ko.mapping.toJS(entry);
-                     entry.name+="";
-                     if ((entry.favorite))
-                     {
-                        if (shortcutCounter < 10){
-                            entry.shortcut = shortcutCounter;
-                            shortcutCounter++;
-                         }
-                         filteredEntries.push(entry);
-                     }
-                 });
-                return filteredEntries();
-            } else {
-                ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
-                     entry = ko.mapping.toJS(entry);
-                     entry.name+="";
-                     if ((entry.name.toLowerCase()).indexOf(searchParam) > -1 && (entry.favorite))
-                     {
-                         entry.shortcut = "";
-                         filteredEntries.push(entry);
-                     }
-                 });
-                return filteredEntries();
-            }
-        }
+        var result = self.filteredItems();
+        result = _.where(result,{favorite: true});
+        return result;
     }, self);
     
     self.filterWaitingQueue = ko.computed(function()

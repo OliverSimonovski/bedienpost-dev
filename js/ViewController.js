@@ -38,22 +38,22 @@ var xmppUserLists = [{ name: "Call List", entries: userListEntries }];
 
 var demoUserLists = [
     { name: "Call List", entries: ko.observableArray( [
-        { id: 1, name: "Receptie DraadloosDraadloosDraadloos", shortcut:"", favorite:true, ext:"264,254", log:true, avail:true, ringing:true, connectedName:"Lambert Storingsdienst", connectedNr:"070123456789" },
-        { id: 2, name: "Thomas Winkelman", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 3, name: "Joop Aanstoot", shortcut:"", favorite:true, ext:"130,140", log:false, avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 4, name: "Bart Meijerink", shortcut:"", favorite:false, ext:"130,140", log:true,  avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 5, name: "Patrick Van der Veen", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"Richard Kamphuis", connectedNr:"070123456789" },
-        { id: 6, name: "Nicole Roskamp", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"", connectedNr:"" },
-        { id: 7, name: "Remko Uland", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"", connectedNr:"" },
-        { id: 8, name: "Richard Kamphuis", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 9, name: "Tom Waanders", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"070123456789", connectedNr:"" },
-        { id: 10, name: "Martin Kamphuis", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 11, name: "Support 1e Lijns", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"070123456789", connectedNr:"" },
-        { id: 12, name: "Lambert Storingsdienst", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 13, name: "Maurice", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"", connectedNr:"" },
-        { id: 14, name: "Pascal", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 15, name: "Roland", shortcut:"",  favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"" },
-        { id: 16, name: "Wim", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:""}] )
+         { id: 1, name: "Receptie DraadloosDraadloosDraadloos", shortcut:"", favorite:true, ext:"264,254", log:true, avail:true, ringing:true, connectedName:"Lambert Storingsdienst", connectedNr:"070123456789", callDuration:0 },
+         { id: 2, name: "Thomas Winkelman", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 3, name: "Joop Aanstoot", shortcut:"", favorite:true, ext:"130,140", log:false, avail:false, ringing:true, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 4, name: "Bart Meijerink", shortcut:"", favorite:false, ext:"130,140", log:true,  avail:false, ringing:true, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 5, name: "Patrick Van der Veen", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"Richard Kamphuis", connectedNr:"070123456789", callDuration:144000 },
+         { id: 6, name: "Nicole Roskamp", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 7, name: "Remko Uland", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 8, name: "Richard Kamphuis", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 9, name: "Tom Waanders", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"070123456789", connectedNr:"", callDuration:55000 },
+         { id: 10, name: "Martin Kamphuis", shortcut:"", favorite:true, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 11, name: "Support 1e Lijns", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"070123456789", connectedNr:"", callDuration:36200000 },
+         { id: 12, name: "Lambert Storingsdienst", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 13, name: "Maurice", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:false, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 14, name: "Pascal", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 15, name: "Roland", shortcut:"",  favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"", callDuration:0 },
+         { id: 16, name: "Wim", shortcut:"", favorite:false, ext:"130,140", log:true, avail:false, ringing:true, connectedName:"", connectedNr:"", callDuration:0}] )
     }
 ];
 
@@ -84,33 +84,43 @@ var ListingsViewModel = function(){
         self.search(""); 
     });
 
+     function addShortCuts() {
+ 
+     }
+ 
+     function filterListByName(list, searchParam) {
+       if (!list) {
+         return null;
+       }
+ 
+       if (!searchParam) {
+         return list;
+       }
+
+       searchParam = searchParam.toLowerCase();  
+       var filteredEntries = ko.observableArray();
+ 
+       ko.utils.arrayForEach(list, function(entry) {
+        console.log(entry.name());  
+         if ((entry.name().toLowerCase()).indexOf(searchParam) > -1) {
+           filteredEntries.push(entry);
+           //console.log(entry);
+         }  
+       });
+ 
+       return filteredEntries;
+     }
+ 
+
     self.filteredItems = ko.computed(function() 
     {
         if (self.currentList()){
             var searchParam = self.search();
             searchParam +="";
-            searchParam = searchParam.toLowerCase();
-            var filteredEntries = ko.observableArray();
-
-            console.log(self.hasFocus);
-            if(!searchParam ){
-                return ko.mapping.toJS(self.currentList().entries());
-            } else {
-                var shortcutCounter = 0;
-                ko.utils.arrayForEach(self.currentList().entries(), function(entry) {
-                     entry = ko.mapping.toJS(entry);
-                     entry.name+="";
-                     if ((entry.name.toLowerCase()).indexOf(searchParam) > -1)
-                     {
-                         if (shortcutCounter < 10){
-                            entry.shortcut = shortcutCounter;
-                            shortcutCounter++;
-                         }
-                         filteredEntries.push(entry);
-                     }
-                 });
-                return filteredEntries();
-            }
+            
+            var result = filterListByName(self.currentList().entries(), searchParam);
+            result = ko.mapping.toJS(result);
+            return result;
         }
         
     }, self);

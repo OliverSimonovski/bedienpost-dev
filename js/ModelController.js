@@ -75,7 +75,10 @@ function gotModel(newmodel) {
 function userToClientModel(user) {
     var numcalls = _.size(user.calls);
 
-    var userObj = Object();
+
+
+    var userObj = new UserListItem(user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
+    /*
     userObj.id = user.id;
     userObj.name = user.name;
     userObj.favorite = ( Math.floor(Math.random()*100) < 8);
@@ -83,7 +86,7 @@ function userToClientModel(user) {
     userObj.log = user.loggedIn;
     userObj.avail = (numcalls == 0);
     userObj.ringing = false;
-
+    */
 
     
     if (numcalls > 0) {
@@ -94,26 +97,27 @@ function userToClientModel(user) {
         var startTime = call.source.find('timeCreated').text(); // seconds since epoch
         var duration = (new Date()).getTime() - (startTime * 1000); // duration in milliseconds
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
-        userObj.startTime = startTime;
 
+        var number = "", name = "";
         if ((call.sourceUser) && (call.sourceUser == user)) {
             if (call.destinationUser) {
-                userObj.connectedNr = call.destinationUser.extension;
-                userObj.connectedName = call.destinationUser.name;
+                number = call.destinationUser.extension;
+                name = call.destinationUser.name;
             } else {
-                userObj.connectedNr = call.destination.find('number').text() + " - [" + timeString + "]";
+                number = call.destination.find('number').text();// + " - [" + timeString + "]";
             }
         } else {
             if (call.sourceUser) {
-                userObj.connectedNr = call.sourceUser.extension;
-                userObj.connectedName = call.sourceUser.name;
+                number = call.sourceUser.extension;
+                name = call.sourceUser.name;
             } else {
-                userObj.connectedNr = call.source.find('number').text() + " - [" + timeString + "]";
+                number = call.source.find('number').text() + " - [" + timeString + "]";
             }
         }
+        userObj.startCall(number, name, startTime);
+
     } else {
-         userObj.connectedNr = "";
-         userObj.connectedName = "";    
+         userObj.noCalls();
     }
 
     return userObj;
@@ -184,10 +188,10 @@ function addUser(user) {
     user.observable.addObserver(updateUser);
 
     var userObj = userToClientModel(user);
-    var userObjObservable = ko.mapping.fromJS(userObj);
+    //var userObjObservable = ko.mapping.fromJS(userObj);
 
-    userListEntries.push(userObjObservable);
-    userIdToUserObservable[user.id] = userObjObservable;
+    userListEntries.push(userObj);
+    userIdToUserObservable[user.id] = userObj;
     
 }
 

@@ -1,17 +1,36 @@
 // Overall viewmodel for this screen, along with initial state
 
-var demoData = false;
-var incomingCallEntries = ko.observableArray();
 
-var waitingListEntries = ko.observableArray();
+function UserListItem(id, name, ext, log, avail, ringing) {
+    this.id = ko.observable(id                            || "");
+    this.name = ko.observable(name                        || "");
+    this.ext = ko.observable(ext                          || "");
+    this.log = ko.observable(log                          || false);
+    this.avail = ko.observable(avail                      || false);
+    this.ringing = ko.observable(ringing                  || false);
 
-var xmppWaitingQueueList = [
-    { name: "WaitingQueue List", entries: ko.observableArray()}
-];
+    this.connectedName = ko.observable("");
+    this.connectedNr = ko.observable("");
+    this.connectedNr = ko.observable("");
+    this.favorite = ko.observable(false);
+    this.callStartTime = ko.observable(0);
+}
 
-var userListEntries = ko.observableArray();
-var xmppUserLists = [{ name: "Call List", entries: userListEntries }];
+UserListItem.prototype.startCall = function(number, name, startTime) {
+    this.connectedName(name);
+    this.connectedNr(number);
+    this.callStartTime(startTime);
+}
 
+UserListItem.prototype.noCalls = function() {
+    this.connectedName("");
+    this.connectedNr("");
+    this.callStartTime(0);
+}
+
+UserListItem.prototype.setFavorite = function (fav) {
+    this.favorite(fav);
+}
 
 var ListingsViewModel = function(){
     var self = this;
@@ -57,7 +76,6 @@ var ListingsViewModel = function(){
        var filteredEntries = ko.observableArray();
  
        ko.utils.arrayForEach(list, function(entry) {
-        console.log(entry.name());  
          if ((entry.name().toLowerCase()).indexOf(searchParam) > -1) {
            filteredEntries.push(entry); 
          }  
@@ -72,7 +90,6 @@ var ListingsViewModel = function(){
         if (self.currentList()){
             var searchParam = self.search();
             var result = filterListByName(self.currentList().entries(), searchParam);
-            console.log(result);
             return result;
         }
         
@@ -80,7 +97,6 @@ var ListingsViewModel = function(){
     
     self.favFilteredItems = ko.computed(function() 
     {
-        console.log(self.filteredItems());
         var result = _.filter(self.filteredItems(), function(item){
             return item.favorite();
         });
@@ -180,7 +196,7 @@ var ListingsViewModel = function(){
     self.doLogin = function()
     {
         //alert("doLogin");
-        console.log(self.loginName() + " " + self.loginPass());
+        //console.log(self.loginName() + " " + self.loginPass());
         $('#loginModal').modal('hide');
     }
     

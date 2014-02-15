@@ -82,6 +82,7 @@ function userToClientModel(user) {
     userObj.ext = user.extension;
     userObj.log = user.loggedIn;
     userObj.avail = (numcalls == 0);
+    userObj.ringing = false;
 
 
     

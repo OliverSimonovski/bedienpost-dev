@@ -108,8 +108,8 @@
                                      data-bind="click: $root.clickItem">
                                      <div class="row nopadding">
                                          <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
-                                                <i data-bind=   "attr: { class: $root.logCssClass(entry.log)  },
-                                                                style: { color: $root.colorClass(entry.avail, entry.log, entry.ringing) }"></i>
+                                                <i data-bind=   "attr: { class: $root.logCssClass(entry.log())  },
+                                                                style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
                                              </span>
                                          </div>
                                         <div  class="col-sm-5 text-left fixed-height">
@@ -153,10 +153,10 @@
                                     <li class="list-group-item"
                                          data-bind="click: $root.clickItem">
                                         <div class="row nopadding">
-                                            <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                  
+                                            <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log() == true ? '#042739' : '#042739' } ">                                                  
                                                  <span class="image_container">
-                                                     <i data-bind="attr: { class: $root.logCssClass(entry.log)  },
-                                                                   style: { color: $root.colorClass(entry.avail, entry.log, entry.ringing) }"></i>
+                                                     <i data-bind="attr: { class: $root.logCssClass(entry.log())  },
+                                                                   style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
                                                  </span>
                                              </div>
                                             <div  class="col-sm-5 text-left fixed-height">
@@ -246,6 +246,7 @@
     <script type='text/javascript' src='js/lib/knockout.mapping.js'></script>
     <script type='text/javascript' src='js/lib/moment.min.js'></script>
     <script type='text/javascript' src='js/lib/underscore-min.js'></script>
+    <script type='text/javascript' src='js/lib/underscore-ko-1.2.2.min.js'></script>
     <script type='text/javascript' src='js/lib/backbone.js'></script>
     <script type='text/javascript' src='js/lib/base64.js'></script>
     <script type='text/javascript' src='js/lib/md5.js'></script>

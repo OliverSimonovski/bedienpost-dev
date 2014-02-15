@@ -115,9 +115,8 @@ var ListingsViewModel = function(){
     {
         if (self.currentList()){
             var searchParam = self.search();
-            
             var result = filterListByName(self.currentList().entries(), searchParam);
-            result = ko.mapping.toJS(result);
+            console.log(result);
             return result;
         }
         
@@ -126,7 +125,8 @@ var ListingsViewModel = function(){
     self.favFilteredItems = ko.computed(function() 
     {
         var result = self.filteredItems();
-        result = _.where(result,{favorite: true});
+        //var favResults = _.where(result(), {favorite: true});
+        //return ko.mapping.fromJS(favResults);
         return result;
     }, self);
     

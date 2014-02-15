@@ -124,9 +124,10 @@ var ListingsViewModel = function(){
     
     self.favFilteredItems = ko.computed(function() 
     {
-        var result = self.filteredItems();
-        //var favResults = _.where(result(), {favorite: true});
-        //return ko.mapping.fromJS(favResults);
+        console.log(self.filteredItems());
+        var result = _.filter(self.filteredItems(), function(item){
+            return item.favorite();
+        });
         return result;
     }, self);
     

@@ -2,6 +2,8 @@
 
 
 function UserListItem(id, name, ext, log, avail, ringing) {
+    _.bindAll(this, 'startCall', 'noCalls', 'setFavorite');
+
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
     this.ext = ko.observable(ext                          || "");
@@ -11,9 +13,26 @@ function UserListItem(id, name, ext, log, avail, ringing) {
 
     this.connectedName = ko.observable("");
     this.connectedNr = ko.observable("");
-    this.connectedNr = ko.observable("");
-    this.favorite = ko.observable(false);
+    this.favorite = ko.observable(true);
     this.callStartTime = ko.observable(0);
+
+    this.numberAndDuration = ko.computed(function() 
+    {
+        if (this.callStartTime() == 0) {
+            return "";
+        }
+
+        var duration = (UserListItem.currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
+        console.log("Call duration: " + duration);
+        if (duration < 0) duration = 0;
+        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
+
+        var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " - ") : ("");
+        var timePart = "[" + timeString + "]";
+
+        return numberPart + timePart;
+        
+    }, this);
 }
 
 UserListItem.prototype.startCall = function(number, name, startTime) {
@@ -31,6 +50,17 @@ UserListItem.prototype.noCalls = function() {
 UserListItem.prototype.setFavorite = function (fav) {
     this.favorite(fav);
 }
+
+/*
+ * ko.observable with the current time that triggers every second. 
+ *  All time-dependent function can efficiently track this one observable. 
+ *  Knockout.js wizardry should only trigger computables that really are dependent on this observable *right now*.
+ */
+UserListItem.currentTime = ko.observable(0); 
+setInterval(function() {
+    UserListItem.currentTime(_.now());
+}, 1000); // Update UserListItem.currentTime every second.
+
 
 var ListingsViewModel = function(){
     var self = this;

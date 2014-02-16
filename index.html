@@ -122,8 +122,8 @@
                                             </div>
                                             -->
                                         <div class="col-sm-5 text-left fixed-height">
-                                            <h4 class="list-group-item-heading" data-bind="text: entry.connectedName"></h4>
-                                            <p class="list-group-item-text" data-bind="text: entry.connectedNr"></p>
+                                            <h4 class="list-group-item-heading" data-bind="text: entry.connectedName()"></h4>
+                                            <p class="list-group-item-text" data-bind="text: entry.numberAndDuration()"></p>
                                         </div>
                                         <div class="col-sm-1 text-right fixed-height">
                                             <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></span></h5>
@@ -169,8 +169,8 @@
                                             </div>
                                             -->
                                             <div class="col-sm-5 text-left fixed-height">
-                                                <h4 class="list-group-item-heading" data-bind="text: entry.connectedName"></h4>
-                                                <p class="list-group-item-text" data-bind="text: entry.connectedNr"></p>
+                                                <h4 class="list-group-item-heading" data-bind="text: entry.connectedName()"></h4>
+                                                <p class="list-group-item-text" data-bind="text: entry.numberAndDuration()"></p>
                                             </div>
                                             <div class="col-sm-1 text-right fixed-height">
                                                 <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></span></h5>

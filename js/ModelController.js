@@ -72,33 +72,20 @@ function gotModel(newmodel) {
     model.queueListObservable.addObserver(refreshModel);
 }
 
-function userToClientModel(user) {
+function userToClientModel(user, userObj) {
     var numcalls = _.size(user.calls);
-
-
-
-    var userObj = new UserListItem(user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
-    /*
-    userObj.id = user.id;
-    userObj.name = user.name;
-    userObj.favorite = ( Math.floor(Math.random()*100) < 8);
-    userObj.ext = user.extension;
-    userObj.log = user.loggedIn;
-    userObj.avail = (numcalls == 0);
-    userObj.ringing = false;
-    */
+    var userObj = userObj || new UserListItem(user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
+    userObj.log(user.loggedIn);
+    userObj.avail(numcalls == 0);
+    userObj.ringing(false);
 
     
     if (numcalls > 0) {
         var call = user.calls[Object.keys(user.calls)[0]]; // Ugh.
         
-
-        // Calling time.
-        var startTime = call.source.find('timeCreated').text(); // seconds since epoch
-        var duration = (new Date()).getTime() - (startTime * 1000); // duration in milliseconds
-        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
-
-        var number = "", name = "";
+        var number = "";
+        var name = "";
+        console.log(call);
         if ((call.sourceUser) && (call.sourceUser == user)) {
             if (call.destinationUser) {
                 number = call.destinationUser.extension;
@@ -111,9 +98,11 @@ function userToClientModel(user) {
                 number = call.sourceUser.extension;
                 name = call.sourceUser.name;
             } else {
-                number = call.source.find('number').text() + " - [" + timeString + "]";
+                number = call.source.find('number').text();// + " - [" + timeString + "]";
             }
         }
+
+        var startTime = call.source.find('timeCreated').text(); // seconds since epoch
         userObj.startCall(number, name, startTime);
 
     } else {
@@ -187,8 +176,8 @@ function addUser(user) {
     console.log("Adding user " + user);
     user.observable.addObserver(updateUser);
 
-    var userObj = userToClientModel(user);
-    //var userObjObservable = ko.mapping.fromJS(userObj);
+    var userObj = userIdToUserObservable[user.id];
+    userObj = userToClientModel(user, userObj);
 
     userListEntries.push(userObj);
     userIdToUserObservable[user.id] = userObj;
@@ -198,12 +187,9 @@ function addUser(user) {
 // Make-up the user entry.
 function updateUser(user, userKoObservable) {
     console.log("Updating user " + user);
-    var userObj = userToClientModel(user);
-    var userObjObservable = userIdToUserObservable[user.id];
+    var userObj = userIdToUserObservable[user.id];
+    userObj = userToClientModel(user, userObj);
 
-    userObj.favorite = userObjObservable.favorite();
-
-    ko.mapping.fromJS(userObj, userObjObservable);
 }
 
 // http://learn.jquery.com/using-jquery-core/faq/how-do-i-select-an-element-by-an-id-that-has-characters-used-in-css-notation/

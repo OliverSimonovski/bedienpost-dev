@@ -52,6 +52,8 @@ UserListItem.prototype.setFavorite = function (fav) {
 
 
 function QueueListItem(id, name) {
+    _.bindAll(this, 'queueLogin');
+
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
 
@@ -59,6 +61,17 @@ function QueueListItem(id, name) {
     this.signInOut = ko.observable(false);
     this.waitingAmount = ko.observable(0);
     this.orderNr = 0;
+}
+
+QueueListItem.prototype.queueLogin = function (amLoggingIn) {
+    //this.signInOut(amLoggingIn); // Event should come correctly through api.
+    var queue = Lisa.Connection.model.queues[this.id()];
+
+    if (amLoggingIn) {
+        conn.queueLogin(queue);
+    } else {
+        conn.queueLogout(queue);   
+    }
 }
 
 /*
@@ -207,13 +220,9 @@ var ListingsViewModel = function(){
     }
     
     // no updating appearing in the UI.. somehow the values do seem to update in the array.. is the accoring value missing bindings?
-    self.signInOut = function(signinout)
+    self.signInOut = function(queueListItem)
     {
-        self.waitingQueueItemToSignInOut(signinout);
-        
-        var indexVal = self.waitingQueueList().entries().indexOf(signinout);
-        var signInOutFlag = self.waitingQueueList().entries()[indexVal].signInOut();
-            self.waitingQueueList().entries()[indexVal].signInOut(!signInOutFlag);
+        queueListItem.queueLogin(!queueListItem.signInOut());
     }
     
     self.actionCalling = function()

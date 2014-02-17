@@ -4,7 +4,9 @@ var model;
 var phoneip;
 var inAttTransfer = false;
 var me = null;
-var userIdToUserObservable = Array();
+
+var userIdToUserObservable = [];
+var queueIdToQueueObservable = [];
 
 $(document).ready(function () {
 
@@ -77,11 +79,11 @@ function userToClientModel(user, userObj) {
     var userObj = userObj || new UserListItem(user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
     userObj.log(user.loggedIn);
     userObj.avail(numcalls == 0);
-    userObj.ringing(false);
 
     
     if (numcalls > 0) {
         var call = user.calls[Object.keys(user.calls)[0]]; // Ugh.
+        userObj.ringing((call.state != "ANSWERED"));
         
         var number = "";
         var name = "";
@@ -108,15 +110,15 @@ function userToClientModel(user, userObj) {
     } else {
          userObj.noCalls();
     }
-
+    
     return userObj;
 }
 
-function queueToClientModel(queue) {
-    var numcalls = _.size(queue.calls);
 
-    var queueObj = Object();
-    queueObj.name = queue.name;
+function queueToClientModel(queue, queueObj) {
+    queueObj = queueObj || new QueueListItem(queue.id, queue.name);
+    queueObj.signInOut(queue.users[Lisa.Connection.myUserId] != null);
+    queueObj.waitingAmount(_.size(queue.calls));
 
     return queueObj;
 }
@@ -124,18 +126,63 @@ function queueToClientModel(queue) {
 function refreshModel(model) {
     console.log("Refreshing interface.")
     
-    //$('#user_list').empty();
-    //$('#queue_list').empty();
-    
     // Add users to interface.
-    //var datamodel = Array();
     userListEntries.removeAll();
     for (var userId in model.users) {
 
         var user = model.users[userId];
         addUser(user);
     }
+
+    // Process queues
+    queueListEntries.removeAll();
+    for (var queueId in model.queues) {
+
+        var queue = model.queues[queueId];
+        addQueue(queue);
+    }
 }
+
+
+/* Add / Update page for users */
+function addUser(user) {
+    console.log("Adding user " + user);
+    user.observable.addObserver(updateUser);
+
+    var userObj = updateUser(user);
+
+    userListEntries.push(userObj);
+    userIdToUserObservable[user.id] = userObj;
+    
+}
+
+// Make-up the user entry.
+function updateUser(user) {
+    console.log("Updating user " + user);
+    var userObj = userIdToUserObservable[user.id];
+    userObj = userToClientModel(user, userObj);
+
+    return userObj;
+}
+
+function addQueue(queue) {
+    console.log("Adding queue " + queue);
+    queue.observable.addObserver(updateQueue);
+
+    var queueObj = updateQueue(queue);
+
+    queueListEntries.push(queueObj);
+    queueIdToQueueObservable[queue.id] = queueObj;
+}
+
+function updateQueue(queue) {
+    console.log("Updating queue " + queue);
+    var queueObj = queueIdToQueueObservable[queue.id];
+    queueObj = queueToClientModel(queue, queueObj);
+
+    return queueObj;
+}
+
 
 function transferToUser(user) {
 
@@ -170,96 +217,7 @@ function attendedtransferToUser(user) {
     }, 1000);
 }
 
-
-/* Add / Update page for users */
-function addUser(user) {
-    console.log("Adding user " + user);
-    user.observable.addObserver(updateUser);
-
-    var userObj = userIdToUserObservable[user.id];
-    userObj = userToClientModel(user, userObj);
-
-    userListEntries.push(userObj);
-    userIdToUserObservable[user.id] = userObj;
-    
-}
-
-// Make-up the user entry.
-function updateUser(user, userKoObservable) {
-    console.log("Updating user " + user);
-    var userObj = userIdToUserObservable[user.id];
-    userObj = userToClientModel(user, userObj);
-
-}
-
-// http://learn.jquery.com/using-jquery-core/faq/how-do-i-select-an-element-by-an-id-that-has-characters-used-in-css-notation/
-function safeId(myid) {
-    return myid.replace(/(:|\.|\[|\]|\@|\/)/g, "\\$1");
-}
-
 /* Add / Update the page-elements for calls */
-
-function updateCalls(call) {
-
-    var elem = $('#tpl_call').clone().attr('id', 'call_' + call.id);
-    updateCall(call, elem);
-    $('#current-calls').append(elem);
-    call.observable.addObserver(function(call) {
-        updateCall(call);
-    });
-}
-
-function updateCall(call, elem) {
-    if (!elem) {
-        elem = $('#call_' + safeId(call.id));
-    }
-    elem.text(callToString(call));
-}
-
-function callToString(call) {
-
-    if (call == null)
-        return "";
-
-    var str = 'Call from ';
-    str += endpointToString(call.source);
-    str += ' to ';
-    str += endpointToString(call.destination);
-    str += '.';
-    return str;
-
-}
-
-function endpointToString(endpoint) {
-
-    if (endpoint == null)
-        return "";
-
-    switch (endpoint.attr('type')) {
-    case 'User':
-        var userId = endpoint.find('userId').text();
-        var user = model.getUser(userId);
-        return user.name + " [" + user.extension + "]";
-
-    case 'Dialplan':
-        var txt = endpoint.find('description').text();
-        if (txt != '' ) return txt;
-        return endpoint.find('exten').text();
-
-    case 'Queue':
-        var queueId = endpoint.find('queueId').text();
-        var queue = model.getQueue(queueId);
-        return "queue '" + queue.name + "'";
-
-    case 'External':
-        return endpoint.find('number').text();
-
-    default:
-        console.log('Cannot represent endpointType ' + endpoint.attr('type'));
-        return '[unknown]';
-    }
-
-}
 
 // Support functions
 function getUrlVars() {

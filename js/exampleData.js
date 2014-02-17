@@ -1,10 +1,10 @@
 var demoData = false;
 var incomingCallEntries = ko.observableArray();
 
-var waitingListEntries = ko.observableArray();
+var queueListEntries = ko.observableArray();
 
 var xmppWaitingQueueList = [
-    { name: "WaitingQueue List", entries: ko.observableArray()}
+    { name: "WaitingQueue List", entries: queueListEntries}
 ];
 
 var userListEntries = ko.observableArray();
@@ -21,7 +21,6 @@ var initialIncomingCallList = [
     }
 ];
 
-var initialWaitingQueueList = [{ name: "Call List", entries: waitingListEntries }];
 
 var initialWaitingQueueList = [
     { name: "WaitingQueue List", entries: ko.observableArray( [

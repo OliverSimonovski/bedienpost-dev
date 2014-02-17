@@ -22,8 +22,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
             return "";
         }
 
-        var duration = (UserListItem.currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
-        console.log("Call duration: " + duration);
+        var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
         if (duration < 0) duration = 0;
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
 
@@ -51,14 +50,25 @@ UserListItem.prototype.setFavorite = function (fav) {
     this.favorite(fav);
 }
 
+
+function QueueListItem(id, name) {
+    this.id = ko.observable(id                            || "");
+    this.name = ko.observable(name                        || "");
+
+    this.favorite = ko.observable(false);
+    this.signInOut = ko.observable(false);
+    this.waitingAmount = ko.observable(0);
+    this.orderNr = 0;
+}
+
 /*
  * ko.observable with the current time that triggers every second. 
  *  All time-dependent function can efficiently track this one observable. 
  *  Knockout.js wizardry should only trigger computables that really are dependent on this observable *right now*.
  */
-UserListItem.currentTime = ko.observable(0); 
+currentTime = ko.observable(0); 
 setInterval(function() {
-    UserListItem.currentTime(_.now());
+    currentTime(_.now());
 }, 1000); // Update UserListItem.currentTime every second.
 
 

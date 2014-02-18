@@ -166,6 +166,9 @@ var ListingsViewModel = function(){
     self.filteredItems = ko.computed(function() 
     {
         if (self.currentList()){
+            // Sort the current list
+            self.currentList().entries.sort(function(left, right) { return left.name() == right.name() ? 0 : (left.name() < right.name() ? -1 : 1) });
+
             var searchParam = self.search();
             var result = filterListByName(self.currentList().entries(), searchParam);
             return result;

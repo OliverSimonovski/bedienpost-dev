@@ -198,7 +198,6 @@ function updateUser(user) {
 
             var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime);
             incomingCallEntries.push(callObj);
-
         }
     }
 

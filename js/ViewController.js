@@ -173,15 +173,19 @@ var ListingsViewModel = function(){
             var result = filterListByName(self.currentList().entries(), searchParam);
             return result;
         }
+        return [];
         
     }, self);
     
     self.favFilteredItems = ko.computed(function() 
     {
-        var result = _.filter(self.filteredItems(), function(item){
-            return item.favorite();
-        });
-        return result;
+        if (self.currentList()){
+            var result = _.filter(self.currentList().entries(), function(item){
+                return item.favorite();
+            });
+            return result;
+        }
+        return [];
     }, self);
     
     self.filterWaitingQueue = ko.computed(function()

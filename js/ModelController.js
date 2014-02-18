@@ -42,7 +42,7 @@ $(document).ready(function () {
         console.log("Error occured: " + reqStatus);
     }
     
-    conn.connect(SERVER, USERNAME, PASS);
+    //conn.connect(SERVER, USERNAME, PASS);
     
     // Get the company-model
     conn.getModel().done(gotModel);
@@ -82,6 +82,7 @@ function getCallInfo(call, user) {
                 callInfo.number = call.destinationUser.extension;
                 callInfo.name = call.destinationUser.name;
             } else {
+                callInfo.name = "...";
                 callInfo.number = call.destination.find('number').text();// + " - [" + timeString + "]";
             }
         } else {
@@ -89,12 +90,13 @@ function getCallInfo(call, user) {
                 callInfo.number = call.sourceUser.extension;
                 callInfo.name = call.sourceUser.name;
             } else {
+                callInfo.name = "...";
                 callInfo.number = call.source.find('number').text();// + " - [" + timeString + "]";
             }
         }
 
     console.log(callInfo.name);
-    callInfo.description = (callInfo.name) ? callInfo.name : callInfo.number;
+    callInfo.description = (callInfo.name != "...") ? callInfo.name : callInfo.number;
     callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
 
     return callInfo;

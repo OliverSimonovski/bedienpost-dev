@@ -58,7 +58,7 @@ function login(login, password) {
     var loginSplit = login.split("@");
     USERNAME = loginSplit[0];
     SERVER = loginSplit[1];
-    SERVER = SERVER || "uc.vhosted.vtel.nl";
+    SERVER = SERVER || "uc.pbx.speakup-telecom.com";
 
     PASS = password;
 

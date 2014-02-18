@@ -42,7 +42,7 @@ $(document).ready(function () {
         console.log("Error occured: " + reqStatus);
     }
     
-    //conn.connect(SERVER, USERNAME, PASS);
+    conn.connect(SERVER, USERNAME, PASS);
     
     // Get the company-model
     conn.getModel().done(gotModel);

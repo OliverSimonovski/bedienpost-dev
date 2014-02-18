@@ -26,7 +26,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
         if (duration < 0) duration = 0;
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
 
-        var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " - ") : ("");
+        var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
 
         return numberPart + timePart;
@@ -101,11 +101,14 @@ function CallListItem(id, name, startTime) {
  *  All time-dependent function can efficiently track this one observable. 
  *  Knockout.js wizardry should only trigger computables that really are dependent on this observable *right now*.
  */
-currentTime = ko.observable(0); 
+currentTime = ko.observable(0);
+var myDate = new Date();
 setInterval(function() {
+    //var currentTime = myDate.getTime(); 
+    //var timezoneOffset = myDate.getTimezoneOffset(); 
+
     currentTime(_.now());
 }, 1000); // Update UserListItem.currentTime every second.
-
 
 var ListingsViewModel = function(){
     var self = this;
@@ -265,9 +268,8 @@ var ListingsViewModel = function(){
     
     self.doLogin = function()
     {
-        //alert("doLogin");
-        //console.log(self.loginName() + " " + self.loginPass());
-        $('#loginModal').modal('hide');
+        console.log("Logging in as: " + self.loginName());
+        login(self.loginName(), self.loginPass());
     }
     
     self.favoriteCssClass = function(fav)

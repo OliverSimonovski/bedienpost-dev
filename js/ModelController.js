@@ -4,6 +4,7 @@ var model;
 var phoneip;
 var inAttTransfer = false;
 var me = null;
+var USERNAME = SERVER = PASS = null;
 
 var userIdToUserObservable = [];
 var queueIdToQueueObservable = [];
@@ -13,11 +14,13 @@ $(document).ready(function () {
     // Retrieve the settings
     var urlvars = getUrlVars();
 
-    var loginSplit = urlvars.login.split("@");
-    USERNAME = loginSplit[0];
-    SERVER = loginSplit[1];
-    PASS = urlvars.pass;
-    phoneip = urlvars.phoneip;
+    if (urlvars["login"])   {
+        var loginSplit = urlvars.login.split("@");
+        USERNAME = loginSplit[0];
+        SERVER = loginSplit[1];
+        PASS = urlvars.pass;
+        phoneip = urlvars.phoneip;
+    }
 
     conn = new Lisa.Connection();
     conn.use_ssl = false;
@@ -42,12 +45,25 @@ $(document).ready(function () {
         console.log("Error occured: " + reqStatus);
     }
     
-    conn.connect(SERVER, USERNAME, PASS);
+    if (USERNAME && SERVER && PASS) {
+        conn.connect(SERVER, USERNAME, PASS);        
+    }
     
     // Get the company-model
     conn.getModel().done(gotModel);
   
 });
+
+function login(login, password) {
+    var loginSplit = login.split("@");
+    USERNAME = loginSplit[0];
+    SERVER = loginSplit[1];
+    SERVER = SERVER || "uc.vhosted.vtel.nl";
+
+    PASS = password;
+
+    conn.connect(SERVER, USERNAME, PASS);    
+}
 
 
 function connectionStatusCallback(status) {
@@ -72,6 +88,9 @@ function gotModel(newmodel) {
     // Listen for added or removed users or queues, which requires to redraw the whole structure.
     model.userListObservable.addObserver(refreshModel);
     model.queueListObservable.addObserver(refreshModel);
+
+    // Hacky
+    $('#loginModal').modal('hide');
 }
 
 function getCallInfo(call, user) {

@@ -110,6 +110,19 @@ setInterval(function() {
     currentTime(_.now());
 }, 1000); // Update UserListItem.currentTime every second.
 
+function nameComparator(left, right) {
+    return left.name() == right.name() ? 0 : (left.name() < right.name() ? -1 : 1);    
+}
+
+/* 
+ * Sorts as following: 
+ * - Keep non-favorites alphabetical
+ * - Keep favorites last-favorited-first
+ */
+function favComparator(left, right) {
+    return left.favorite() == right.favorite() ? (left.favorite() ? 0 : nameComparator(left,right)) : (left.favorite() && !right.favorite() ? -1 : 1);
+}
+
 var ListingsViewModel = function(){
     var self = this;
     
@@ -167,7 +180,7 @@ var ListingsViewModel = function(){
     {
         if (self.currentList()){
             // Sort the current list
-            self.currentList().entries.sort(function(left, right) { return left.name() == right.name() ? 0 : (left.name() < right.name() ? -1 : 1) });
+            self.currentList().entries.sort(nameComparator);
 
             var searchParam = self.search();
             var result = filterListByName(self.currentList().entries(), searchParam);
@@ -199,7 +212,9 @@ var ListingsViewModel = function(){
     }, self);
  
     self.sortItemsAscending = function() {
-        self.waitingQueueList().entries(self.waitingQueueList().entries().sort(function(a, b) { return a.favorite < b.favorite;}));                                    };
+        //self.waitingQueueList().entries(self.waitingQueueList().entries().sort(nameComparator));
+        self.waitingQueueList().entries(self.waitingQueueList().entries().sort(favComparator));                                   
+    };
     
     // Pretty useless to have it computed... Nothing changes with the currentIncomingList
     self.incomingCallQueue = ko.computed(function()

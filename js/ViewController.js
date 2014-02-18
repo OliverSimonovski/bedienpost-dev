@@ -74,6 +74,28 @@ QueueListItem.prototype.queueLogin = function (amLoggingIn) {
     }
 }
 
+function CallListItem(id, name, startTime) {
+    this.id = ko.observable(id                            || "");
+    this.name = ko.observable(name                        || "");
+    this.callStartTime = ko.observable(startTime          || 0);
+
+    this.timeConnected = ko.computed(function() 
+    {
+        if (this.callStartTime() == 0) {
+            return "";
+        }
+
+        var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
+        if (duration < 0) duration = 0;
+        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
+
+        return timeString;
+        
+    }, this);
+}
+
+
+
 /*
  * ko.observable with the current time that triggers every second. 
  *  All time-dependent function can efficiently track this one observable. 
@@ -307,15 +329,17 @@ var ListingsViewModel = function(){
     }
 
     self.favoriteList( self.favFilteredItems()) ;
-    self.incomingCallList( initialIncomingCallList[0] );  //Not sure if this is correctly working out of the box
+   
     self.setSearch("");
     
     if (demoData) {
         self.currentList( demoUserLists[0] );
         self.waitingQueueList( initialWaitingQueueList[0] );
+        self.incomingCallList( initialIncomingCallList[0] );
     } else {
         self.currentList( xmppUserLists[0] );
         self.waitingQueueList( xmppWaitingQueueList[0] );
+        self.incomingCallList( xmppIncomingCallList[0] );
     }
     
     $( "#inputField" ).keypress(function(e)

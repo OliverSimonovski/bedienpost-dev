@@ -74,6 +74,32 @@ function gotModel(newmodel) {
     model.queueListObservable.addObserver(refreshModel);
 }
 
+function getCallInfo(call, user) {
+    callInfo = {};
+
+    if ((call.sourceUser) && (call.sourceUser == user)) {
+            if (call.destinationUser) {
+                callInfo.number = call.destinationUser.extension;
+                callInfo.name = call.destinationUser.name;
+            } else {
+                callInfo.number = call.destination.find('number').text();// + " - [" + timeString + "]";
+            }
+        } else {
+            if (call.sourceUser) {
+                callInfo.number = call.sourceUser.extension;
+                callInfo.name = call.sourceUser.name;
+            } else {
+                callInfo.number = call.source.find('number').text();// + " - [" + timeString + "]";
+            }
+        }
+
+    console.log(callInfo.name);
+    callInfo.description = (callInfo.name) ? callInfo.name : callInfo.number;
+    callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
+
+    return callInfo;
+}
+
 function userToClientModel(user, userObj) {
     var numcalls = _.size(user.calls);
     var userObj = userObj || new UserListItem(user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
@@ -84,28 +110,8 @@ function userToClientModel(user, userObj) {
     if (numcalls > 0) {
         var call = user.calls[Object.keys(user.calls)[0]]; // Ugh.
         userObj.ringing((call.state != "ANSWERED"));
-        
-        var number = "";
-        var name = "";
-        console.log(call);
-        if ((call.sourceUser) && (call.sourceUser == user)) {
-            if (call.destinationUser) {
-                number = call.destinationUser.extension;
-                name = call.destinationUser.name;
-            } else {
-                number = call.destination.find('number').text();// + " - [" + timeString + "]";
-            }
-        } else {
-            if (call.sourceUser) {
-                number = call.sourceUser.extension;
-                name = call.sourceUser.name;
-            } else {
-                number = call.source.find('number').text();// + " - [" + timeString + "]";
-            }
-        }
-
-        var startTime = call.source.find('timeCreated').text(); // seconds since epoch
-        userObj.startCall(number, name, startTime);
+        var callInfo = getCallInfo(call, user);
+        userObj.startCall(callInfo.number, callInfo.name, callInfo.startTime);
 
     } else {
          userObj.noCalls();
@@ -161,6 +167,19 @@ function updateUser(user) {
     console.log("Updating user " + user);
     var userObj = userIdToUserObservable[user.id];
     userObj = userToClientModel(user, userObj);
+
+    // The user is us
+    if (user.id == Lisa.Connection.myUserId) {
+        incomingCallEntries.removeAll();
+        for (key in user.calls) {
+            var call = user.calls[key];
+            var callInfo = getCallInfo(call, user);
+
+            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime);
+            incomingCallEntries.push(callObj);
+
+        }
+    }
 
     return userObj;
 }

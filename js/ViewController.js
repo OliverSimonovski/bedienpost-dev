@@ -207,8 +207,7 @@ var ListingsViewModel = function(){
     self.clickItem = function(clickedItem) 
     {
         self.clickedListItem(clickedItem);
-        var name = clickedItem.name;
-        name += "";
+        var name = clickedItem.name();
         self.clickedListItemName(name);
        
         $('#connectModal').modal({

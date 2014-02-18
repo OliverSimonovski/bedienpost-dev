@@ -148,7 +148,7 @@ var ListingsViewModel = function(){
        }
 
        searchParam = searchParam.toLowerCase();  
-       var filteredEntries = ko.observableArray();
+       var filteredEntries = [];
  
        ko.utils.arrayForEach(list, function(entry) {
          if ((entry.name().toLowerCase()).indexOf(searchParam) > -1) {

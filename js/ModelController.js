@@ -23,8 +23,8 @@ $(document).ready(function () {
     }
 
     conn = new Lisa.Connection();
-    conn.use_ssl = true;
-    conn.bosh_port = 7500;
+    //conn.use_ssl = true;
+    //conn.bosh_port = 7500;
     conn.log_xmpp = true;
     //console.log(conn);
     

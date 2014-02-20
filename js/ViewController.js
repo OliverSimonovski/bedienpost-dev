@@ -13,7 +13,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
 
     this.connectedName = ko.observable("");
     this.connectedNr = ko.observable("");
-    this.favorite = ko.observable(true);
+    this.favorite = ko.observable(false);
     this.callStartTime = ko.observable(0);
 
     this.numberAndDuration = ko.computed(function() 
@@ -350,6 +350,10 @@ var ListingsViewModel = function(){
         self.search(searchParam);
     }
 
+    self.setFavorite = function(item) {
+        item.favorite(true);
+    }
+
     self.favoriteList( self.favFilteredItems()) ;
    
     self.setSearch("");
@@ -434,6 +438,47 @@ var ListingsViewModel = function(){
         self.hasFocus = false;
     });
     */
+
+    /* Drag and Drop handling */
+    
+    ko.bindingHandlers.drag = {
+        init: function(element, valueAccessor, allBindingsAccessor) {
+            //set meta-data
+            ko.utils.domData.set(element, "ko_drag_data", valueAccessor());
+            
+            //combine options passed into binding (in dragOptions binding) with global options (in ko.bindingHandlers.drag.options)
+            var options = ko.utils.extend(ko.bindingHandlers.drag.options, allBindingsAccessor().dragOptions);
+            
+            //initialize draggable
+            $(element).draggable(options);
+        },
+        options: {}   
+    };
+
+    ko.bindingHandlers.drop = {
+        init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+            //grab method
+            var action = ko.utils.unwrapObservable(valueAccessor());
+            
+            //combine options passed into binding (in dropOptions binding) with global options (in ko.bindingHandlers.drop.options)
+            var options = ko.utils.extend(ko.bindingHandlers.drop.options, allBindingsAccessor().dropOptions);
+            
+            options.drop = function(event, ui) {
+                //read meta-data off of dropped item 
+                var data = ko.utils.domData.get(ui.draggable[0], "ko_drag_data");
+                //execute our action
+                action.call(viewModel, data);
+            };
+            
+            //initialize droppable
+            $(element).droppable(options);            
+        },
+        options: {}    
+    };
+
+    ko.bindingHandlers.drag.options = { helper: 'clone' };
+    /* ----------------------- */
+
     
     //Modal positioning for screen and resizing
     function adjustModalMaxHeightAndPosition(){

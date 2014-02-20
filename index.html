@@ -133,7 +133,7 @@
                                         css: { 'curl':true }">
 
                                  <li class="list-group-item"
-                                     data-bind="click: $root.clickItem">
+                                     data-bind="click: $root.clickItem, drag: entry">
                                      <div class="row nopadding">
                                          <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
                                                 <i data-bind=   "attr: { class: $root.logCssClass(entry.log())  },
@@ -175,7 +175,7 @@
                         </div>
                      <div class ='col-md-12 nopadding'>
                         <div class="list-group list">
-                             <ul data-bind="foreach: { data:  favFilteredItems, as: 'entry' },
+                             <ul data-bind="drop: setFavorite, foreach: { data:  favFilteredItems, as: 'entry' },
                                             css: { 'curl':true }">
 
                                     <li class="list-group-item"

@@ -154,7 +154,7 @@
                                             <p class="list-group-item-text" data-bind="text: entry.numberAndDuration()"></p>
                                         </div>
                                         <div class="col-sm-1 text-right fixed-height">
-                                            <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></span></h5>
+                                            <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: ($root.search() != '') ? $root.filteredItems().indexOf(entry) : '' "></span></h5>
                                         </div>
                                     </div>
                                 </li>
@@ -201,7 +201,7 @@
                                                 <p class="list-group-item-text" data-bind="text: entry.numberAndDuration()"></p>
                                             </div>
                                             <div class="col-sm-1 text-right fixed-height">
-                                                <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></span></h5>
+                                                <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: ($root.search() == '') ? $root.favFilteredItems().indexOf(entry) : '' "></span></h5>
                                             </div>
                                          </div>
                                     </li>

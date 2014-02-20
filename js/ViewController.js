@@ -212,7 +212,6 @@ var ListingsViewModel = function(){
     }, self);
  
     self.sortItemsAscending = function() {
-        //self.waitingQueueList().entries(self.waitingQueueList().entries().sort(nameComparator));
         self.waitingQueueList().entries(self.waitingQueueList().entries().sort(favComparator));                                   
     };
     

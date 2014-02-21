@@ -350,8 +350,12 @@ var ListingsViewModel = function(){
         self.search(searchParam);
     }
 
-    self.setFavorite = function(item) {
+    self.markFavorite = function(item) {
         item.favorite(true);
+    }
+
+    self.unmarkFavorite = function(item) {
+        item.favorite(false);
     }
 
     self.favoriteList( self.favFilteredItems()) ;

@@ -100,7 +100,7 @@
                                              
                                              <div class="col-sm-1 text-left nopadding" >
                                                 <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite()) },
-                                                              click: $root.markFavorite"></i>
+                                                              click: $root.markQueueFavorite"></i>
                                              </div>
                                             
                                              <div  class="col-sm-1 text-right ">
@@ -129,7 +129,7 @@
                      <div class ='col-sm-12 nopadding'>
 
                     <div class="list-group list">
-                         <ul data-bind="drop: unmarkFavorite, foreach: { data:  filteredItems, as: 'entry' },
+                         <ul data-bind="drop: unmarkUserFavorite, foreach: { data:  filteredItems, as: 'entry' },
                                         css: { 'curl':true }">
 
                                  <li class="list-group-item"
@@ -175,7 +175,7 @@
                         </div>
                      <div class ='col-md-12 nopadding'>
                         <div class="list-group list">
-                             <ul data-bind="drop: markFavorite, foreach: { data:  favFilteredItems, as: 'entry' },
+                             <ul data-bind="drop: markUserFavorite, foreach: { data:  favFilteredItems, as: 'entry' },
                                             css: { 'curl':true }">
 
                                     <li class="list-group-item"

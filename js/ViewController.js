@@ -79,7 +79,7 @@ function saveFavs(list, storageKey) {
         }
     }
     var json = JSON.stringify(favIndices);
-    //console.log("Saving favorite ids: " + JSON.stringify(favIndices) + " for key " + storageKey);
+    console.log("Saving favorite ids: " + JSON.stringify(favIndices) + " for key " + storageKey);
     global[storageKey] = favIndices;
     localStorage.setItem(storageKey, json);
 }
@@ -91,10 +91,11 @@ function QueueListItem(id, name) {
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
 
-    this.favorite = ko.observable(false);
     this.signInOut = ko.observable(false);
     this.waitingAmount = ko.observable(0);
     this.orderNr = 0;
+
+    this.favorite = ko.observable(isFav(id, QueueListItem.storageKey()));
 }
 
 QueueListItem.prototype.queueLogin = function (amLoggingIn) {
@@ -106,6 +107,14 @@ QueueListItem.prototype.queueLogin = function (amLoggingIn) {
     } else {
         conn.queueLogout(queue);   
     }
+}
+
+QueueListItem.saveFavs = function(queueList) {
+    saveFavs(queueList, QueueListItem.storageKey());  
+}
+
+QueueListItem.storageKey = function() {
+    return USERNAME + "@" + SERVER + "_QueueListFavs";
 }
 
 function CallListItem(id, name, startTime) {
@@ -154,7 +163,7 @@ function nameComparator(left, right) {
  * - Keep favorites last-favorited-first
  */
 function favComparator(left, right) {
-    return left.favorite() == right.favorite() ? (left.favorite() ? 0 : nameComparator(left,right)) : (left.favorite() && !right.favorite() ? -1 : 1);
+    return left.favorite() == right.favorite() ? nameComparator(left,right) : (left.favorite() && !right.favorite() ? -1 : 1);
 }
 
 var ListingsViewModel = function(){
@@ -281,21 +290,10 @@ var ListingsViewModel = function(){
 
     // no updating appearing in the UI .. omehow the values do seem to update in the array.. is the accoring value missing bindings?
     // another question: should you be able to mark the ones you aren't logged into as favorite?
-    self.markFavorite = function(favorite)
+    self.markQueueFavorite = function(favorite)
     {
-        self.waitingQueueItemToMarkFavorite(favorite);
-        
-        var indexVal = self.waitingQueueList().entries().indexOf(favorite);
-        var markFavoriteFlag = self.waitingQueueList().entries()[indexVal].favorite();
-        var tobeShifted = self.waitingQueueList().entries().splice(indexVal,1);
-        if (markFavoriteFlag){
-            tobeShifted[0].favorite(false);
-            self.waitingQueueList().entries().push(tobeShifted[0]);
-        } else if (!markFavoriteFlag) {
-            tobeShifted[0].favorite(true);
-            self.waitingQueueList().entries().unshift(tobeShifted[0]);
-        }        
-        self.sortItemsAscending();
+        favorite.favorite(!favorite.favorite()); // Toggle
+        QueueListItem.saveFavs(self.waitingQueueList().entries());
     }
     
     // no updating appearing in the UI.. somehow the values do seem to update in the array.. is the accoring value missing bindings?
@@ -384,12 +382,12 @@ var ListingsViewModel = function(){
         self.search(searchParam);
     }
 
-    self.markFavorite = function(item) {
+    self.markUserFavorite = function(item) {
         item.favorite(true);
         UserListItem.saveFavs(self.currentList().entries());
     }
 
-    self.unmarkFavorite = function(item) {
+    self.unmarkUserFavorite = function(item) {
         item.favorite(false);
         UserListItem.saveFavs(self.currentList().entries());
     }

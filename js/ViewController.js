@@ -1,10 +1,10 @@
 // Overall viewmodel for this screen, along with initial state
-
+var global = {};
 
 function UserListItem(id, name, ext, log, avail, ringing) {
     _.bindAll(this, 'startCall', 'noCalls', 'setFavorite');
 
-    this.id = ko.observable(id                            || "");
+    this.id = ko.observable(id                            || 0);
     this.name = ko.observable(name                        || "");
     this.ext = ko.observable(ext                          || "");
     this.log = ko.observable(log                          || false);
@@ -13,8 +13,10 @@ function UserListItem(id, name, ext, log, avail, ringing) {
 
     this.connectedName = ko.observable("");
     this.connectedNr = ko.observable("");
-    this.favorite = ko.observable(false);
     this.callStartTime = ko.observable(0);
+
+    var storedAsFav = isFav(id, UserListItem.storageKey());
+    this.favorite = ko.observable(storedAsFav);
 
     this.numberAndDuration = ko.computed(function() 
     {
@@ -48,6 +50,38 @@ UserListItem.prototype.noCalls = function() {
 
 UserListItem.prototype.setFavorite = function (fav) {
     this.favorite(fav);
+}
+
+UserListItem.storageKey = function() {
+    return USERNAME + "@" + SERVER + "_UserListFavs";
+}
+
+UserListItem.saveFavs = function(userList) {
+    saveFavs(userList, UserListItem.storageKey());  
+}
+
+function isFav(id, storageKey) {
+    if (global[storageKey] == null) {
+        var result = localStorage.getItem(storageKey);
+        global[storageKey] = (result) ? JSON.parse(result) : {} ;
+
+    }
+    return _.contains(global[storageKey], id); 
+}
+
+function saveFavs(list, storageKey) {
+    var favIndices = [];
+
+    for (index in list) {
+        var item = list[index];
+        if (item.favorite()) {
+            favIndices.push(item.id());
+        }
+    }
+    var json = JSON.stringify(favIndices);
+    //console.log("Saving favorite ids: " + JSON.stringify(favIndices) + " for key " + storageKey);
+    global[storageKey] = favIndices;
+    localStorage.setItem(storageKey, json);
 }
 
 
@@ -352,10 +386,12 @@ var ListingsViewModel = function(){
 
     self.markFavorite = function(item) {
         item.favorite(true);
+        UserListItem.saveFavs(self.currentList().entries());
     }
 
     self.unmarkFavorite = function(item) {
         item.favorite(false);
+        UserListItem.saveFavs(self.currentList().entries());
     }
 
     self.favoriteList( self.favFilteredItems()) ;

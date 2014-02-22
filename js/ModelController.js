@@ -123,7 +123,7 @@ function getCallInfo(call, user) {
 
 function userToClientModel(user, userObj) {
     var numcalls = _.size(user.calls);
-    var userObj = userObj || new UserListItem(user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
+    var userObj = userObj || new UserListItem(+user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
     userObj.log(user.loggedIn);
     userObj.avail(numcalls == 0);
 

@@ -120,7 +120,9 @@ function getPhoneAuth(user, server, pass) {
             phoneUser = responseObj.phoneUser;
             phonePass = responseObj.phonePass;
             console.log("Configured authentication information for phone on " + phoneIp);
-            chromeLoginPhone();
+            if (navigator.userAgent.indexOf("Chrome") != -1) {
+                chromeLoginPhone();
+            }
         }, 
         error: function (response) {
             console.log("User not authorized for SNOM control.")
@@ -186,7 +188,6 @@ function getCallInfo(call, user) {
             }
         }
 
-    console.log(callInfo.name);
     callInfo.description = (callInfo.name != "...") ? callInfo.name : callInfo.number;
     callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
 

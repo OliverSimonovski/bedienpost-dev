@@ -25,9 +25,13 @@ function UserListItem(id, name, ext, log, avail, ringing) {
         }
 
         var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
-        if (duration < 0) duration = 0;
-        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
+        var myDate = new Date();
 
+        var timezoneOffset = (myDate.getTimezoneOffset() * 60 * 1000);
+        duration += timezoneOffset;
+        if (duration < timezoneOffset) duration = timezoneOffset;
+
+        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
 
@@ -145,12 +149,10 @@ function CallListItem(id, name, startTime) {
  *  Knockout.js wizardry should only trigger computables that really are dependent on this observable *right now*.
  */
 currentTime = ko.observable(0);
-var myDate = new Date();
-setInterval(function() {
-    //var currentTime = myDate.getTime(); 
-    //var timezoneOffset = myDate.getTimezoneOffset(); 
 
-    currentTime(_.now());
+setInterval(function() {
+    var myDate = new Date();
+    currentTime(myDate.getTime());
 }, 1000); // Update UserListItem.currentTime every second.
 
 function nameComparator(left, right) {

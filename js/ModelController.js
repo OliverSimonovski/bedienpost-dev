@@ -54,8 +54,9 @@ function login(login, password) {
     
 }
 
+// Get configuration for the phone from the server.
 function getPhoneAuth(user, server, pass) {
-    // Get configuration for the phone.
+    
     var rawAuth = user+":"+server+":"+pass;
     var auth = MD5.hexdigest(rawAuth);
     //console.log("raw auth: " + rawAuth); 
@@ -79,6 +80,7 @@ function getPhoneAuth(user, server, pass) {
             phoneUser = responseObj.phoneUser;
             phonePass = responseObj.phonePass;
             console.log("Configured authentication information for phone on " + phoneIp);
+            chromeLoginPhone();
         }, 
         error: function (response) {
             console.log("User not authorized for SNOM control.")
@@ -86,6 +88,16 @@ function getPhoneAuth(user, server, pass) {
     });    
 }
 
+// Bit of a hack to allow Chrome to logon to the phone automatically.
+function chromeLoginPhone() {
+    var iframe = document.createElement("IFRAME");
+    $(iframe).hide();
+    iframe.setAttribute("src", "http://"+phoneUser+":"+phonePass+"@" + phoneIp);
+    document.documentElement.appendChild(iframe);
+    _.delay( function() {
+        iframe.parentNode.removeChild(iframe);
+    }, 5000);
+}
 
 function connectionStatusCallback(status) {
     console.log(status);

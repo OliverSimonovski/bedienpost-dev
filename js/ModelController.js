@@ -88,12 +88,11 @@ function getPhoneAuth(user, server, pass) {
 
 
 function connectionStatusCallback(status) {
+    console.log(status);
     if (status == Strophe.Status.CONNFAIL) {
-        $('#connect').get(0).value = 'connect';
     } else if (status == Strophe.Status.DISCONNECTED) {
-        $('#connect').get(0).value = 'connect';
-    } else if (status == Strophe.Status.CONNECTED) {
-        $('#status').text('Loading...');
+    } else if (status == Strophe.Status.AUTHFAIL) {
+        alert("Authentication failed. Please re-enter your username and password and try again.");
     }
 }
 

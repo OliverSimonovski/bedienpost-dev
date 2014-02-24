@@ -14,57 +14,40 @@ var queueIdToQueueObservable = [];
 
 $(document).ready(function () {
 
-    // Retrieve the settings
+    // Auto-login if auto-login information provided.
     var urlvars = getUrlVars();
-
     if (urlvars["login"])   {
-        var loginSplit = urlvars.login.split("@");
-        USERNAME = loginSplit[0];
-        SERVER = loginSplit[1];
-        PASS = urlvars.pass;
+        login(urlvars.login, urlvars.pass);
     }
+  
+});
+
+function login(login, password) {
+
+    var loginSplit = login.split("@");
+    USERNAME = loginSplit[0];
+    SERVER = loginSplit[1];
+    SERVER = SERVER || "uc.pbx.speakup-telecom.com";
+    PASS = password;
 
     conn = new Lisa.Connection();
-    //conn.use_ssl = true;
-    //conn.bosh_port = 7500;
-    conn.log_xmpp = true;
-    //console.log(conn);
+    conn.log_xmpp = false;
     
     // Setup logging and status messages.
     conn.logging.setCallback(function(msg) {
         console.log(msg);
     });
-    conn.logging.setStatusCallback(function(msg) {
-        $('#status').text(msg);
-    });
-    
+
     // Setup connection-status callback.
     conn.connectionStatusObservable.addObserver(connectionStatusCallback);
-    $('#status').text('Connecting...');
-    
+
     // Debugging
     conn._hitError = function (reqStatus) {
         console.log("Error occured: " + reqStatus);
     }
-    
-    if (USERNAME && SERVER && PASS) {
-        conn.connect(SERVER, USERNAME, PASS);
-        getPhoneAuth(USERNAME, SERVER, PASS);      
-    }
-    
-    // Get the company-model
+
+    // Setup callback when receiving the company model
     conn.getModel().done(gotModel);
-
-  
-});
-
-function login(login, password) {
-    var loginSplit = login.split("@");
-    USERNAME = loginSplit[0];
-    SERVER = loginSplit[1];
-    SERVER = SERVER || "uc.pbx.speakup-telecom.com";
-
-    PASS = password;
 
     conn.connect(SERVER, USERNAME, PASS);
     getPhoneAuth(USERNAME,SERVER,PASS);

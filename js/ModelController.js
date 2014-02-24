@@ -1,10 +1,13 @@
 
 var conn;
 var model;
-var phoneip;
 var inAttTransfer = false;
 var me = null;
 var USERNAME = SERVER = PASS = null;
+
+var phoneIp = "";
+var phoneUser = "";
+var phonePass = "";
 
 var userIdToUserObservable = [];
 var queueIdToQueueObservable = [];
@@ -19,7 +22,6 @@ $(document).ready(function () {
         USERNAME = loginSplit[0];
         SERVER = loginSplit[1];
         PASS = urlvars.pass;
-        phoneip = urlvars.phoneip;
     }
 
     conn = new Lisa.Connection();
@@ -46,11 +48,13 @@ $(document).ready(function () {
     }
     
     if (USERNAME && SERVER && PASS) {
-        conn.connect(SERVER, USERNAME, PASS);        
+        conn.connect(SERVER, USERNAME, PASS);
+        getPhoneAuth(USERNAME, SERVER, PASS);      
     }
     
     // Get the company-model
     conn.getModel().done(gotModel);
+
   
 });
 
@@ -62,7 +66,41 @@ function login(login, password) {
 
     PASS = password;
 
-    conn.connect(SERVER, USERNAME, PASS);    
+    conn.connect(SERVER, USERNAME, PASS);
+    getPhoneAuth(USERNAME,SERVER,PASS);
+    
+}
+
+function getPhoneAuth(user, server, pass) {
+    // Get configuration for the phone.
+    var rawAuth = user+":"+server+":"+pass;
+    var auth = MD5.hexdigest(rawAuth);
+    //console.log("raw auth: " + rawAuth); 
+    //console.log("auth:" + auth );
+
+    var postObj = {};
+    postObj.username = user;
+    postObj.server = server;
+    postObj.auth = auth;
+
+    $.ajax
+      ({
+        type: "POST",
+        url: "http://www.bedienpost.nl/getPhoneAuth.php",
+        dataType: 'json',
+        data: postObj,
+        success: function (response){
+            //console.log(response);
+            var responseObj = response;
+            phoneIp = responseObj.phoneIp;
+            phoneUser = responseObj.phoneUser;
+            phonePass = responseObj.phonePass;
+            console.log("Configured authentication information for phone on " + phoneIp);
+        }, 
+        error: function (response) {
+            console.log("User not authorized for SNOM control.")
+        }
+    });    
 }
 
 
@@ -275,6 +313,6 @@ function openUrl(url) {
 }
 
 function phoneCommand(cmdString) {
-    var url = "http://jasperdev:776@" + phoneip + "/command.htm?key=" + cmdString;
+    var url = "http://"+phoneUser+":"+phonePass+"@" + phoneIp + "/command.htm?key=" + cmdString;
     openUrl(url);    
 }

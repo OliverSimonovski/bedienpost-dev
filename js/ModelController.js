@@ -260,12 +260,30 @@ function updateQueue(queue) {
     return queueObj;
 }
 
+/*** Phone commands ***/
 
-function transferToUser(user) {
+function callUser(number) {
+    if (phoneIp == "") {
+        return;
+    }
+
+    var url = "CANCEL;";
+    var extension = number;
+    for ( var i = 0; i < extension.length; i++ ) {
+        url += extension.charAt(i) + ";";
+    }
+    url += "ENTER";
+    phoneCommand(url);   
+}
+
+function transferToUser(number) {
+     if (phoneIp == "") {
+        return;
+    }
 
     var url = "TRANSFER;";
 
-    var extension = user.extension;
+    var extension = number;
     for ( var i = 0; i < extension.length; i++ ) {
         url += extension.charAt(i) + ";";
     }
@@ -274,7 +292,10 @@ function transferToUser(user) {
     phoneCommand(url);
 }
 
-function attendedtransferToUser(user) {
+function attendedtransferToUser(number) {
+     if (phoneIp == "") {
+        return;
+    }
 
     inAttTransfer = true;
     //updateUser(me); // Update the user gui
@@ -284,7 +305,7 @@ function attendedtransferToUser(user) {
     _.delay(function() {
        
         var url = "";
-        var extension = user.extension;
+        var extension = number;
         for ( var i = 0; i < extension.length; i++ ) {
             url += extension.charAt(i) + ";";
         }

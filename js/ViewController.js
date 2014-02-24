@@ -273,6 +273,10 @@ var ListingsViewModel = function(){
     
     self.clickItem = function(clickedItem) 
     {
+        if (phoneIp == "") {
+            return;
+        }
+
         self.clickedListItem(clickedItem);
         var name = clickedItem.name();
         self.clickedListItemName(name);
@@ -302,14 +306,17 @@ var ListingsViewModel = function(){
         queueListItem.queueLogin(!queueListItem.signInOut());
     }
     
-    self.actionCalling = function()
+    self.actionCalling = function(item)
     {
+        //console.log(self.clickedListItem());
+        callUser(self.clickedListItem().ext());
         //alert("Calling");
         // use self.clickItem ... as the reference to really call.
     }
     
     self.actionConnectThrough = function()
     {
+        transferToUser(self.clickedListItem().ext());
         //alert("actionCallingThrough");
         // use self.clickItem ... as the reference to really callthrough
     }

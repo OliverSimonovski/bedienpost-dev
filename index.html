@@ -25,165 +25,133 @@
         <div class="container">
            <div class='row nopadding'>
             
-            <div class='col-md-6 offset-6 nopadding'>
+            <div class='col-md-6 offset-6'>
                   <div class="header">
-                        <h4>Incoming Calls</h4>
+                        <h4>Active Calls</h4>
                     </div>
-                    <div class="col-sm-12 nopadding-left">
-                            <div class="list-group queuelist">
-                                 <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
-                                                css: { 'queue':true }">
-        
-                                         <li class="list-group-item">
-                                            <div  class="col-sm-10 text-left nopadding-left">
-                                                <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
-                                             </div>
-                                             <div class="col-sm-1 text-left nopadding" >
-                                                <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
-                                             </div>
-                                            <div class="col-sm-1 text-right">
-                                                <h5 class="list-group-item-heading"><span class="badge pull-right" data-bind="text: entry.timeConnected"></span></h5>
-                                             </div>
-                                        </li>
-        
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="list-group queuelist">
+                         <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
+                                        css: { 'queue':true }">
+                             <li class="list-group-item">
+                                <span class="badge pull-right"  data-bind="text: entry.timeConnected"></span>
+                                <div class="options todooptions">
+                                        <i class="fa fa-arrow-circle-right"></i>
+                                        <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
+                                 </div>
+                                <label> 
+                                    <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
+                                </label>
+                                
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div class='col-md-6 offset-1 nopadding'>
+                <div class='col-md-6'>
                         <div class="header">
                             <h4>Waiting Queue</h4>
                         </div>
-                        <div class="col-sm-12 nopadding">
-                            <div class="list-group queuelist">
-                                 <ul data-bind="foreach: { data: filterWaitingQueue, as: 'entry' },
-                                                css: { 'queue':true }">
-        
-                                         <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut()) }"> 
-                                            <div class="col-sm-9 text-left nopadding">
-                                                <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
-                                             </div>
-                                              
-                                             <div class="col-sm-1 text-left nopadding" >
-                                                <i data-bind="attr: { class: $root.signInOutCssClass(entry.signInOut()) }, 
-                                                              click: $root.signInOut"></i>
-                                             </div>
+                        <div class="list-group queuelist">
+                             <ul data-bind="foreach: { data: filterWaitingQueue, as: 'entry' },
+                                            css: { 'queue':true }">
+                                <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut()) }">
+                                     <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
+                                     <div class="options todooptions" >
+                                            <i data-bind="attr: { class: $root.signInOutCssClass(entry.signInOut()) },
+                                                                            click: $root.signInOut"></i> 
+                                            <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite()) },
+                                                               click: $root.markFavorite"></i>
+                                    </div>
+                                    <label> 
+                                        <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
+                                    </label>
                                     
-                                             
-                                             <div class="col-sm-1 text-left nopadding" >
-                                                <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite()) },
-                                                              click: $root.markFavorite"></i>
-                                             </div>
-                                            
-                                             <div  class="col-sm-1 text-right ">
-                                                <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
-                                             </div>
-                                        </li>
-        
-                                </ul>
-                            </div>
+                                </li>
+                            </ul>
                         </div>
                     </div> 
                </div>
-            <div class='col-sm-12 nopadding'>
-                <input id="inputField" type="text" data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" placeholder="Search here!">
-            </div>
-                <div class='col-sm-6 nopadding'>
-                    <div class="row nopadding">
-                        <div class="header">
-                            <h4>Contact / User List</h4>
-                        </div>
-                            <div class="col-sm-1 text-left"></div>
-                            <div class="col-sm-5 text-left">Name</div>
-                            <div class="col-sm-4 text-left">Calling with</div>
-                            <div class="col-sm-2 text-right">Shortcut</div>
-                     </div>
-                     <div class ='col-sm-12 nopadding'>
-
-                    <div class="list-group list">
-                         <ul id="sortable" data-bind="foreach: { data:  filteredItems, as: 'entry' },
-                                        css: { 'curl':true }">
-
-                                 <li class="list-group-item"
-                                     data-bind="click: $root.clickItem">
-                                     <div class="row nopadding">
-                                         <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
-                                                <i data-bind=   "attr: { class: $root.logCssClass(entry.log())  },
-                                                                style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
-                                             </span>
-                                         </div>
-                                        <div  class="col-sm-5 text-left fixed-height">
-                                            <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
-                                            <p class="list-group-item-text" data-bind="text: entry.ext"></p>
-                                        </div>
-                                         <!--
-                                            <div class="col-sm-1 text-center fixed-height">
-                                                <i class="fa fa-phone-square"></i>
-                                            </div>
-                                            -->
-                                        <div class="col-sm-5 text-left fixed-height">
-                                            <h4 class="list-group-item-heading" data-bind="text: entry.connectedName()"></h4>
-                                            <p class="list-group-item-text" data-bind="text: entry.numberAndDuration()"></p>
-                                        </div>
-                                        <div class="col-sm-1 text-right fixed-height">
-                                            <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></span></h5>
-                                        </div>
-                                    </div>
-                                </li>
-
-                        </ul>
-                    </div>
-                    </div>
+             <div class='row nopadding'>
+                <div class='col-md-12'>
+                    <input id="inputField" type="text" data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" placeholder="Search here!">
                 </div>
-                 <div class='col-sm-6 nopadding'>
-                    <div class ='row nopadding'>
+                 <div class='col-md-6 offset-6'>
                         <div class="header">
                             <h4>Favorite List</h4>
                         </div>
+                        <!--
                             <div class="col-sm-1 text-left"></div>
                             <div class="col-sm-5 text-left">Name</div>
                             <div class="col-sm-4 text-left">Calling with</div>
                             <div class="col-sm-2 text-right">Shortcut</div>
-                        </div>
-                     <div class ='col-md-12 nopadding'>
+                        !-->
                         <div class="list-group list">
-                             <ul id="sortable" data-bind="foreach: { data:  favFilteredItems, as: 'entry' },
-                                            css: { 'curl':true }">
-
-                                    <li class="list-group-item"
-                                         data-bind="click: $root.clickItem">
-                                        <div class="row nopadding">
-                                            <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log() == true ? '#042739' : '#042739' } ">                                                  
-                                                 <span class="image_container">
-                                                     <i data-bind="attr: { class: $root.logCssClass(entry.log())  },
-                                                                   style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
-                                                 </span>
-                                             </div>
-                                            <div  class="col-sm-5 text-left fixed-height">
-                                                <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
-                                                <p class="list-group-item-text" data-bind="text: entry.ext"></p>
-                                            </div>
-                                            <!--
-                                            <div class="col-sm-1 text-center fixed-height">
-                                                <i class="fa fa-phone-square"></i>
-                                            </div>
-                                            -->
-                                            <div class="col-sm-5 text-left fixed-height">
-                                                <h4 class="list-group-item-heading" data-bind="text: entry.connectedName()"></h4>
-                                                <p class="list-group-item-text" data-bind="text: entry.numberAndDuration()"></p>
-                                            </div>
-                                            <div class="col-sm-1 text-right fixed-height">
-                                                <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: entry.shortcut"></span></h5>
-                                            </div>
-                                         </div>
-                                    </li>
-
+                             <ul data-bind="foreach: { data:  favFilteredItems, as: 'entry' },
+                                                        css: { 'curl':true }">
+                                <li class="list-group-item" data-bind="click: $root.clickItem" > 
+                                     <div class="options todooptions">
+                                         <span class="badge pull-right" ></span>
+                                    </div>
+                                    <div class="first-info">
+                                        <div class="status">
+                                         <i data-bind=      "attr: { class: $root.logCssClass(entry.log())  },
+                                                            style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
+                                        </div>
+                                        <label class="first-label"> 
+                                            <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
+                                            <p class="list-group-item-text" data-bind="text: entry.ext"></p>
+                                        </label>
+                                    </div>
+                                    <div class="second-info">
+                                        <div class="connection">
+                                         <i data-bind=      "attr: { class: $root.connectionCssClass("")  }"></i>
+                                        </div>
+                                          <label class="second-label"> 
+                                            <h4 class="list-group-item-heading" data-bind="text: entry.connectedName()"></h4>
+                                            <p class="list-group-item-text" data-bind="text: entry.numberAndDuration()"></p>
+                                        </label>
+                                    </div>
+                                </li>
                             </ul>
                         </div>
+                    </div>
+                 </div>
+            <div class='row nopadding'>
+                <div class='col-md-6'>
+                        <div class="header">
+                            <h4>Contact / User List</h4>
                         </div>
+                       
+                    <div class="list-group list">
+                         <ul data-bind="foreach: { data:  filteredItems, as: 'entry' }">
+                             <li class="list-group-item" data-bind="click: $root.clickItem">
+                                 <div class="options todooptions"></span>
+                                </div>
+                                <div class="first-info">
+                                     <div class="status">
+                                     <i data-bind=      "attr: { class: $root.logCssClass(entry.log())  },
+                                                        style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
+                                    </div>
+                                    <label class="first-label"> 
+                                        <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
+                                        <p class="list-group-item-text" data-bind="text: entry.ext"></p>
+                                    </label>
+                                </div>
+                                <div class="second-info">
+                                     <div class="connection">
+                                    <i data-bind=      "attr: { class: $root.connectionCssClass("")  }"></i>
+                                    </div>
+                                    <label class="second-label"> 
+                                       <h4 class="list-group-item-heading" data-bind="text: entry.connectedName()"></h4>
+                                            <p class="list-group-item-text" data-bind="text: entry.numberAndDuration()"></p>                                                                            </label>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            
+                    </div>
+                </div>
+            </div>
+        
     <!-- Modal -->
     <div class="modal fade" id="connectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -220,6 +188,10 @@
               <label class="control-label" for="inputError1">Password:</label>
               <input type="text"  data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control" id="inputError">
             </div>
+             <div class="form-group"><!--has-error -->
+              <label class="control-label" for="inputError1">Password:</label>
+              <input type="text"  data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control" id="inputError">
+            </div>
    
         </div>
         <div class="modal-footer">
@@ -231,9 +203,7 @@
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
            
-      
-        </div>    
-        </div>
+
     </body>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
@@ -254,7 +224,6 @@
     <script type='text/javascript' src='js/lib/core.js'></script>
     <script type='text/javascript' src='js/lib/strophe.pubsub.js'></script>
     <script type='text/javascript' src="js/LisaApi/LisaApi.js"></script>
-
     <script type='text/javascript' src='js/exampleData.js'></script>
     <script type='text/javascript' src='js/ViewController.js'></script>
     <script type='text/javascript' src="js/ModelController.js"></script>

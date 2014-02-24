@@ -23,7 +23,6 @@ body {
     content:"";
 }
 
-
 #loginModal .modal-dialog
 {
     margin: 0;
@@ -55,22 +54,6 @@ body {
     border: 1px solid #801c78;
 }
 
-.nopadding {
-   padding: 0 !important;
-   margin: 0 !important;
-}
-
-.nopadding-left {
-   padding-left:0px !important;
-   margin-left:0 !important;
-}
-
-.nopadding-right {
-   padding-right:0px !important;
-   margin-right:0 !important;
-}
-
-
 .fixed-height
 {
     height:40px;
@@ -83,7 +66,7 @@ body {
 
 .h4
 {
-    overflow: hidden; 
+    overflow:hidden; 
     display:inline;
     min-width:100px;
 }
@@ -102,14 +85,9 @@ body {
     min-width:100px;
 }
 
-.list
-{
-    margin:0px;
-}
-
 .list ul
 {
-	height: 450px;
+	height: 400px;
 	margin:10px 0 10px 0;
 	padding: 0;
 	overflow-y: scroll;
@@ -121,6 +99,66 @@ body {
 	    -ms-perspective: 400px;
 	     -o-perspective: 400px;
 	        perspective: 400px;
+}
+
+.list li
+{
+    border: 1px solid #ffffff; 
+    padding: 0px;
+}
+
+.list li .options
+{
+    float:right;
+}
+
+.list li .options .badge
+{
+    width: 40px;
+    margin-left:7px;
+    margin-right:10px;
+}
+
+.list li .status
+{
+    margin-right: 5px;
+    display:inline;
+    float:left;
+    padding:10px;
+    background-color:#032739;
+}
+
+.list li .connection
+{
+    margin-top: 0px;
+    margin-right: 7px;
+    display:inline;
+    float:left;
+    padding:10px;
+    padding-bottom: 12px;
+}
+
+
+.list li .first-info
+{
+    display:inline-block;
+    width:43%;
+}
+
+.list li .second-info
+{
+    display:inline-block;
+    width:43%;
+}
+
+.list li .first-label
+{ 
+    display:block;
+}
+
+.list li .second-label
+{
+   display:block;
 }
 
 .queuelist ul
@@ -139,47 +177,35 @@ body {
 	        perspective: 400px;
 }
 
-.curl 
-{
-  margin:0;
-  background-color: #ffffff;
-}
-
-.curl li 
-{
-  display:block-inline;
-  height:42px;
-  border:1px solid #ffffff;
-}
-
-.curl li:hover
-{
-    -moz-box-shadow: inset 0 0 1px #2d2f31;
-    -webkit-box-shadow: inset 0 0 1px #2d2f31;
-    box-shadow: inner 0 0 1px #2d2f31;
-    cursor:pointer;
-}
-
-.list-group-item 
-{
-    padding:0px;
-    margin-bottom: -1px;
-    border: 1px solid #dddddd;
-    table-layout: fixed;
-}
-
 .queue li 
 {
     height: 30px;
     border: 1px solid #ffffff;
 }
 
+.queue li .options
+{
+    float:right;
+}
+
+.queue li .badge
+{
+    width: 40px;
+    margin-left:7px;
+    margin-right:10px;
+}
+
 .fa 
 { 
-    font-size: 24px; 
-    position: absolute;
-    outline: none; 
-    margin-top:8px; 
+    font-size: 20px; 
+    margin-top:2px;
+    display: inline-block;
+	font-family: FontAwesome;
+	font-style: normal;
+	font-weight: normal;
+	line-height: 1;
+	webkit-font-smoothing:antialiased;
+	-moz-osx-font-smoothing:grayscale;
 }
 
 .fa-pencil-square-o
@@ -191,14 +217,18 @@ body {
 
 .fa-star 
 {
+    margin-left: 6px;
+    margin-right: 6px;
     cursor:pointer;
-   font-size: 18px;
+    font-size: 18px;
     margin-top:0px; 
 
 }
 
 .fa-star-o
 {
+    margin-left: 6px;
+    margin-right: 6px;
     cursor:pointer;
     font-size: 18px;
     margin-top:0px; 
@@ -206,6 +236,8 @@ body {
 
 .fa-sign-in
 {
+    margin-left: 6px;
+    margin-right: 6px;
     cursor:pointer;
     font-size: 18px;
     margin-top:0px; 
@@ -213,10 +245,23 @@ body {
 
 .fa-sign-out
 {
+    margin-left: 6px;
+    margin-right: 6px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px; 
+    margin-top:0px;
+}
 
+.fa-arrow-circle-left
+{
+    font-size: 20px;
+    margin-top:0px;
+}
+
+.fa-arrow-circle-right
+{
+    font-size: 20px;
+    margin-top:0px;
 }
 
 .logged-in-color
@@ -229,29 +274,10 @@ body {
     color:#afafaf;
 }
 
-li  { 
-    transition: all .3s ease;
-    -webkit-transition: all .3s ease;
-    -moz-transition: all .3s ease;
-    -o-transition: all .3s ease; 
-}
-
-.image_container
-{  
-    display:block;
-    height:40px;
-    margin-left:-3px;
-}
-
 .list-group-item-heading 
 {
     margin-top: 2px;
     margin-bottom: 0px;
-}
-.text-middle
-{
-   float:left;
-   padding:0px; 
 }
 
 .header
@@ -275,26 +301,3 @@ li  {
   border-radius: 9px;
 }
 
-.badge logged-in-color
-{
-      background-color::#2d2f31;
-}
-
-.badge logged-out-color
-{
-      background-color::#afafaf;
-}
-
-.badge-avail {
-  background-color: #468847;
-}
-.badge-avail:hover {
-  background-color: #356635;
-}
-
-.badge-nonavail {
-  background-color: #b94a48;;
-}
-.badge-nonavail:hover {
-  background-color:#953b39;
-}

@@ -1,10 +1,10 @@
 // Overall viewmodel for this screen, along with initial state
-
+var global = {};
 
 function UserListItem(id, name, ext, log, avail, ringing) {
     _.bindAll(this, 'startCall', 'noCalls', 'setFavorite');
 
-    this.id = ko.observable(id                            || "");
+    this.id = ko.observable(id                            || 0);
     this.name = ko.observable(name                        || "");
     this.ext = ko.observable(ext                          || "");
     this.log = ko.observable(log                          || false);
@@ -13,8 +13,10 @@ function UserListItem(id, name, ext, log, avail, ringing) {
 
     this.connectedName = ko.observable("");
     this.connectedNr = ko.observable("");
-    this.favorite = ko.observable(true);
     this.callStartTime = ko.observable(0);
+
+    var storedAsFav = isFav(id, UserListItem.storageKey());
+    this.favorite = ko.observable(storedAsFav);
 
     this.numberAndDuration = ko.computed(function() 
     {
@@ -26,7 +28,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
         if (duration < 0) duration = 0;
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
 
-        var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " - ") : ("");
+        var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
 
         return numberPart + timePart;
@@ -50,6 +52,38 @@ UserListItem.prototype.setFavorite = function (fav) {
     this.favorite(fav);
 }
 
+UserListItem.storageKey = function() {
+    return USERNAME + "@" + SERVER + "_UserListFavs";
+}
+
+UserListItem.saveFavs = function(userList) {
+    saveFavs(userList, UserListItem.storageKey());  
+}
+
+function isFav(id, storageKey) {
+    if (global[storageKey] == null) {
+        var result = localStorage.getItem(storageKey);
+        global[storageKey] = (result) ? JSON.parse(result) : {} ;
+
+    }
+    return _.contains(global[storageKey], id); 
+}
+
+function saveFavs(list, storageKey) {
+    var favIndices = [];
+
+    for (index in list) {
+        var item = list[index];
+        if (item.favorite()) {
+            favIndices.push(item.id());
+        }
+    }
+    var json = JSON.stringify(favIndices);
+    console.log("Saving favorite ids: " + JSON.stringify(favIndices) + " for key " + storageKey);
+    global[storageKey] = favIndices;
+    localStorage.setItem(storageKey, json);
+}
+
 
 function QueueListItem(id, name) {
     _.bindAll(this, 'queueLogin');
@@ -57,10 +91,11 @@ function QueueListItem(id, name) {
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
 
-    this.favorite = ko.observable(false);
     this.signInOut = ko.observable(false);
     this.waitingAmount = ko.observable(0);
     this.orderNr = 0;
+
+    this.favorite = ko.observable(isFav(id, QueueListItem.storageKey()));
 }
 
 QueueListItem.prototype.queueLogin = function (amLoggingIn) {
@@ -72,6 +107,14 @@ QueueListItem.prototype.queueLogin = function (amLoggingIn) {
     } else {
         conn.queueLogout(queue);   
     }
+}
+
+QueueListItem.saveFavs = function(queueList) {
+    saveFavs(queueList, QueueListItem.storageKey());  
+}
+
+QueueListItem.storageKey = function() {
+    return USERNAME + "@" + SERVER + "_QueueListFavs";
 }
 
 function CallListItem(id, name, startTime) {
@@ -101,11 +144,27 @@ function CallListItem(id, name, startTime) {
  *  All time-dependent function can efficiently track this one observable. 
  *  Knockout.js wizardry should only trigger computables that really are dependent on this observable *right now*.
  */
-currentTime = ko.observable(0); 
+currentTime = ko.observable(0);
+var myDate = new Date();
 setInterval(function() {
+    //var currentTime = myDate.getTime(); 
+    //var timezoneOffset = myDate.getTimezoneOffset(); 
+
     currentTime(_.now());
 }, 1000); // Update UserListItem.currentTime every second.
 
+function nameComparator(left, right) {
+    return left.name() == right.name() ? 0 : (left.name() < right.name() ? -1 : 1);    
+}
+
+/* 
+ * Sorts as following: 
+ * - Keep non-favorites alphabetical
+ * - Keep favorites last-favorited-first
+ */
+function favComparator(left, right) {
+    return left.favorite() == right.favorite() ? nameComparator(left,right) : (left.favorite() && !right.favorite() ? -1 : 1);
+}
 
 var ListingsViewModel = function(){
     var self = this;
@@ -163,19 +222,26 @@ var ListingsViewModel = function(){
     self.filteredItems = ko.computed(function() 
     {
         if (self.currentList()){
+            // Sort the current list
+            self.currentList().entries.sort(nameComparator);
+
             var searchParam = self.search();
             var result = filterListByName(self.currentList().entries(), searchParam);
             return result;
         }
+        return [];
         
     }, self);
     
     self.favFilteredItems = ko.computed(function() 
     {
-        var result = _.filter(self.filteredItems(), function(item){
-            return item.favorite();
-        });
-        return result;
+        if (self.currentList()){
+            var result = _.filter(self.currentList().entries(), function(item){
+                return item.favorite();
+            });
+            return result;
+        }
+        return [];
     }, self);
     
     self.filterWaitingQueue = ko.computed(function()
@@ -189,7 +255,8 @@ var ListingsViewModel = function(){
     }, self);
  
     self.sortItemsAscending = function() {
-        self.waitingQueueList().entries(self.waitingQueueList().entries().sort(function(a, b) { return a.favorite < b.favorite;}));                                    };
+        self.waitingQueueList().entries(self.waitingQueueList().entries().sort(favComparator));                                   
+    };
     
     // Pretty useless to have it computed... Nothing changes with the currentIncomingList
     self.incomingCallQueue = ko.computed(function()
@@ -207,9 +274,12 @@ var ListingsViewModel = function(){
     
     self.clickItem = function(clickedItem) 
     {
+        if (phoneIp == "") {
+            return;
+        }
+
         self.clickedListItem(clickedItem);
-        var name = clickedItem.name;
-        name += "";
+        var name = clickedItem.name();
         self.clickedListItemName(name);
        
         $('#connectModal').modal({
@@ -225,21 +295,10 @@ var ListingsViewModel = function(){
 
     // no updating appearing in the UI .. omehow the values do seem to update in the array.. is the accoring value missing bindings?
     // another question: should you be able to mark the ones you aren't logged into as favorite?
-    self.markFavorite = function(favorite)
+    self.markQueueFavorite = function(favorite)
     {
-        self.waitingQueueItemToMarkFavorite(favorite);
-        
-        var indexVal = self.waitingQueueList().entries().indexOf(favorite);
-        var markFavoriteFlag = self.waitingQueueList().entries()[indexVal].favorite();
-        var tobeShifted = self.waitingQueueList().entries().splice(indexVal,1);
-        if (markFavoriteFlag){
-            tobeShifted[0].favorite(false);
-            self.waitingQueueList().entries().push(tobeShifted[0]);
-        } else if (!markFavoriteFlag) {
-            tobeShifted[0].favorite(true);
-            self.waitingQueueList().entries().unshift(tobeShifted[0]);
-        }        
-        self.sortItemsAscending();
+        favorite.favorite(!favorite.favorite()); // Toggle
+        QueueListItem.saveFavs(self.waitingQueueList().entries());
     }
     
     // no updating appearing in the UI.. somehow the values do seem to update in the array.. is the accoring value missing bindings?
@@ -248,14 +307,17 @@ var ListingsViewModel = function(){
         queueListItem.queueLogin(!queueListItem.signInOut());
     }
     
-    self.actionCalling = function()
+    self.actionCalling = function(item)
     {
+        //console.log(self.clickedListItem());
+        callUser(self.clickedListItem().ext());
         //alert("Calling");
         // use self.clickItem ... as the reference to really call.
     }
     
     self.actionConnectThrough = function()
     {
+        transferToUser(self.clickedListItem().ext());
         //alert("actionCallingThrough");
         // use self.clickItem ... as the reference to really callthrough
     }
@@ -267,9 +329,8 @@ var ListingsViewModel = function(){
     
     self.doLogin = function()
     {
-        //alert("doLogin");
-        //console.log(self.loginName() + " " + self.loginPass());
-        $('#loginModal').modal('hide');
+        console.log("Logging in as: " + self.loginName());
+        login(self.loginName(), self.loginPass());
     }
     
     self.favoriteCssClass = function(fav)
@@ -339,6 +400,16 @@ var ListingsViewModel = function(){
     self.setSearch = function(searchParam)
     {
         self.search(searchParam);
+    }
+
+    self.markUserFavorite = function(item) {
+        item.favorite(true);
+        UserListItem.saveFavs(self.currentList().entries());
+    }
+
+    self.unmarkUserFavorite = function(item) {
+        item.favorite(false);
+        UserListItem.saveFavs(self.currentList().entries());
     }
 
     self.favoriteList( self.favFilteredItems()) ;
@@ -427,6 +498,47 @@ var ListingsViewModel = function(){
         self.hasFocus = false;
     });
     */
+
+    /* Drag and Drop handling */
+    
+    ko.bindingHandlers.drag = {
+        init: function(element, valueAccessor, allBindingsAccessor) {
+            //set meta-data
+            ko.utils.domData.set(element, "ko_drag_data", valueAccessor());
+            
+            //combine options passed into binding (in dragOptions binding) with global options (in ko.bindingHandlers.drag.options)
+            var options = ko.utils.extend(ko.bindingHandlers.drag.options, allBindingsAccessor().dragOptions);
+            
+            //initialize draggable
+            $(element).draggable(options);
+        },
+        options: {}   
+    };
+
+    ko.bindingHandlers.drop = {
+        init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+            //grab method
+            var action = ko.utils.unwrapObservable(valueAccessor());
+            
+            //combine options passed into binding (in dropOptions binding) with global options (in ko.bindingHandlers.drop.options)
+            var options = ko.utils.extend(ko.bindingHandlers.drop.options, allBindingsAccessor().dropOptions);
+            
+            options.drop = function(event, ui) {
+                //read meta-data off of dropped item 
+                var data = ko.utils.domData.get(ui.draggable[0], "ko_drag_data");
+                //execute our action
+                action.call(viewModel, data);
+            };
+            
+            //initialize droppable
+            $(element).droppable(options);            
+        },
+        options: {}    
+    };
+
+    ko.bindingHandlers.drag.options = { helper: 'clone' };
+    /* ----------------------- */
+
     
     //Modal positioning for screen and resizing
     function adjustModalMaxHeightAndPosition(){

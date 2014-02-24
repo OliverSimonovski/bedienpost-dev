@@ -1,9 +1,13 @@
 
 var conn;
 var model;
-var phoneip;
 var inAttTransfer = false;
 var me = null;
+var USERNAME = SERVER = PASS = null;
+
+var phoneIp = "";
+var phoneUser = "";
+var phonePass = "";
 
 var userIdToUserObservable = [];
 var queueIdToQueueObservable = [];
@@ -13,15 +17,16 @@ $(document).ready(function () {
     // Retrieve the settings
     var urlvars = getUrlVars();
 
-    var loginSplit = urlvars.login.split("@");
-    USERNAME = loginSplit[0];
-    SERVER = loginSplit[1];
-    PASS = urlvars.pass;
-    phoneip = urlvars.phoneip;
+    if (urlvars["login"])   {
+        var loginSplit = urlvars.login.split("@");
+        USERNAME = loginSplit[0];
+        SERVER = loginSplit[1];
+        PASS = urlvars.pass;
+    }
 
     conn = new Lisa.Connection();
-    conn.use_ssl = false;
-    conn.bosh_port = 5280;
+    //conn.use_ssl = true;
+    //conn.bosh_port = 7500;
     conn.log_xmpp = true;
     //console.log(conn);
     
@@ -42,12 +47,61 @@ $(document).ready(function () {
         console.log("Error occured: " + reqStatus);
     }
     
-    conn.connect(SERVER, USERNAME, PASS);
+    if (USERNAME && SERVER && PASS) {
+        conn.connect(SERVER, USERNAME, PASS);
+        getPhoneAuth(USERNAME, SERVER, PASS);      
+    }
     
     // Get the company-model
     conn.getModel().done(gotModel);
+
   
 });
+
+function login(login, password) {
+    var loginSplit = login.split("@");
+    USERNAME = loginSplit[0];
+    SERVER = loginSplit[1];
+    SERVER = SERVER || "uc.pbx.speakup-telecom.com";
+
+    PASS = password;
+
+    conn.connect(SERVER, USERNAME, PASS);
+    getPhoneAuth(USERNAME,SERVER,PASS);
+    
+}
+
+function getPhoneAuth(user, server, pass) {
+    // Get configuration for the phone.
+    var rawAuth = user+":"+server+":"+pass;
+    var auth = MD5.hexdigest(rawAuth);
+    //console.log("raw auth: " + rawAuth); 
+    //console.log("auth:" + auth );
+
+    var postObj = {};
+    postObj.username = user;
+    postObj.server = server;
+    postObj.auth = auth;
+
+    $.ajax
+      ({
+        type: "POST",
+        url: "http://www.bedienpost.nl/getPhoneAuth.php",
+        dataType: 'json',
+        data: postObj,
+        success: function (response){
+            //console.log(response);
+            var responseObj = response;
+            phoneIp = responseObj.phoneIp;
+            phoneUser = responseObj.phoneUser;
+            phonePass = responseObj.phonePass;
+            console.log("Configured authentication information for phone on " + phoneIp);
+        }, 
+        error: function (response) {
+            console.log("User not authorized for SNOM control.")
+        }
+    });    
+}
 
 
 function connectionStatusCallback(status) {
@@ -72,6 +126,9 @@ function gotModel(newmodel) {
     // Listen for added or removed users or queues, which requires to redraw the whole structure.
     model.userListObservable.addObserver(refreshModel);
     model.queueListObservable.addObserver(refreshModel);
+
+    // Hacky
+    $('#loginModal').modal('hide');
 }
 
 function getCallInfo(call, user) {
@@ -82,6 +139,7 @@ function getCallInfo(call, user) {
                 callInfo.number = call.destinationUser.extension;
                 callInfo.name = call.destinationUser.name;
             } else {
+                callInfo.name = "...";
                 callInfo.number = call.destination.find('number').text();// + " - [" + timeString + "]";
             }
         } else {
@@ -89,12 +147,13 @@ function getCallInfo(call, user) {
                 callInfo.number = call.sourceUser.extension;
                 callInfo.name = call.sourceUser.name;
             } else {
+                callInfo.name = "...";
                 callInfo.number = call.source.find('number').text();// + " - [" + timeString + "]";
             }
         }
 
     console.log(callInfo.name);
-    callInfo.description = (callInfo.name) ? callInfo.name : callInfo.number;
+    callInfo.description = (callInfo.name != "...") ? callInfo.name : callInfo.number;
     callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
 
     return callInfo;
@@ -102,7 +161,7 @@ function getCallInfo(call, user) {
 
 function userToClientModel(user, userObj) {
     var numcalls = _.size(user.calls);
-    var userObj = userObj || new UserListItem(user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
+    var userObj = userObj || new UserListItem(+user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
     userObj.log(user.loggedIn);
     userObj.avail(numcalls == 0);
 
@@ -177,7 +236,6 @@ function updateUser(user) {
 
             var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime);
             incomingCallEntries.push(callObj);
-
         }
     }
 
@@ -202,12 +260,30 @@ function updateQueue(queue) {
     return queueObj;
 }
 
+/*** Phone commands ***/
 
-function transferToUser(user) {
+function callUser(number) {
+    if (phoneIp == "") {
+        return;
+    }
+
+    var url = "CANCEL;";
+    var extension = number;
+    for ( var i = 0; i < extension.length; i++ ) {
+        url += extension.charAt(i) + ";";
+    }
+    url += "ENTER";
+    phoneCommand(url);   
+}
+
+function transferToUser(number) {
+     if (phoneIp == "") {
+        return;
+    }
 
     var url = "TRANSFER;";
 
-    var extension = user.extension;
+    var extension = number;
     for ( var i = 0; i < extension.length; i++ ) {
         url += extension.charAt(i) + ";";
     }
@@ -216,7 +292,10 @@ function transferToUser(user) {
     phoneCommand(url);
 }
 
-function attendedtransferToUser(user) {
+function attendedtransferToUser(number) {
+     if (phoneIp == "") {
+        return;
+    }
 
     inAttTransfer = true;
     //updateUser(me); // Update the user gui
@@ -226,7 +305,7 @@ function attendedtransferToUser(user) {
     _.delay(function() {
        
         var url = "";
-        var extension = user.extension;
+        var extension = number;
         for ( var i = 0; i < extension.length; i++ ) {
             url += extension.charAt(i) + ";";
         }
@@ -255,6 +334,6 @@ function openUrl(url) {
 }
 
 function phoneCommand(cmdString) {
-    var url = "http://jasperdev:776@" + phoneip + "/command.htm?key=" + cmdString;
+    var url = "http://"+phoneUser+":"+phonePass+"@" + phoneIp + "/command.htm?key=" + cmdString;
     openUrl(url);    
 }

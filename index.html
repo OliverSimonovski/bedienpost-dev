@@ -19,6 +19,34 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script type='text/javascript' src='js/lib/jquery-ui.min.js'></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+    <script type='text/javascript' src="js/less-1.6.1.min.js"></script>
+    <script type='text/javascript' src='js/knockout-3.0.0.js'></script>
+    <script type='text/javascript' src='js/lib/knockout.mapping.js'></script>
+    <script type='text/javascript' src='js/lib/knockout-sortable.js'></script>
+    
+
+    <script type='text/javascript' src='js/lib/moment.min.js'></script>
+    <script type='text/javascript' src='js/lib/underscore-min.js'></script>
+    <script type='text/javascript' src='js/lib/underscore-ko-1.2.2.min.js'></script>
+    <script type='text/javascript' src='js/lib/backbone.js'></script>
+    <script type='text/javascript' src='js/lib/base64.js'></script>
+    <script type='text/javascript' src='js/lib/md5.js'></script>
+    <script type='text/javascript' src='js/lib/sha1.js'></script>
+    <script type='text/javascript' src='js/lib/core.js'></script>
+    <script type='text/javascript' src='js/lib/strophe.pubsub.js'></script>
+    <script type='text/javascript' src="js/LisaApi/LisaApi.js"></script>
+
+    
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="bootstrap-3.0.3/dist/js/bootstrap.min.js"></script>
+
     </head>
   <body >
     <div id="wrap">
@@ -65,8 +93,24 @@
                                         <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
                                     </label>
                                     
+<<<<<<< HEAD
                                 </li>
                             </ul>
+=======
+                                             
+                                             <div class="col-sm-1 text-left nopadding" >
+                                                <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite()) },
+                                                              click: $root.markQueueFavorite"></i>
+                                             </div>
+                                            
+                                             <div  class="col-sm-1 text-right ">
+                                                <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
+                                             </div>
+                                        </li>
+        
+                                </ul>
+                            </div>
+>>>>>>> eee1e895b6d8f8f18f7908e943de03501fcfc3db
                         </div>
                     </div> 
                </div>
@@ -83,6 +127,7 @@
                             <div class="col-sm-5 text-left">Name</div>
                             <div class="col-sm-4 text-left">Calling with</div>
                             <div class="col-sm-2 text-right">Shortcut</div>
+<<<<<<< HEAD
                         !-->
                         <div class="list-group list">
                              <ul data-bind="foreach: { data:  favFilteredItems, as: 'entry' },
@@ -97,6 +142,24 @@
                                                             style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
                                         </div>
                                         <label class="first-label"> 
+=======
+                     </div>
+                     <div class ='col-sm-12 nopadding'>
+
+                    <div class="list-group list">
+                         <ul data-bind="drop: unmarkUserFavorite, foreach: { data:  filteredItems, as: 'entry' },
+                                        css: { 'curl':true }">
+
+                                 <li class="list-group-item"
+                                     data-bind="click: $root.clickItem, drag: entry">
+                                     <div class="row nopadding">
+                                         <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log == true ? '#042739' : '#042739' } ">                                                   <span class="image_container">
+                                                <i data-bind=   "attr: { class: $root.logCssClass(entry.log())  },
+                                                                style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
+                                             </span>
+                                         </div>
+                                        <div  class="col-sm-5 text-left fixed-height">
+>>>>>>> eee1e895b6d8f8f18f7908e943de03501fcfc3db
                                             <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
                                             <p class="list-group-item-text" data-bind="text: entry.ext"></p>
                                         </label>
@@ -108,9 +171,66 @@
                                           <label class="second-label"> 
                                             <h4 class="list-group-item-heading" data-bind="text: entry.connectedName()"></h4>
                                             <p class="list-group-item-text" data-bind="text: entry.numberAndDuration()"></p>
+<<<<<<< HEAD
                                         </label>
                                     </div>
                                 </li>
+=======
+                                        </div>
+                                        <div class="col-sm-1 text-right fixed-height">
+                                            <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: ($root.search() != '') ? $root.filteredItems().indexOf(entry) : '' "></span></h5>
+                                        </div>
+                                    </div>
+                                </li>
+
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+                 <div class='col-sm-6 nopadding'>
+                    <div class ='row nopadding'>
+                        <div class="header">
+                            <h4>Favorite List</h4>
+                        </div>
+                            <div class="col-sm-1 text-left"></div>
+                            <div class="col-sm-5 text-left">Name</div>
+                            <div class="col-sm-4 text-left">Calling with</div>
+                            <div class="col-sm-2 text-right">Shortcut</div>
+                        </div>
+                     <div class ='col-md-12 nopadding'>
+                        <div class="list-group list">
+                             <ul data-bind="drop: markUserFavorite, foreach: { data:  favFilteredItems, as: 'entry' },
+                                            css: { 'curl':true }">
+
+                                    <li class="list-group-item"
+                                         data-bind="click: $root.clickItem, drag: entry">
+                                        <div class="row nopadding">
+                                            <div class="col-sm-1 text-left fixed-height"  data-bind="style: { backgroundColor: entry.log() == true ? '#042739' : '#042739' } ">                                                  
+                                                 <span class="image_container">
+                                                     <i data-bind="attr: { class: $root.logCssClass(entry.log())  },
+                                                                   style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
+                                                 </span>
+                                             </div>
+                                            <div  class="col-sm-5 text-left fixed-height">
+                                                <h4 class="list-group-item-heading count" data-bind="text: entry.name"></h4>
+                                                <p class="list-group-item-text" data-bind="text: entry.ext"></p>
+                                            </div>
+                                            <!--
+                                            <div class="col-sm-1 text-center fixed-height">
+                                                <i class="fa fa-phone-square"></i>
+                                            </div>
+                                            -->
+                                            <div class="col-sm-5 text-left fixed-height">
+                                                <h4 class="list-group-item-heading" data-bind="text: entry.connectedName()"></h4>
+                                                <p class="list-group-item-text" data-bind="text: entry.numberAndDuration()"></p>
+                                            </div>
+                                            <div class="col-sm-1 text-right fixed-height">
+                                                <h5 class="list-group-item-text"><span class="badge pull-right" data-bind="text: ($root.search() == '') ? $root.favFilteredItems().indexOf(entry) : '' "></span></h5>
+                                            </div>
+                                         </div>
+                                    </li>
+
+>>>>>>> eee1e895b6d8f8f18f7908e943de03501fcfc3db
                             </ul>
                         </div>
                     </div>
@@ -186,7 +306,7 @@
             </div>
             <div class="form-group"><!--has-error -->
               <label class="control-label" for="inputError1">Password:</label>
-              <input type="text"  data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control" id="inputError">
+              <input type="password"  data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control" id="inputError">
             </div>
              <div class="form-group"><!--has-error -->
               <label class="control-label" for="inputError1">Password:</label>
@@ -203,6 +323,7 @@
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
            
+<<<<<<< HEAD
 
     </body>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -224,19 +345,16 @@
     <script type='text/javascript' src='js/lib/core.js'></script>
     <script type='text/javascript' src='js/lib/strophe.pubsub.js'></script>
     <script type='text/javascript' src="js/LisaApi/LisaApi.js"></script>
+=======
+      
+        </div>    
+        </div>
+
+    </body>
+
+>>>>>>> eee1e895b6d8f8f18f7908e943de03501fcfc3db
     <script type='text/javascript' src='js/exampleData.js'></script>
     <script type='text/javascript' src='js/ViewController.js'></script>
-    <script type='text/javascript' src="js/ModelController.js"></script>
-        
-        <script>
-          $(function() {
-            $( "#sortable" ).sortable();
-            $( "#sortable" ).disableSelection();
-          });
-          
-  </script>
-    
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="bootstrap-3.0.3/dist/js/bootstrap.min.js"></script>
+    <script type='text/javascript' src="js/ModelController.js"></script>   
 
 </html>

@@ -331,12 +331,12 @@ var ListingsViewModel = function(){
     
     self.doPickup = function()
     {
-        
+        pickupPhone();   
     }
     
     self.doHangup = function()
     {
-    
+        hangupPhone();
     }
     
     self.doTransfer = function()
@@ -418,9 +418,9 @@ var ListingsViewModel = function(){
     {
         console.log(self.callingState());
         console.log(current);
-        if(self.callingState() == "pickup" && current == 'pick'){
+        if(self.callingState() == "ringing" && current == 'pick'){
              return 'btn btn-pickup';
-        } else if (self.callingState() == "hangup" && current == 'hang'){
+        } else if (self.callingState() == "calling" && current == 'hang'){
              return 'btn btn-hangup';
         } else if (self.callingState() == "transfer" && current =='transfer'){
             return 'btn btn-transfer';
@@ -480,10 +480,10 @@ var ListingsViewModel = function(){
     });
     
     self.showButton = function(){
-            $('.overlay').fadeIn(250) // slideDown(1000);
+            $('.overlay').fadeIn(250); // slideDown(1000);
         }
      self.hideButton = function(){
-            $('.overlay').fadeOut(250)  // slideUp(1000);
+            $('.overlay').fadeOut(250);  // slideUp(1000);
         }
     
     $( document ).keypress(function(e)
@@ -620,4 +620,5 @@ var ListingsViewModel = function(){
     $(window).resize(adjustModalMaxHeightAndPosition).trigger("resize");
     }
 
-ko.applyBindings(new ListingsViewModel());
+var listingViewModel = new ListingsViewModel();
+ko.applyBindings(listingViewModel);

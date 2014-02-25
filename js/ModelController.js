@@ -34,7 +34,7 @@ function login(login, password, server) {
     PASS = password;
 
     conn = new Lisa.Connection();
-    conn.log_xmpp = false;
+    conn.log_xmpp = true; // Development
 
     // Connect over SSL
     conn.bosh_port = 7500;
@@ -153,9 +153,7 @@ function connectionStatusCallback(status) {
 
 function gotModel(newmodel) {
     // Show interface
-    $('#loading').hide();
-    $('#container').show();
-
+    
     model = newmodel;
     me = model.users[Lisa.Connection.myUserId];
     refreshModel(model);
@@ -266,12 +264,21 @@ function updateUser(user) {
     // The user is us
     if (user.id == Lisa.Connection.myUserId) {
         incomingCallEntries.removeAll();
+        var amInCall = false;
         for (key in user.calls) {
+            amInCall = true;
             var call = user.calls[key];
             var callInfo = getCallInfo(call, user);
 
             var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime);
             incomingCallEntries.push(callObj);
+        }
+        if (amInCall) {
+            listingViewModel.callingState("calling");
+            listingViewModel.showButton();
+        } else {
+            listingViewModel.callingState("onhook");
+            listingViewModel.hideButton();
         }
     }
 
@@ -349,6 +356,14 @@ function attendedtransferToUser(number) {
 
         phoneCommand(url);
     }, 1000);
+}
+
+function pickupPhone() {
+    phoneCommand("ENTER");
+}
+
+function hangupPhone() {
+    phoneCommand("CANCEL");
 }
 
 /* Add / Update the page-elements for calls */

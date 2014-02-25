@@ -185,6 +185,7 @@ var ListingsViewModel = function(){
     
     self.loginName = ko.observable();
     self.loginPass = ko.observable();
+    self.loginServer = ko.observable("uc.pbx.speakup-telecom.com");
     self.incomingCallMailTo = ko.observable();
     self.search = ko.observable();
     self.shortcutKey = ko.observable();
@@ -349,7 +350,7 @@ var ListingsViewModel = function(){
     self.doLogin = function()
     {
         console.log("Logging in as: " + self.loginName());
-        login(self.loginName(), self.loginPass());
+        login(self.loginName(), self.loginPass(), self.loginServer());
     }
     
     self.favoriteCssClass = function(fav)

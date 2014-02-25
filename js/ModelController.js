@@ -24,11 +24,12 @@ $(document).ready(function () {
   
 });
 
-function login(login, password) {
+function login(login, password, server) {
 
     var loginSplit = login.split("@");
     USERNAME = loginSplit[0];
     SERVER = loginSplit[1];
+    SERVER = SERVER || server;
     SERVER = SERVER || "uc.pbx.speakup-telecom.com";
     PASS = password;
 

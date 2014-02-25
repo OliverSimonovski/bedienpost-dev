@@ -186,7 +186,7 @@ var ListingsViewModel = function(){
     self.incomingCallMailTo = ko.observable();
     self.search = ko.observable();
     self.shortcutKey = ko.observable();
-    self.callingState = ko.observable();
+    self.callingState = ko.observable('transfer');
     
     
     self.currentList.subscribe(function()
@@ -416,10 +416,12 @@ var ListingsViewModel = function(){
     
     self.actionStateCssClass = function( current )
     {
+        console.log(self.callingState());
+        console.log(current);
         if(self.callingState() == "pickup" && current == 'pick'){
              return 'btn btn-pickup';
         } else if (self.callingState() == "hangup" && current == 'hang'){
-             return 'btn-hangup';
+             return 'btn btn-hangup';
         } else if (self.callingState() == "transfer" && current =='transfer'){
             return 'btn btn-transfer';
         } else {

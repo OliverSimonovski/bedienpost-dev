@@ -133,7 +133,12 @@ function CallListItem(id, name, startTime) {
         }
 
         var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
-        if (duration < 0) duration = 0;
+        var myDate = new Date();
+
+        var timezoneOffset = (myDate.getTimezoneOffset() * 60 * 1000);
+        duration += timezoneOffset;
+        if (duration < timezoneOffset) duration = timezoneOffset;
+
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
 
         return timeString;

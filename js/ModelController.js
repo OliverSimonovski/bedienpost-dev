@@ -274,7 +274,7 @@ function updateUser(user) {
             incomingCallEntries.push(callObj);
         }
         if (amInCall) {
-            listingViewModel.callingState("calling");
+            listingViewModel.callingState(userObj.ringing() ? "ringing" : "calling");
             listingViewModel.showButton();
         } else {
             listingViewModel.callingState("onhook");

@@ -186,6 +186,7 @@ var ListingsViewModel = function(){
     self.incomingCallMailTo = ko.observable();
     self.search = ko.observable();
     self.shortcutKey = ko.observable();
+    self.callingState = ko.observable();
     
     
     self.currentList.subscribe(function()
@@ -328,6 +329,21 @@ var ListingsViewModel = function(){
         //alert("cancelLogin");
     }
     
+    self.doPickup = function()
+    {
+        
+    }
+    
+    self.doHangup = function()
+    {
+    
+    }
+    
+    self.doTransfer = function()
+    {
+        
+    }
+    
     self.doLogin = function()
     {
         console.log("Logging in as: " + self.loginName());
@@ -396,6 +412,19 @@ var ListingsViewModel = function(){
         } else {
             return 'white';
         }  
+    }
+    
+    self.actionStateCssClass = function( current )
+    {
+        if(self.callingState() == "pickup" && current == 'pick'){
+             return 'btn btn-pickup';
+        } else if (self.callingState() == "hangup" && current == 'hang'){
+             return 'btn-hangup';
+        } else if (self.callingState() == "transfer" && current =='transfer'){
+            return 'btn btn-transfer';
+        } else {
+            return 'btn btn-inactive';
+        }
     }
     
     self.setSearch = function(searchParam)

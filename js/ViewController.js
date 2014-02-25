@@ -270,7 +270,8 @@ var ListingsViewModel = function(){
                  filteredEntries.push(entry);
              });
              return filteredEntries();
-        }                                 
+        }       
+        
     }, self);
     
     self.clickItem = function(clickedItem) 
@@ -371,6 +372,18 @@ var ListingsViewModel = function(){
         }                                       
     };
     
+    self.connectionCssClass = function(typeConnection)
+    {
+        if(typeConnection == false){
+            return 'fa fa-arrow-circle-left';
+        } else if (typeConnection == true){
+            return 'fa fa-arrow-circle-right';
+        } else {
+          return '';  
+        }
+        
+    }
+    
     self.colorClass = function(avail, logged, ringing)
     {
         if (logged == true) {
@@ -380,7 +393,7 @@ var ListingsViewModel = function(){
                 return 'orange';
             } else {
                 return 'red'
-            }
+            } 
         } else {
             return 'white';
         }  
@@ -473,6 +486,8 @@ var ListingsViewModel = function(){
     $('#loginModal').modal({
             keyboard: false
     })
+    
+    
     
     /*
     $( "#inputField" ).focusin(function() {

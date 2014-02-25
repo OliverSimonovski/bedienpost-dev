@@ -314,17 +314,14 @@ var ListingsViewModel = function(){
     
     self.actionCalling = function(item)
     {
-        //console.log(self.clickedListItem());
-        callUser(self.clickedListItem().ext());
-        //alert("Calling");
-        // use self.clickItem ... as the reference to really call.
+        var toCall = self.clickedListItem().ext().split(",")[0];
+        callUser(toCall);
     }
     
     self.actionConnectThrough = function()
     {
-        transferToUser(self.clickedListItem().ext());
-        //alert("actionCallingThrough");
-        // use self.clickItem ... as the reference to really callthrough
+        var toCall = self.clickedListItem().ext().split(",")[0];
+        transferToUser(toCall);
     }
     
     self.cancelLogin = function()

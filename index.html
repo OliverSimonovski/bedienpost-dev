@@ -57,6 +57,9 @@
                         <h4>Active Calls</h4>
                     </div>
                     <div class="list-group queuelist">
+                        <div class="overlay">
+                                <button class="btn btn-pickup"  type="button" data-bind="click: $root.doLogin">Pick-up</button>
+                            </div>
                          <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
                                         css: { 'queue':true }">
                              <li class="list-group-item">
@@ -71,6 +74,7 @@
                                 
                             </li>
                         </ul>
+                        
                     </div>
                 </div>
                 <div class='col-md-6'>
@@ -78,6 +82,7 @@
                             <h4>Waiting Queue</h4>
                         </div>
                         <div class="list-group queuelist">
+                             
                              <ul data-bind="foreach: { data: filterWaitingQueue, as: 'entry' },
                                             css: { 'queue':true }">
                                 <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut()) }">
@@ -86,7 +91,7 @@
                                             <i data-bind="attr: { class: $root.signInOutCssClass(entry.signInOut()) },
                                                                             click: $root.signInOut"></i> 
                                             <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite()) },
-                                                               click: $root.markFavorite"></i>
+                                                               click: $root.markQueueFavorite"></i>
                                     </div>
                                     <label> 
                                         <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
@@ -147,7 +152,25 @@
                         <div class="header">
                             <h4>Contact / User List</h4>
                         </div>
-                       
+                        <!--
+                             <div class="options todooptions">
+                                    <span class="pull-right">Shortcut</span>
+                             </div>
+                            <div class="first-info">
+                                     <div class="connection">
+                                    </div>
+                                    <span class="first-label"> 
+                                        <span class="">Name :</span>
+                                    </span>
+                             </div>
+                            <div class="second-info">
+                                     <div class="connection">
+                                    </div>
+                                    <span class="second-label"> 
+                                       <span class="">Calling with:</span>
+                                    </span>
+                                </div>
+                        !-->
                     <div class="list-group list">
                          <ul data-bind="drop: unmarkUserFavorite,foreach: { data:  filteredItems, as: 'entry' }">
                              <li class="list-group-item" data-bind="click: $root.clickItem , drag: entry">
@@ -223,7 +246,7 @@
    
         </div>
         <div class="modal-footer">
-          <button class="btn" type="button" data-dismiss="modal"  data-bind="click: $root.cancelLogin">Cancel</button>
+          <button class="btn" type="button" data-bind="click: $root.cancelLogin">Cancel</button>
           <button class="btn btn-primary"  type="button" data-bind="click: $root.doLogin">Submit</button>
         </div>
          

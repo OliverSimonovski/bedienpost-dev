@@ -25,9 +25,13 @@ function UserListItem(id, name, ext, log, avail, ringing) {
         }
 
         var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
-        if (duration < 0) duration = 0;
-        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
+        var myDate = new Date();
 
+        var timezoneOffset = (myDate.getTimezoneOffset() * 60 * 1000);
+        duration += timezoneOffset;
+        if (duration < timezoneOffset) duration = timezoneOffset;
+
+        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
 
@@ -145,12 +149,10 @@ function CallListItem(id, name, startTime) {
  *  Knockout.js wizardry should only trigger computables that really are dependent on this observable *right now*.
  */
 currentTime = ko.observable(0);
-var myDate = new Date();
-setInterval(function() {
-    //var currentTime = myDate.getTime(); 
-    //var timezoneOffset = myDate.getTimezoneOffset(); 
 
-    currentTime(_.now());
+setInterval(function() {
+    var myDate = new Date();
+    currentTime(myDate.getTime());
 }, 1000); // Update UserListItem.currentTime every second.
 
 function nameComparator(left, right) {
@@ -183,6 +185,7 @@ var ListingsViewModel = function(){
     
     self.loginName = ko.observable();
     self.loginPass = ko.observable();
+    self.loginServer = ko.observable("uc.pbx.speakup-telecom.com");
     self.incomingCallMailTo = ko.observable();
     self.search = ko.observable();
     self.shortcutKey = ko.observable();
@@ -311,17 +314,14 @@ var ListingsViewModel = function(){
     
     self.actionCalling = function(item)
     {
-        //console.log(self.clickedListItem());
-        callUser(self.clickedListItem().ext());
-        //alert("Calling");
-        // use self.clickItem ... as the reference to really call.
+        var toCall = self.clickedListItem().ext().split(",")[0];
+        callUser(toCall);
     }
     
     self.actionConnectThrough = function()
     {
-        transferToUser(self.clickedListItem().ext());
-        //alert("actionCallingThrough");
-        // use self.clickItem ... as the reference to really callthrough
+        var toCall = self.clickedListItem().ext().split(",")[0];
+        transferToUser(toCall);
     }
     
     self.cancelLogin = function()
@@ -331,12 +331,12 @@ var ListingsViewModel = function(){
     
     self.doPickup = function()
     {
-        
+        pickupPhone();   
     }
     
     self.doHangup = function()
     {
-    
+        hangupPhone();
     }
     
     self.doTransfer = function()
@@ -347,7 +347,7 @@ var ListingsViewModel = function(){
     self.doLogin = function()
     {
         console.log("Logging in as: " + self.loginName());
-        login(self.loginName(), self.loginPass());
+        login(self.loginName(), self.loginPass(), self.loginServer());
     }
     
     self.favoriteCssClass = function(fav)
@@ -418,9 +418,9 @@ var ListingsViewModel = function(){
     {
         console.log(self.callingState());
         console.log(current);
-        if(self.callingState() == "pickup" && current == 'pick'){
+        if(self.callingState() == "ringing" && current == 'pick'){
              return 'btn btn-pickup';
-        } else if (self.callingState() == "hangup" && current == 'hang'){
+        } else if (self.callingState() == "calling" && current == 'hang'){
              return 'btn btn-hangup';
         } else if (self.callingState() == "transfer" && current =='transfer'){
             return 'btn btn-transfer';
@@ -480,10 +480,10 @@ var ListingsViewModel = function(){
     });
     
     self.showButton = function(){
-            $('.overlay').fadeIn(250) // slideDown(1000);
+            $('.overlay').fadeIn(250); // slideDown(1000);
         }
      self.hideButton = function(){
-            $('.overlay').fadeOut(250)  // slideUp(1000);
+            $('.overlay').fadeOut(250);  // slideUp(1000);
         }
     
     $( document ).keypress(function(e)
@@ -620,4 +620,5 @@ var ListingsViewModel = function(){
     $(window).resize(adjustModalMaxHeightAndPosition).trigger("resize");
     }
 
-ko.applyBindings(new ListingsViewModel());
+var listingViewModel = new ListingsViewModel();
+ko.applyBindings(listingViewModel);

@@ -9,70 +9,95 @@ var phoneIp = "";
 var phoneUser = "";
 var phonePass = "";
 
+var restUrl = "";
+
 var userIdToUserObservable = [];
 var queueIdToQueueObservable = [];
 
 $(document).ready(function () {
 
-    // Retrieve the settings
+    // Auto-login if auto-login information provided.
     var urlvars = getUrlVars();
-
     if (urlvars["login"])   {
-        var loginSplit = urlvars.login.split("@");
-        USERNAME = loginSplit[0];
-        SERVER = loginSplit[1];
-        PASS = urlvars.pass;
+        login(urlvars.login, urlvars.pass);
     }
+  
+});
+
+function login(login, password, server) {
+
+    var loginSplit = login.split("@");
+    USERNAME = loginSplit[0];
+    SERVER = loginSplit[1];
+    SERVER = SERVER || server;
+    SERVER = SERVER || "uc.pbx.speakup-telecom.com";
+    PASS = password;
 
     conn = new Lisa.Connection();
-    //conn.use_ssl = true;
-    //conn.bosh_port = 7500;
-    conn.log_xmpp = true;
-    //console.log(conn);
-    
+    conn.log_xmpp = true; // Development
+
+    // Connect over SSL
+    conn.bosh_port = 7500;
+    conn.use_ssl = true;
+    // HACK for VTEL server
+    if (SERVER == "uc.vhosted.vtel.nl") {
+        conn.bosh_port = 7509;        
+    }
+
     // Setup logging and status messages.
     conn.logging.setCallback(function(msg) {
         console.log(msg);
     });
-    conn.logging.setStatusCallback(function(msg) {
-        $('#status').text(msg);
-    });
-    
+
     // Setup connection-status callback.
     conn.connectionStatusObservable.addObserver(connectionStatusCallback);
-    $('#status').text('Connecting...');
-    
+
     // Debugging
     conn._hitError = function (reqStatus) {
         console.log("Error occured: " + reqStatus);
     }
-    
-    if (USERNAME && SERVER && PASS) {
-        conn.connect(SERVER, USERNAME, PASS);
-        getPhoneAuth(USERNAME, SERVER, PASS);      
-    }
-    
-    // Get the company-model
+
+    // Setup callback when receiving the company model
     conn.getModel().done(gotModel);
 
-  
-});
-
-function login(login, password) {
-    var loginSplit = login.split("@");
-    USERNAME = loginSplit[0];
-    SERVER = loginSplit[1];
-    SERVER = SERVER || "uc.pbx.speakup-telecom.com";
-
-    PASS = password;
-
-    conn.connect(SERVER, USERNAME, PASS);
-    getPhoneAuth(USERNAME,SERVER,PASS);
+    conn.connect(SERVER, USERNAME, PASS);                 // HTTP - For development
+    //connectWithGiveSession(SERVER, USERNAME, PASS);     // HTTPS
     
+    getPhoneAuth(USERNAME,SERVER,PASS);
 }
 
+// Retrieve SSL BOSH session from the QED giveSession script
+function connectWithGiveSession(SERVER, USERNAME, PASS) {
+    var giveSessionUrl = SERVER.replace("uc.", "https://www.");
+    giveSessionUrl += "/qed/givesession.php?username="+USERNAME+"&token="+PASS+"&server="+SERVER;
+    console.log(giveSessionUrl);
+
+    $.ajax({url: giveSessionUrl,
+              success: function(response, textStatus) {
+                  try {
+                    var session = JSON.parse(response);
+                    conn.bosh_port = session.port;
+                    conn.use_ssl = true;
+                    conn.attach(SERVER, session.jid, session.sid[0], session.rid);
+                  } catch(err) {
+                    console.log("Error while attaching to session: " + err);
+                  }
+                  
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                              if (jqXHR.status == 403) {
+                                      console.log("Couldn't connect to server.. Check username &amp; password.");
+                                      alert("Authentication failed. Please re-enter your username and password and try again.");
+                              } else {
+                                      console.log("Error occured: " + textStatus + "<br/>" + errorThrown);
+                              }
+              }
+            });
+}
+
+// Get configuration for the phone from the server.
 function getPhoneAuth(user, server, pass) {
-    // Get configuration for the phone.
+    
     var rawAuth = user+":"+server+":"+pass;
     var auth = MD5.hexdigest(rawAuth);
     //console.log("raw auth: " + rawAuth); 
@@ -86,7 +111,7 @@ function getPhoneAuth(user, server, pass) {
     $.ajax
       ({
         type: "POST",
-        url: "http://www.bedienpost.nl/getPhoneAuth.php",
+        url: "https://www.bedienpost.nl/getPhoneAuth.php",
         dataType: 'json',
         data: postObj,
         success: function (response){
@@ -96,6 +121,9 @@ function getPhoneAuth(user, server, pass) {
             phoneUser = responseObj.phoneUser;
             phonePass = responseObj.phonePass;
             console.log("Configured authentication information for phone on " + phoneIp);
+            if (navigator.userAgent.indexOf("Chrome") != -1) {
+                chromeLoginPhone();
+            }
         }, 
         error: function (response) {
             console.log("User not authorized for SNOM control.")
@@ -103,22 +131,29 @@ function getPhoneAuth(user, server, pass) {
     });    
 }
 
+// Bit of a hack to allow Chrome to logon to the phone automatically.
+function chromeLoginPhone() {
+    var iframe = document.createElement("IFRAME");
+    $(iframe).hide();
+    iframe.setAttribute("src", "http://"+phoneUser+":"+phonePass+"@" + phoneIp);
+    document.documentElement.appendChild(iframe);
+    _.delay( function() {
+        iframe.parentNode.removeChild(iframe);
+    }, 5000);
+}
 
 function connectionStatusCallback(status) {
+    console.log(status);
     if (status == Strophe.Status.CONNFAIL) {
-        $('#connect').get(0).value = 'connect';
     } else if (status == Strophe.Status.DISCONNECTED) {
-        $('#connect').get(0).value = 'connect';
-    } else if (status == Strophe.Status.CONNECTED) {
-        $('#status').text('Loading...');
+    } else if (status == Strophe.Status.AUTHFAIL) {
+        alert("Authentication failed. Please re-enter your username and password and try again.");
     }
 }
 
 function gotModel(newmodel) {
     // Show interface
-    $('#loading').hide();
-    $('#container').show();
-
+    
     model = newmodel;
     me = model.users[Lisa.Connection.myUserId];
     refreshModel(model);
@@ -152,7 +187,6 @@ function getCallInfo(call, user) {
             }
         }
 
-    console.log(callInfo.name);
     callInfo.description = (callInfo.name != "...") ? callInfo.name : callInfo.number;
     callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
 
@@ -230,12 +264,21 @@ function updateUser(user) {
     // The user is us
     if (user.id == Lisa.Connection.myUserId) {
         incomingCallEntries.removeAll();
+        var amInCall = false;
         for (key in user.calls) {
+            amInCall = true;
             var call = user.calls[key];
             var callInfo = getCallInfo(call, user);
 
             var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime);
             incomingCallEntries.push(callObj);
+        }
+        if (amInCall) {
+            listingViewModel.callingState("calling");
+            listingViewModel.showButton();
+        } else {
+            listingViewModel.callingState("onhook");
+            listingViewModel.hideButton();
         }
     }
 
@@ -313,6 +356,14 @@ function attendedtransferToUser(number) {
 
         phoneCommand(url);
     }, 1000);
+}
+
+function pickupPhone() {
+    phoneCommand("ENTER");
+}
+
+function hangupPhone() {
+    phoneCommand("CANCEL");
 }
 
 /* Add / Update the page-elements for calls */

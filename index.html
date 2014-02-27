@@ -10,9 +10,7 @@
         <link href="css/sticky-footer-navbar.css" rel="stylesheet">
         <link href="css/bootstrap.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-
-        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -21,16 +19,13 @@
         <![endif]-->
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script type='text/javascript' src='js/lib/jquery.min.js'></script>
     <script type='text/javascript' src='js/lib/jquery-ui.min.js'></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
 
     <script type='text/javascript' src="js/less-1.6.1.min.js"></script>
     <script type='text/javascript' src='js/knockout-3.0.0.js'></script>
     <script type='text/javascript' src='js/lib/knockout.mapping.js'></script>
-    <script type='text/javascript' src='js/lib/knockout-sortable.js'></script>
-    
 
     <script type='text/javascript' src='js/lib/moment.min.js'></script>
     <script type='text/javascript' src='js/lib/underscore-min.js'></script>
@@ -58,22 +53,29 @@
                         <h4>Active Calls</h4>
                     </div>
                     <div class="list-group queuelist">
-                        <div class="overlay">
+
+                        <div class="overlay" style="display:none">
+                           
                             <div class="btn-group btn-group-justified">
                                 <div class="btn-group">
+                            
+
                                 <button class="btn btn-pickup"  type="button" data-bind="click: $root.doPickup,
                                                                                         attr: { class: $root.actionStateCssClass('pick') }">Pick-up</button>
                                     </div>
                                 <div class="btn-group">
                                 <button class="btn btn-hangup"  type="button" data-bind="click: $root.doHangup,
+<<<<<<< HEAD
                                                                                          attr: { class: $root.actionStateCssClass('hang') }">Hangup-up</button>
                                     </div>
                                 <div class="btn-group">
                                 <button class="btn btn-transfer"  type="button" data-bind="click: $root.doTransfer,
                                                                                            attr: { class: $root.actionStateCssClass('transfer') }">Transfer</button>
                                     </div>
+
                             </div>
-                            </div>
+                            
+                        </div>
                          <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
                                         css: { 'queue':true }">
                              <li>
@@ -254,8 +256,8 @@
               <input type="password"  data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control" id="inputError">
             </div>
              <div class="form-group"><!--has-error -->
-              <label class="control-label" for="inputError1">Password:</label>
-              <input type="text"  data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control" id="inputError">
+              <label class="control-label" for="inputError1">Server:</label>
+              <input type="text"  data-bind="value: loginServer, valueUpdate: 'afterkeydown'"  class="form-control" id="inputError">
             </div>
    
         </div>
@@ -269,25 +271,6 @@
     </div><!-- /.modal -->
 
     </body>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-
-    <script type='text/javascript' src="js/less-1.6.1.min.js"></script>
-    <script type='text/javascript' src='js/knockout-3.0.0.js'></script>
-    <script type='text/javascript' src='js/lib/knockout.mapping.js'></script>
-    <script type='text/javascript' src='js/lib/moment.min.js'></script>
-    <script type='text/javascript' src='js/lib/underscore-min.js'></script>
-    <script type='text/javascript' src='js/lib/underscore-ko-1.2.2.min.js'></script>
-    <script type='text/javascript' src='js/lib/backbone.js'></script>
-    <script type='text/javascript' src='js/lib/base64.js'></script>
-    <script type='text/javascript' src='js/lib/md5.js'></script>
-    <script type='text/javascript' src='js/lib/sha1.js'></script>
-    <script type='text/javascript' src='js/lib/core.js'></script>
-    <script type='text/javascript' src='js/lib/strophe.pubsub.js'></script>
-    <script type='text/javascript' src="js/LisaApi/LisaApi.js"></script>
 
     <script type='text/javascript' src='js/exampleData.js'></script>
     <script type='text/javascript' src='js/ViewController.js'></script>

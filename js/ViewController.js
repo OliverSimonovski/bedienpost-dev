@@ -299,6 +299,8 @@ var ListingsViewModel = function(){
     self.mailTo = function(incomingCall)
     {
         self.incomingCallMailTo(incomingCall);
+        console.log(incomingCall);
+        window.open("mailto:?Subject=Gemiste oproep vanaf " + incomingCall.name());
         //perform mailto functionality upon this object.
     }
 

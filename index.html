@@ -53,16 +53,28 @@
                         <h4>Active Calls</h4>
                     </div>
                     <div class="list-group queuelist">
+
                         <div class="overlay" style="display:none">
-                            <div class="span4">
+                           
+                            <div class="btn-group btn-group-justified">
+                                <div class="btn-group">
+                            
+
                                 <button class="btn btn-pickup"  type="button" data-bind="click: $root.doPickup,
                                                                                         attr: { class: $root.actionStateCssClass('pick') }">Pick-up</button>
+                                    </div>
+                                <div class="btn-group">
                                 <button class="btn btn-hangup"  type="button" data-bind="click: $root.doHangup,
-                                                                                         attr: { class: $root.actionStateCssClass('hang') }">Hang-up</button>
+
+                                                                                         attr: { class: $root.actionStateCssClass('hang') }">Hangup-up</button>
+                                    </div>
+                                <div class="btn-group">
                                 <button class="btn btn-transfer"  type="button" data-bind="click: $root.doTransfer,
                                                                                            attr: { class: $root.actionStateCssClass('transfer') }">Transfer</button>
+                                    </div>
                             </div>
-                            </div>
+                            
+                        </div>
                          <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
                                         css: { 'queue':true }">
                              <li>

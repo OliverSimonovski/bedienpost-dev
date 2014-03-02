@@ -429,6 +429,25 @@ var ListingsViewModel = function(){
         }
     }
     
+    self.firstRowCssClass = function( entry )
+    {
+        console.log("TEST " + entry);
+        if (entry != null && entry !=""){
+             return 'first-info-small';
+        } else {
+             return 'first-info-big';
+        }
+    }
+    
+    self.secondRowCssClass = function( entry )
+    {
+         if (entry != null && entry !=""){
+             return 'second-info';
+        } else {
+             return 'invisible';
+        }
+    }
+    
     self.setSearch = function(searchParam)
     {
         self.search(searchParam);
@@ -478,6 +497,19 @@ var ListingsViewModel = function(){
            } 
         }
     });
+    
+    $("#activecalls").on("mouseenter", function(){
+
+        $(".overlay").stop(true, true).fadeIn(250);
+
+    });
+
+    $("#activecalls").on("mouseleave", function(){
+
+        $(".overlay").stop(true, true).fadeOut(250);
+
+    });
+
     
     self.showButton = function(){
             $('.overlay').fadeIn(250); // slideDown(1000);
@@ -540,19 +572,34 @@ var ListingsViewModel = function(){
         self.hasFocus = false;
     });
     */
-
+    var _dragged;
     /* Drag and Drop handling */
-    
     ko.bindingHandlers.drag = {
         init: function(element, valueAccessor, allBindingsAccessor) {
             //set meta-data
             ko.utils.domData.set(element, "ko_drag_data", valueAccessor());
+             var dragElement = element;
+            var dragOptions = {
+                helper: function() {
+                    //debugger;
+                    return $(this).clone()},
+                revert: 'true',
+                appendTo: 'body',
+                containment: 'window',
+                revertDuration: 100,
+                start: function() {
+                    _dragged = ko.utils.unwrapObservable(valueAccessor().value);
+                },
+                cursor: 'default'
+            };
+            
             
             //combine options passed into binding (in dragOptions binding) with global options (in ko.bindingHandlers.drag.options)
-            var options = ko.utils.extend(ko.bindingHandlers.drag.options, allBindingsAccessor().dragOptions);
+            var options = ko.utils.extend(ko.bindingHandlers.drag.options, allBindingsAccessor.dragOptions);
             
+            //$(dragElement).draggable(dragOptions);
             //initialize draggable
-            $(element).draggable(options);
+            $(element).draggable(dragOptions).disableSelection();
         },
         options: {}   
     };
@@ -560,6 +607,14 @@ var ListingsViewModel = function(){
     ko.bindingHandlers.drop = {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
             //grab method
+             var dropElement = $(element);
+            var dropOptions = {
+                drop: function(event, ui) {
+                    valueAccessor().value(_dragged);
+                }
+            };
+            dropElement.droppable(dropOptions);
+           
             var action = ko.utils.unwrapObservable(valueAccessor());
             
             //combine options passed into binding (in dropOptions binding) with global options (in ko.bindingHandlers.drop.options)

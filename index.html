@@ -75,10 +75,10 @@
                     <div class="list-group queuelist" >
 
                        
-                         <ul data-bind="foreach: { data:  filterWaitingQueue, as: 'entry' },
+                         <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
                                         css: { 'queue_1':true }">
                              <li>
-                                <span class="badge pull-right"  >!:34:23</span>
+                                <span class="badge pull-right"  ></span>
                                 <div class="options todooptions">
                                         <i class="fa fa-arrow-circle-right"></i>
                                         <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>

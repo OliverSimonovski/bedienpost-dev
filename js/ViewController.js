@@ -195,7 +195,7 @@ var ListingsViewModel = function(){
     self.incomingCallMailTo = ko.observable();
     self.search = ko.observable();
     self.shortcutKey = ko.observable();
-    self.callingState = ko.observable('transfer');
+    self.callingState = ko.observable('onhook');
     
     
     self.currentList.subscribe(function()
@@ -284,7 +284,13 @@ var ListingsViewModel = function(){
     
     self.clickItem = function(clickedItem) 
     {
+        // Check whether the user has paid and has access to a phone.
         if (phoneIp == "") {
+            return;
+        }
+
+        // Check whether the target user is logged-in and available
+        if (!clickedItem.avail() || !clickedItem.log()){
             return;
         }
 

@@ -684,3 +684,4 @@ var ListingsViewModel = function(){
 
 var listingViewModel = new ListingsViewModel();
 ko.applyBindings(listingViewModel);
+$('.overlay').hide();

@@ -278,7 +278,9 @@ function updateUser(user) {
             incomingCallEntries.push(callObj);
         }
         if (amInCall) {
-            listingViewModel.callingState(userObj.ringing() ? "ringing" : "calling");
+            if (listingViewModel.callingState() != "transfer") { // If we're transfering, remain in that state.
+                listingViewModel.callingState(userObj.ringing() ? "ringing" : "calling");
+            }
             listingViewModel.showButton();
         } else {
             listingViewModel.callingState("onhook");

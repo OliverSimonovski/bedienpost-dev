@@ -290,17 +290,23 @@ var ListingsViewModel = function(){
         }
 
         // Check whether the user has paid and has access to a phone.
-        if (phoneIp == "") {
-            return;
-        }
+        //if (phoneIp == "") {
+        //    return;
+        //}
 
         self.clickedListItem(clickedItem);
         var name = clickedItem.name();
         self.clickedListItemName(name);
-       
-        $('#transferModal').modal({
-            keyboard: true
-        })
+
+        if (self.callingState() == "onhook") {
+            $('#callModal').modal({
+                keyboard: true
+            })    
+        } else if (phoneIp != "") {
+            $('#transferModal').modal({
+                keyboard: true
+            })
+        }
     }
     
     self.mailTo = function(incomingCall)
@@ -329,7 +335,8 @@ var ListingsViewModel = function(){
     self.actionCalling = function(item)
     {
         var toCall = self.clickedListItem().ext().split(",")[0];
-        callUser(toCall);
+        conn.dialNumber(toCall);
+        //callUser(toCall);
     }
     
     self.actionTransfer = function()

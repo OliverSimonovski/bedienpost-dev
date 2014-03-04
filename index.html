@@ -44,7 +44,7 @@
     </head>
   <body >
     <div id="wrap">
-        <div class="container">
+        <div class="container" data-bind="drop: markUserFavorite">
              
            <div class='row nopadding'>
             
@@ -131,7 +131,7 @@
                 </div>
                  </div>
             <div class='row nopadding'>
-                 <div class='col-md-6 offset-6' data-bind="drop: markUserFavorite">
+                 <div class='col-md-6 offset-6'>
                         <div class="header">
                             <h4>Favorite List</h4>
                         </div>
@@ -143,7 +143,7 @@
                         !-->
                         <div class="list-group list">
                              <ul data-bind=" foreach: { data:  favFilteredItems, as: 'entry' },
-                                                        css: { 'curl':true }">
+                                                        css: { 'curl':true }, drop: markUserFavorite">
                                 <li class="list-group-item" data-bind="click: $root.clickItem, drag: entry" > 
                                      <div class="options todooptions">
                                         <span class="badge pull-right" data-bind="text: ($root.search() == '') ? $root.favFilteredItems().indexOf(entry) : '' "></span>

@@ -121,10 +121,11 @@ QueueListItem.storageKey = function() {
     return USERNAME + "@" + SERVER + "_QueueListFavs";
 }
 
-function CallListItem(id, name, startTime) {
+function CallListItem(id, name, startTime, directionIsOut) {
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
     this.callStartTime = ko.observable(startTime          || 0);
+    this.directionIsOut = ko.observable(directionIsOut    || false);
 
     this.timeConnected = ko.computed(function() 
     {

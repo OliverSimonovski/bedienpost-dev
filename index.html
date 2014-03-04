@@ -80,7 +80,7 @@
                              <li>
                                 <span class="badge pull-right"  ></span>
                                 <div class="options todooptions">
-                                        <i class="fa fa-arrow-circle-right"></i>
+                                        <i class="fa" data-bind= "attr: { class: (entry.directionIsOut()) ? 'fa fa-arrow-circle-right' : 'fa fa-arrow-circle-left'}"></i>
                                         <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
                                  </div>
                                 <label> 

@@ -170,6 +170,8 @@ function getCallInfo(call, user) {
     callInfo = {};
 
     if ((call.sourceUser) && (call.sourceUser == user)) {
+            // Outgoing call
+            callInfo.directionIsOut = true;
             if (call.destinationUser) {
                 callInfo.number = call.destinationUser.extension;
                 callInfo.name = call.destinationUser.name;
@@ -178,6 +180,8 @@ function getCallInfo(call, user) {
                 callInfo.number = call.destination.find('number').text();// + " - [" + timeString + "]";
             }
         } else {
+            // Incoming call
+            callInfo.directionIsOut = false;
             if (call.sourceUser) {
                 callInfo.number = call.sourceUser.extension;
                 callInfo.name = call.sourceUser.name;
@@ -270,7 +274,7 @@ function updateUser(user) {
             var call = user.calls[key];
             var callInfo = getCallInfo(call, user);
 
-            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime);
+            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut);
             incomingCallEntries.push(callObj);
         }
         if (amInCall) {

@@ -314,7 +314,7 @@ function callUser(number) {
         return;
     }
 
-    var url = "CANCEL;";
+    var url = "TRANSFER;";
     var extension = number;
     for ( var i = 0; i < extension.length; i++ ) {
         url += extension.charAt(i) + ";";

@@ -62,7 +62,16 @@ body {
     width:25%;
 }
 
-#connectModal .modal-dialog
+#connectModal #transferModal .modal-dialog
+{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:35%;
+}
+
+#transferModal .modal-dialog
 {
     margin: 0;
     position: absolute;

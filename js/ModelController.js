@@ -362,6 +362,10 @@ function attendedtransferToUser(number) {
     }, 1000);
 }
 
+function finishAttendedTransfer() {
+    phoneCommand("TRANSFER");    
+}
+
 function pickupPhone() {
     phoneCommand("ENTER");
 }

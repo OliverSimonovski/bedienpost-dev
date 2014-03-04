@@ -284,13 +284,13 @@ var ListingsViewModel = function(){
     
     self.clickItem = function(clickedItem) 
     {
-        // Check whether the user has paid and has access to a phone.
-        if (phoneIp == "") {
+        // Check whether the target user is logged-in and available
+        if (!clickedItem.avail() || !clickedItem.log()){
             return;
         }
 
-        // Check whether the target user is logged-in and available
-        if (!clickedItem.avail() || !clickedItem.log()){
+        // Check whether the user has paid and has access to a phone.
+        if (phoneIp == "") {
             return;
         }
 
@@ -298,7 +298,7 @@ var ListingsViewModel = function(){
         var name = clickedItem.name();
         self.clickedListItemName(name);
        
-        $('#connectModal').modal({
+        $('#transferModal').modal({
             keyboard: true
         })
     }
@@ -332,10 +332,17 @@ var ListingsViewModel = function(){
         callUser(toCall);
     }
     
-    self.actionConnectThrough = function()
+    self.actionTransfer = function()
     {
         var toCall = self.clickedListItem().ext().split(",")[0];
         transferToUser(toCall);
+    }
+
+    self.actionTransferAttended = function()
+    {
+        self.callingState("transfer");
+        var toCall = self.clickedListItem().ext().split(",")[0];
+        attendedtransferToUser(toCall);
     }
     
     self.cancelLogin = function()
@@ -355,7 +362,7 @@ var ListingsViewModel = function(){
     
     self.doTransfer = function()
     {
-        
+        finishAttendedTransfer();    
     }
     
     self.doLogin = function()
@@ -430,8 +437,6 @@ var ListingsViewModel = function(){
     
     self.actionStateCssClass = function( current )
     {
-        console.log(self.callingState());
-        console.log(current);
         if(self.callingState() == "ringing" && current == 'pick'){
              return 'btn btn-pickup';
         } else if (self.callingState() == "calling" && current == 'hang'){

@@ -230,17 +230,17 @@
             </div>
         
     <!-- Modal -->
-    <div class="modal fade" id="connectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="transferModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">How to connect with <span data-bind="text: $root.clickedListItemName"></span>?</h4>
+            <h4 class="modal-title" id="myModalLabel">How to transfer to <span data-bind="text: $root.clickedListItemName"></span>?</h4>
           </div>
           <div class="modal-body">
                 <div class="span3">
-                 <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Doorverbinden</button>
-                <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Bellen</button>
+                 <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionTransfer">Unattended Transfer</button>
+                <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionTransferAttended">Attended Transfer</button>
                
             </div>
           </div>

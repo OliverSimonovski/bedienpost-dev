@@ -525,8 +525,9 @@ var ListingsViewModel = function(){
     });
     
     $("#activecalls").on("mouseenter", function(){
-
-        $(".overlay").stop(true, true).fadeIn(250);
+        if (phoneIp != "") {
+            $(".overlay").stop(true, true).fadeIn(250);
+        }
 
     });
 
@@ -538,7 +539,9 @@ var ListingsViewModel = function(){
 
     
     self.showButton = function(){
-            $('.overlay').fadeIn(250); // slideDown(1000);
+            if (phoneIp != "") {
+                $('.overlay').fadeIn(250); // slideDown(1000);
+            }
         }
      self.hideButton = function(){
             $('.overlay').fadeOut(250);  // slideUp(1000);

@@ -78,7 +78,7 @@
                          <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
                                         css: { 'queue_1':true }">
                              <li>
-                                <span class="badge pull-right"  ></span>
+                                <span class="badge pull-right" data-bind="text: entry.timeConnected"  ></span>
                                 <div class="options todooptions">
                                         <i class="fa" data-bind= "attr: { class: (entry.directionIsOut()) ? 'fa fa-arrow-circle-right' : 'fa fa-arrow-circle-left'}"></i>
                                         <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>

@@ -68,36 +68,6 @@ function login(login, password, server) {
     getPhoneAuth(USERNAME,SERVER,PASS);
 }
 
-// Retrieve SSL BOSH session from the QED giveSession script
-function connectWithGiveSession(SERVER, USERNAME, PASS) {
-    var giveSessionUrl = SERVER.replace("uc.", "https://www.");
-    giveSessionUrl += "/qed/givesession.php?username="+USERNAME+"&token="+PASS+"&server="+SERVER;
-    console.log(giveSessionUrl);
-
-    $.ajax({url: giveSessionUrl,
-              success: function(response, textStatus) {
-                  try {
-                    var session = JSON.parse(response);
-                    conn.bosh_port = session.port;
-                    conn.use_ssl = true;
-                    conn.attach(SERVER, session.jid, session.sid[0], session.rid);
-                  } catch(err) {
-                    console.log("Error while attaching to session: " + err);
-                  }
-                  
-              },
-              error: function(jqXHR, textStatus, errorThrown) {
-                              if (jqXHR.status == 403) {
-                                      console.log("Couldn't connect to server.. Check username &amp; password.");
-                                      listingViewModel.authError(true);
-                                      alert("Authentication failed. Please re-enter your username and password and try again.");
-                              } else {
-                                      console.log("Error occured: " + textStatus + "<br/>" + errorThrown);
-                              }
-              }
-            });
-}
-
 // Get configuration for the phone from the server.
 function getPhoneAuth(user, server, pass) {
     

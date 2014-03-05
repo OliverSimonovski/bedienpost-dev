@@ -136,13 +136,24 @@ function connectionStatusCallback(status) {
 }
 
 function logout() {
-        $('#loginModal').modal({
+    // Show the login modal
+    $('#loginModal').modal({
             keyboard: true
     })
+    listingViewModel.loginPass("");
+
+    // Remove the between-session login information.
     var loginInfo = {};
     loginInfo.loggedIn = false;
     localStorage.setItem("loginInfo", JSON.stringify(loginInfo));  
-    conn.disconnect();  
+
+    // Actual disconnect
+    conn.disconnect();
+
+    // Empty on-screen lists.
+    userListEntries.removeAll();
+    queueListEntries.removeAll();
+
 }
 
 function gotModel(newmodel) {

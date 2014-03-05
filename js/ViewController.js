@@ -318,6 +318,11 @@ var ListingsViewModel = function(){
         //perform mailto functionality upon this object.
     }
 
+    self.logOut = function(item) {
+        console.log("Logging out");
+        logout();
+    }
+
     // no updating appearing in the UI .. omehow the values do seem to update in the array.. is the accoring value missing bindings?
     // another question: should you be able to mark the ones you aren't logged into as favorite?
     self.markQueueFavorite = function(favorite)

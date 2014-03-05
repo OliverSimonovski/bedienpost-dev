@@ -418,9 +418,9 @@ Lisa.Connection = function() {
 		 * since this is typically called
 		 * onUnload.
 		 */
-		this.connection.sync = true;
-		this.connection.flush();
-		this.connection.disconnect();
+		Lisa.Connection.connection.sync = true;
+		Lisa.Connection.connection.flush();
+		Lisa.Connection.connection.disconnect();
 	},
 
 	this.sendIQ = function(iq) {
@@ -446,6 +446,7 @@ Lisa.Connection = function() {
 		var bosh_service = protocol + '://' + server + ':' + this.bosh_port
 				+ '/http-bind';
 		connection = new Strophe.Connection(bosh_service);
+		Lisa.Connection.connection = connection;
 		if (this.log_xmpp) {
 			connection.rawInput = this.logging.logInput;
 			connection.rawOutput = this.logging.logOutput;

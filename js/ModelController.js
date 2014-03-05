@@ -20,8 +20,15 @@ $(document).ready(function () {
     var urlvars = getUrlVars();
     if (urlvars["login"])   {
         login(urlvars.login, urlvars.pass);
+        return;
     }
-  
+
+    var loginInfo = localStorage.getItem("loginInfo");
+    if (loginInfo) loginInfo = JSON.parse(loginInfo);
+    if ((loginInfo != null) && loginInfo.loggedIn) {
+        console.log("Was previously logged in. Automatically logging in as " + loginInfo.username + "@" + loginInfo.server);
+        login(loginInfo.username, loginInfo.password, loginInfo.server);
+    }    
 });
 
 function login(login, password, server) {
@@ -32,6 +39,9 @@ function login(login, password, server) {
     SERVER = SERVER || server;
     SERVER = SERVER || "uc.pbx.speakup-telecom.com";
     PASS = password;
+
+    listingViewModel.loginName(USERNAME);
+    listingViewModel.loginServer(SERVER);
 
     listingViewModel.authError(false);
 
@@ -125,8 +135,25 @@ function connectionStatusCallback(status) {
     }
 }
 
+function logout() {
+        $('#loginModal').modal({
+            keyboard: true
+    })
+    var loginInfo = {};
+    loginInfo.loggedIn = false;
+    localStorage.setItem("loginInfo", JSON.stringify(loginInfo));  
+    conn.disconnect();  
+}
+
 function gotModel(newmodel) {
     // Show interface
+    var loginInfo = {};
+    loginInfo.loggedIn = true;
+    loginInfo.username = USERNAME;
+    loginInfo.password = PASS;
+    loginInfo.server = SERVER;
+    localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
+
     
     model = newmodel;
     me = model.users[Lisa.Connection.myUserId];

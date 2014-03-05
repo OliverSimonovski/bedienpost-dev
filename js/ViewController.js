@@ -467,7 +467,6 @@ var ListingsViewModel = function(){
     
     self.firstRowCssClass = function( entry )
     {
-        console.log("TEST " + entry);
         if (entry != null && entry !=""){
              return 'first-info-small';
         } else {

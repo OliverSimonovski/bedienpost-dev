@@ -178,6 +178,21 @@ Lisa.Call = function() {
 		return "(Call:" + this.id + ",f:" + this.source + ",t:"
 				+ this.destination + ")";
 	}
+
+	this.removeUser = function(user) {
+		if (!user) {
+			Lisa.Connection.logging.warn("MODEL::Call - Tried to remove user, but user is NULL");
+			return;	
+		}
+
+		if (this.sourceUser == user) {
+			delete this.sourceUser.calls[this.id];
+		}
+		if (this.destinationUser == user) {
+			delete this.destinationUser.calls[this.id];
+		}
+		user.observable.notify(user);
+	}
 }
 
 /**
@@ -199,7 +214,7 @@ Lisa.Model = function() {
 		var newCall = (this.calls[call.id] == null);
 		this.calls[call.id] = call;
 		
-		Lisa.Connection.logging.log("MODEL: Added or updated call " + call);
+		Lisa.Connection.logging.log("MODEL: " + ((newCall) ? "Added" : "Updated") + " call " + call);
 		if (newCall) {
 			this.callListObservable.notify(call, 'add');
 		} else {
@@ -1064,7 +1079,6 @@ Lisa.Connection = function() {
 
 		notification.children().each(function(user) {
 			return function (idx, child) {
-				console.log(child);
 				if (child.nodeName == "propertyChange") {
 					var name = $(child).find("name").text();
 					var value = $(child).find("newValue").text();
@@ -1127,12 +1141,19 @@ Lisa.Connection = function() {
             	                        " already ended source. Not adding to model.");
             return null;
         }
-		callModel.source = src;
+		
+		var sourceUser = null
 		if (src.attr('type') == 'User') {
 			var userId = src.find('userId').text();
-			var user = findOrCreateUser(userId);
-			callModel.sourceUser = user;
+			var sourceUser = findOrCreateUser(userId);
 		}
+		// Remove the call from the original source user; 
+		// After changing the sourceUser, we won't remember the original sourceuser anymore.
+		if (callModel.sourceUser && (callModel.sourceUser != sourceUser)) {
+			callModel.removeUser(callModel.sourceUser);
+		}
+		callModel.sourceUser = sourceUser;
+		callModel.source = src;
 
 		// Destination
 		var dst = call.find('destination');
@@ -1141,12 +1162,20 @@ Lisa.Connection = function() {
             						    " already ended destination. Not adding to model.");
             return null;
         }
-		callModel.destination = dst;
+		
+		var destinationUser = null;
 		if (dst.attr('type') == 'User') {
 			var userId = dst.find('userId').text();
-			var user = findOrCreateUser(userId);
-			callModel.destinationUser = user;
+			var destinationUser = findOrCreateUser(userId);
+			
 		}
+		// Remove the call from the original destination user; 
+		// After changing the destinationUser, we won't remember the original destinationUser anymore.
+		if (callModel.destinationUser && (callModel.destinationUser != destinationUser)) {
+			callModel.removeUser(callModel.destinationUser);
+		}
+		callModel.destinationUser = destinationUser;
+		callModel.destination = dst;
 
         callModel.state = call.find('state').text();
 

@@ -33,6 +33,8 @@ function login(login, password, server) {
     SERVER = SERVER || "uc.pbx.speakup-telecom.com";
     PASS = password;
 
+    listingViewModel.authError(false);
+
     conn = new Lisa.Connection();
     conn.log_xmpp = true; // Development
 
@@ -87,6 +89,7 @@ function connectWithGiveSession(SERVER, USERNAME, PASS) {
               error: function(jqXHR, textStatus, errorThrown) {
                               if (jqXHR.status == 403) {
                                       console.log("Couldn't connect to server.. Check username &amp; password.");
+                                      listingViewModel.authError(true);
                                       alert("Authentication failed. Please re-enter your username and password and try again.");
                               } else {
                                       console.log("Error occured: " + textStatus + "<br/>" + errorThrown);
@@ -147,6 +150,7 @@ function connectionStatusCallback(status) {
     if (status == Strophe.Status.CONNFAIL) {
     } else if (status == Strophe.Status.DISCONNECTED) {
     } else if (status == Strophe.Status.AUTHFAIL) {
+        listingViewModel.authError(true);
         alert("Authentication failed. Please re-enter your username and password and try again.");
     }
 }

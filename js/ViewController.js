@@ -196,6 +196,7 @@ var ListingsViewModel = function(){
     self.search = ko.observable();
     self.shortcutKey = ko.observable();
     self.callingState = ko.observable('onhook');
+    self.authError = ko.observable(false);
     
     
     self.currentList.subscribe(function()
@@ -453,6 +454,10 @@ var ListingsViewModel = function(){
         } else {
             return 'btn btn-inactive';
         }
+    }
+
+    self.loginFieldsCssClass = function() {
+
     }
     
     self.firstRowCssClass = function( entry )

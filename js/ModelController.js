@@ -326,10 +326,6 @@ _.intersectOnId = function(array) {
   };
 
 function mergeCallEntriesList(newEntries) {
-    console.log("########################### mergeCallEntriesList");
-    console.log(ko.mapping.toJS(newEntries));
-    console.log(ko.mapping.toJS(incomingCallEntries()));
-
     // Handle deletion of calls that aren't running anymore.
     for (key in incomingCallEntries()) {
         var oldEntry = incomingCallEntries()[key];
@@ -346,9 +342,7 @@ function mergeCallEntriesList(newEntries) {
 
         if (!stillExists) {
             console.log ("Call involving " + oldEntry.name() + " with id " + oldEntry.id() + " Doesn't exist anymore. Deleting.");
-            console.log(ko.mapping.toJS(incomingCallEntries()));
             incomingCallEntries.remove(oldEntry);
-            console.log(ko.mapping.toJS(incomingCallEntries()));
             delete callIdToCallObservable[oldEntry.id];
         }
     }
@@ -366,9 +360,6 @@ function mergeCallEntriesList(newEntries) {
             incomingCallEntries.push(newEntry);    
         }
     }
-
-    console.log("################### current calls");
-    console.log(ko.mapping.toJS(incomingCallEntries()));
 }
 
 function addQueue(queue) {

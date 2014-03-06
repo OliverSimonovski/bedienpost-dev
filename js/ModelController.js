@@ -13,6 +13,7 @@ var restUrl = "";
 
 var userIdToUserObservable = [];
 var queueIdToQueueObservable = [];
+var callIdToCallObservable = [];
 
 $(document).ready(function () {
 
@@ -278,17 +279,20 @@ function updateUser(user) {
     userObj = userToClientModel(user, userObj);
 
     // The user is us
+    var newIncomingCallEntries = [];
     if (user.id == Lisa.Connection.myUserId) {
-        incomingCallEntries.removeAll();
+        //incomingCallEntries.removeAll();
         var amInCall = false;
         for (key in user.calls) {
             amInCall = true;
             var call = user.calls[key];
-            var callInfo = getCallInfo(call, user);
 
+            var callInfo = getCallInfo(call, user);
             var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut);
-            incomingCallEntries.push(callObj);
+            newIncomingCallEntries.push(callObj);
         }
+        mergeCallEntriesList(newIncomingCallEntries);
+
         if (amInCall) {
             if (listingViewModel.callingState() != "transfer") { // If we're transfering, remain in that state.
                 listingViewModel.callingState(userObj.ringing() ? "ringing" : "calling");
@@ -301,6 +305,70 @@ function updateUser(user) {
     }
 
     return userObj;
+}
+
+function idEqual(a,b) {
+    if (a != b) {
+        return a.id === b.id;
+    }
+    return true;
+}
+
+_.intersectOnId = function(array) {
+    var slice = Array.prototype.slice; // added this line as a utility
+    var rest = slice.call(arguments, 1);
+    return _.filter(_.uniq(array), function(item) {
+      return _.every(rest, function(other) {
+        //return _.indexOf(other, item) >= 0;
+        return _.any(other, function(element) { return idEqual(element, item); });
+      });
+    });
+  };
+
+function mergeCallEntriesList(newEntries) {
+    console.log("########################### mergeCallEntriesList");
+    console.log(ko.mapping.toJS(newEntries));
+    console.log(ko.mapping.toJS(incomingCallEntries()));
+
+    // Handle deletion of calls that aren't running anymore.
+    for (key in incomingCallEntries()) {
+        var oldEntry = incomingCallEntries()[key];
+
+        // Determine for each call whether it still exists.
+        var stillExists = false;
+        for (newEntryKey in newEntries) {
+            var newEntry = newEntries[newEntryKey];
+            if (newEntry.id() == oldEntry.id()) {
+                stillExists = true;
+                continue;
+            }
+        }
+
+        if (!stillExists) {
+            console.log ("Call involving " + oldEntry.name() + " with id " + oldEntry.id() + " Doesn't exist anymore. Deleting.");
+            console.log(ko.mapping.toJS(incomingCallEntries()));
+            incomingCallEntries.remove(oldEntry);
+            console.log(ko.mapping.toJS(incomingCallEntries()));
+            delete callIdToCallObservable[oldEntry.id];
+        }
+    }
+
+    // Add and update all currently running calls.
+    for (newEntryKey in newEntries) {
+        var newEntry = newEntries[newEntryKey];
+        var oldEntry = callIdToCallObservable[newEntry.id()];
+        if (oldEntry) {
+            console.log("Merging new call info from call: " + newEntry.id() );
+            ko.mapping.fromJS(newEntry, oldEntry);    
+        } else {
+            console.log("Adding call " + newEntry.id() );
+            callIdToCallObservable[newEntry.id()] = newEntry;
+            incomingCallEntries.push(newEntry);    
+        }
+    }
+
+    console.log("################### current calls");
+    console.log(ko.mapping.toJS(incomingCallEntries()));
 }
 
 function addQueue(queue) {

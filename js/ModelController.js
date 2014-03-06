@@ -342,7 +342,8 @@ function mergeCallEntriesList(newEntries) {
 
         if (!stillExists) {
             console.log ("Call involving " + oldEntry.name() + " with id " + oldEntry.id() + " Doesn't exist anymore. Deleting.");
-            incomingCallEntries.remove(oldEntry);
+            //incomingCallEntries.remove(oldEntry);
+            oldEntry.stopCall();
             delete callIdToCallObservable[oldEntry.id];
         }
     }

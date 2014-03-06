@@ -122,6 +122,8 @@ QueueListItem.storageKey = function() {
 }
 
 function CallListItem(id, name, startTime, directionIsOut) {
+    _.bindAll(this, 'stopCall');
+
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
     this.callStartTime = ko.observable(startTime          || 0);
@@ -145,6 +147,18 @@ function CallListItem(id, name, startTime, directionIsOut) {
         return timeString;
         
     }, this);
+}
+
+CallListItem.prototype.stopCall = function() {
+    this.callStartTime(0);
+    this.name(this.name() + " - Finished");
+    _.delay(
+        function(self) {
+            return function() {
+                incomingCallEntries.remove(self);
+            }
+        }(this)
+    , 10000);
 }
 
 

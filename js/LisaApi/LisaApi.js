@@ -513,7 +513,7 @@ Lisa.Connection = function() {
             Lisa.Connection.restUserUrl + "/dialNumber",
             {destination: number},
             function (response){
-                console.log("Issued call to " + number);
+                Lisa.Connection.logging.log("Issued call to " + number);
             }
         );
 	}
@@ -526,36 +526,69 @@ Lisa.Connection = function() {
             Lisa.Connection.restUserUrl + "/dialUser",
             {callee: targetUserUrl},
             function (response){
-                console.log("Issued call to " + user);
+                Lisa.Connection.logging.log("Issued call to " + user);
             }
         );
     }
 
-	/** Have the current user logon to a queue */
+	/** Have the current user logon to a queue*/
 	this.queueLogin = function(queue) {
+        // First, see whether we have any previous settings stored for the queue.
+        var fromLs = localStorage.getItem(localStorageKeyForQueue(queue));
+        var settingsObj = (fromLs) ? JSON.parse(fromLs) : {};
+        this.queueLoginWithSettings(queue, settingsObj.priority || 1, settingsObj.callForward || false);
+	}
+
+    /** Have the current user logon to a queue with known settings*/
+    this.queueLoginWithSettings = function(queue, priority, callForward) {
         var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
-        Lisa.Connection.logging.log("Logging in to queue " + queueId);
+        Lisa.Connection.logging.log("Logging in to queue " + queueId
+                                    + " with priority " + priority + " and follow-forwards " + callForward);
         restAjaxRequest(
             Lisa.Connection.restIdentityUrl + "/loginQueue",
-            {queue:queueId, priority:1, callForward:false},
+            {queue:queueId, priority:priority, callForward:callForward},
             function (response){
-                console.log("Logged onto queue" + queue);
+                Lisa.Connection.logging.log("Logged onto queue" + queue);
             }
+        )
+    }
+
+	/** Have the current user log out of a queue */
+	this.queueLogout = function(queue) {
+
+        // First, retrieve any queue membership settings, so we can
+        // set these settings correctly upon logging in again.
+        restAjaxRequest(
+            Lisa.Connection.restIdentityUrl + "/queueMemberships",
+            null,
+            function(queue) {
+                return function (response){
+                    // Store current queue settings
+                    var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
+                    var currentSettings = _.where(response, {queue: queueId})[0];
+                    var settingsObj = {priority: currentSettings.priority, callForward: currentSettings.callForward};
+                    Lisa.Connection.logging.log("Storing settings " + JSON.stringify(settingsObj) + " for queue " + queue + " on logout.");
+                    localStorage.setItem(localStorageKeyForQueue(queue), JSON.stringify(settingsObj));
+
+                    // then, logout of the queue.
+                    Lisa.Connection.logging.log("Logging out of queue " + queueId);
+                    restAjaxRequest(
+                        Lisa.Connection.restIdentityUrl + "/logoutQueue",
+                        {queue:queueId},
+                        function (response){
+                            Lisa.Connection.logging.log("Logged out of queue" + queue);
+                        }
+                    )
+                }
+            }(queue),
+            null,
+            "GET"
         )
 	}
 
-	/** Have the current user log out of a queue */
-	this.queueLogout = function(queue, user) {
-        var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
-        Lisa.Connection.logging.log("Logging out of queue " + queueId);
-        restAjaxRequest(
-            Lisa.Connection.restIdentityUrl + "/logoutQueue",
-            {queue:queueId},
-            function (response){
-                console.log("Logged onto queue" + queue);
-            }
-        )
-	}
+    function localStorageKeyForQueue(queue) {
+        return "queueSettings_" + queue.id;
+    }
 
 	/*
 	 * One-off getters
@@ -674,7 +707,7 @@ Lisa.Connection = function() {
 			id : connection.getUniqueId('lisa')
 		}).c('request', {
 			xmlns : Strophe.NS.LISA_REQUESTS,
-			type: 'GET_COMPANY',
+			type: 'GET_COMPANY'
 		});
 		connection.sendIQ(iq, callback(onGetCompany), function() {
 			initDeferred.reject("Service is down.");

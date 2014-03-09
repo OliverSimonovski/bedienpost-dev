@@ -364,6 +364,11 @@ Lisa.Connection = function() {
 	Lisa.Connection.model = new Lisa.Model();
 	Lisa.Connection.myUserId = 0;
 	Lisa.Connection.userName = "";
+    Lisa.Connection.password = "";
+    Lisa.Connection.server = "";
+	Lisa.Connection.restServer = "";
+    Lisa.Connection.restUserUrl = "";
+    Lisa.Connection.restIdentityUrl = "";
 
 	// === Local variables
 	var self = this;
@@ -395,6 +400,7 @@ Lisa.Connection = function() {
 	this.connect = function(server, username, password, resource) {
 
 		this.setupConnection(server, username);
+        Lisa.Connection.password = password;
 
 		// Configuration
 		resource = resource || "LisaApi" + "_" + randomstring(10);
@@ -404,7 +410,10 @@ Lisa.Connection = function() {
 		connection.connect(jid, password, connectionStatusChanged);
 	}
 
-	/** Attach to a previous BOSH session * */
+	/** Attach to a previous BOSH session
+     *  Note: Doesn't store the password, and as such disables
+     *  use of functions that use the REST api such as
+     *  dialNumber, dialUser, queueLogin, and queueLogout */
 	this.attach = function(server, jid, sid, rid) {
 
 		var username = jid.substring(0, jid.indexOf('@'));
@@ -495,73 +504,57 @@ Lisa.Connection = function() {
 
 	/*
 	 * Actions
-	 *
-	 * BEWARE: Each of these functions is UNSUPPORTED, and might disappear or stop working
-	 * at any moment, without prior notice.
 	 */
 
-	/** Have the current user dial a phone-numer. -UNSUPPORTED- */
+	/** Have the current user dial a phone-numer.*/
 	this.dialNumber = function(number) {
-		var iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
-			type : 'set',
-			id : connection.getUniqueId('lisa')
-		}).c('request', {
-			xmlns : Strophe.NS.LISA_REQUESTS,
-			type: 'ACTION',
-		}).c('action', {
-			name : 'dial'
-		}).c('destinationNumber').t(number);
-		return this.sendIQ(iq);
+		Lisa.Connection.logging.log("Calling " + number);
+        restAjaxRequest(
+            Lisa.Connection.restUserUrl + "/dialNumber",
+            {destination: number},
+            function (response){
+                console.log("Issued call to " + number);
+            }
+        );
 	}
 
-	/** Have the current user dial another user -UNSUPPORTED- */
-	this.dialUser = function(user) { // user-object.
-		var iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
-			type : 'set',
-			id : connection.getUniqueId('lisa')
-		}).c('request', {
-			xmlns : Strophe.NS.LISA_REQUESTS,
-			type: 'ACTION',
-		}).c('action', {
-			name : 'dial'
-		}).c('destinationUserId').t(user.id);
-		return this.sendIQ(iq);
+	/** Have the current user dial another user */
+	this.dialUser = function(user) {
+        Lisa.Connection.logging.log("Calling " + user);
+        var targetUserUrl = "https://" + Lisa.Connection.restServer + "/user/" + user.id;
+        restAjaxRequest(
+            Lisa.Connection.restUserUrl + "/dialUser",
+            {callee: targetUserUrl},
+            function (response){
+                console.log("Issued call to " + user);
+            }
+        );
+    }
+
+	/** Have the current user logon to a queue */
+	this.queueLogin = function(queue) {
+        var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
+        Lisa.Connection.logging.log("Logging in to queue " + queueId);
+        restAjaxRequest(
+            Lisa.Connection.restIdentityUrl + "/loginQueue",
+            {queue:queueId, priority:1, callForward:false},
+            function (response){
+                console.log("Logged onto queue" + queue);
+            }
+        )
 	}
 
-	/** Have the current user logon to a queue -UNSUPPORTED- */
-	this.queueLogin = function(queue, user) {
-		var userId = user ? user.userId : Lisa.Connection.myUserId;
-
-		var iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
-			type : 'set',
-			id : connection.getUniqueId('lisa')
-		}).c('request', {
-			xmlns : Strophe.NS.LISA_REQUESTS,
-			type : 'ACTION',
-		}).c('action', {
-			name : 'queue-login',
-		}).c('userId').t(userId).up().c('queueId').t(queue.id);
-		return this.sendIQ(iq);
-	}
-
-	/** Have the current user log out of a queue -UNSUPPORTED- */
+	/** Have the current user log out of a queue */
 	this.queueLogout = function(queue, user) {
-		var userId = user ? user.userId : Lisa.Connection.myUserId;
-
-		var iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
-			type : 'set',
-			id : connection.getUniqueId('lisa')
-		}).c('request', {
-			xmlns : Strophe.NS.LISA_REQUESTS,
-			type : 'ACTION',
-		}).c('action', {
-			name : 'queue-logout',
-		}).c('userId').t(userId).up().c('queueId').t(queue.id);
-		return this.sendIQ(iq);
+        var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
+        Lisa.Connection.logging.log("Logging out of queue " + queueId);
+        restAjaxRequest(
+            Lisa.Connection.restIdentityUrl + "/logoutQueue",
+            {queue:queueId},
+            function (response){
+                console.log("Logged onto queue" + queue);
+            }
+        )
 	}
 
 	/*
@@ -734,6 +727,41 @@ Lisa.Connection = function() {
 
 	}
 
+    function setupRest() {
+        console.log("############## Setting up rest.")
+        // Setup REST server & often-used urls
+        Lisa.Connection.restServer = Lisa.Connection.server.replace("uc.", "rest.");
+        Lisa.Connection.restUserUrl = "https://" + Lisa.Connection.restServer + "/user/" + Lisa.Connection.myUserId;
+        Lisa.Connection.restAuthHeader = "Basic " + btoa(Lisa.Connection.userName + ":" + Lisa.Connection.password);
+
+        // Retrieve the identity
+        restAjaxRequest(
+            Lisa.Connection.restUserUrl + "/identities",
+            null,
+            function(response) {
+                Lisa.Connection.restIdentityUrl = _.where(response, {order: 0})[0].self;
+            },
+            null,
+            "GET"
+        )
+    }
+
+    function restAjaxRequest(url, data, success, error, method) {
+        $.ajax
+        ({
+            type: method || "POST",
+            headers: {
+                "Authorization": Lisa.Connection.restAuthHeader,
+                "X-No-Redirect": true
+            },
+            url: url,
+            dataType: 'json',
+            data: JSON.stringify(data),
+            success: success,
+            error: error
+        });
+    }
+
 	function processUser(xml) {
 		$(xml).find('result').children().each(
 				function(idx, user) {
@@ -747,9 +775,12 @@ Lisa.Connection = function() {
 						Lisa.Connection.myUserId = userModel.id;
 						Lisa.Connection.logging.log("INFO: Found my userid: "
 								+ Lisa.Connection.myUserId);
+                        usersDone = true;
+
+                        // Now we have an User ID, Setup REST
+                        setupRest();
 					}
 				});
-		usersDone = true;
 		isModelComplete();
 	}
 

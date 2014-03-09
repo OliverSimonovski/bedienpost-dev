@@ -105,6 +105,7 @@ function getPhoneAuth(user, server, pass) {
             phoneUser = responseObj.phoneUser;
             phonePass = responseObj.phonePass;
             console.log("Configured authentication information for phone on " + phoneIp);
+            console.log(navigator.userAgent);
             if (navigator.userAgent.indexOf("Chrome") != -1) {
                 chromeLoginPhone();
             }
@@ -117,6 +118,7 @@ function getPhoneAuth(user, server, pass) {
 
 // Bit of a hack to allow Chrome to logon to the phone automatically.
 function chromeLoginPhone() {
+    console.log("ChromeLogin");
     var iframe = document.createElement("IFRAME");
     $(iframe).hide();
     iframe.setAttribute("src", "http://"+phoneUser+":"+phonePass+"@" + phoneIp);

@@ -145,7 +145,7 @@
                                                         css: { 'curl':true }, drop: markUserFavorite">
                                 <li class="list-group-item" data-bind="click: $root.clickItem, drag: entry" > 
                                      <div class="options todooptions">
-                                        <span class="badge pull-right" data-bind="text: ($root.search() == '') ? $root.favFilteredItems().indexOf(entry) : '' "></span>
+                                        <span class="badge pull-right" data-bind="text: ($root.search() == '') ? ($root.favFilteredItems().indexOf(entry) < 10 ? $root.favFilteredItems().indexOf(entry) : '' ) : '' "></span>
                                     </div>
                                     <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                         <div class="status">
@@ -199,7 +199,7 @@
                          <ul data-bind="foreach: { data:  filteredItems, as: 'entry' }">
                              <li class="list-group-item" data-bind="click: $root.clickItem , drag: entry">
                                  <div class="options todooptions">
-                                     <span class="badge pull-right" data-bind="text: ($root.search() != '') ? $root.filteredItems().indexOf(entry) : '' "></span>
+                                     <span class="badge pull-right" data-bind="text: ($root.search() != '') ? ($root.filteredItems().indexOf(entry) < 10 ? $root.filteredItems().indexOf(entry) : '' ) : '' "></span>
                                 </div>
                                  <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                     <div class="status">

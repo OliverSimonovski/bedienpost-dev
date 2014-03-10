@@ -327,7 +327,6 @@ var ListingsViewModel = function(){
     self.mailTo = function(incomingCall)
     {
         self.incomingCallMailTo(incomingCall);
-        console.log(incomingCall);
         window.open("mailto:?Subject=Gemiste oproep vanaf " + incomingCall.name());
         //perform mailto functionality upon this object.
     }
@@ -503,7 +502,6 @@ var ListingsViewModel = function(){
     }
 
     self.markUserFavorite = function(item) {
-         console.log(item);
         item.favorite(true);
         UserListItem.saveFavs(self.currentList().entries());
     }
@@ -529,7 +527,6 @@ var ListingsViewModel = function(){
     
     $( "#inputField" ).keypress(function(e)
     {
-         console.log(e.which);
         var searchParam = self.search();
         if(searchParam){
            if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
@@ -573,7 +570,6 @@ var ListingsViewModel = function(){
     $( document ).keypress(function(e)
     {
         // ugly code ... should be a better way... for later to cleanup -> might make a keyFunction..
-        console.log(e.which);
         var searchParam = self.search();
         searchParam +="";
         searchParam = searchParam.toLowerCase();

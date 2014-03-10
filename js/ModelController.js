@@ -47,7 +47,7 @@ function login(login, password, server) {
     listingViewModel.authError(false);
 
     conn = new Lisa.Connection();
-    conn.log_xmpp = true; // Development
+    conn.log_xmpp = false;
 
     // Connect over SSL
     conn.bosh_port = 7500;
@@ -73,8 +73,7 @@ function login(login, password, server) {
     // Setup callback when receiving the company model
     conn.getModel().done(gotModel);
 
-    conn.connect(SERVER, USERNAME, PASS);                 // HTTP - For development
-    //connectWithGiveSession(SERVER, USERNAME, PASS);     // HTTPS
+    conn.connect(SERVER, USERNAME, PASS);
     
     getPhoneAuth(USERNAME,SERVER,PASS);
 }
@@ -129,7 +128,6 @@ function chromeLoginPhone() {
 }
 
 function connectionStatusCallback(status) {
-    console.log(status);
     if (status == Strophe.Status.CONNFAIL) {
     } else if (status == Strophe.Status.DISCONNECTED) {
     } else if (status == Strophe.Status.AUTHFAIL) {

@@ -11,6 +11,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
     this.avail = ko.observable(avail                      || false);
     this.ringing = ko.observable(ringing                  || false);
 
+    this.directionIsOut = ko.observable(true);
     this.connectedName = ko.observable("");
     this.connectedNr = ko.observable("");
     this.callStartTime = ko.observable(0);
@@ -32,18 +33,20 @@ function UserListItem(id, name, ext, log, avail, ringing) {
         if (duration < timezoneOffset) duration = timezoneOffset;
 
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
+        var directionPart = (this.directionIsOut() ? '> ' : '< ');
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
 
-        return numberPart + timePart;
+        return directionPart + numberPart + timePart;
         
     }, this);
 }
 
-UserListItem.prototype.startCall = function(number, name, startTime) {
+UserListItem.prototype.startCall = function(number, name, startTime, directionIsOut) {
     this.connectedName(name);
     this.connectedNr(number);
     this.callStartTime(startTime);
+    this.directionIsOut(directionIsOut);
 }
 
 UserListItem.prototype.noCalls = function() {

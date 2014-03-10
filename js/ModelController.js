@@ -229,7 +229,7 @@ function userToClientModel(user, userObj) {
         var call = user.calls[Object.keys(user.calls)[0]]; // Ugh.
         userObj.ringing((call.state != "ANSWERED"));
         var callInfo = getCallInfo(call, user);
-        userObj.startCall(callInfo.number, callInfo.name, callInfo.startTime);
+        userObj.startCall(callInfo.number, callInfo.name, callInfo.startTime, callInfo.directionIsOut);
 
     } else {
          userObj.noCalls();

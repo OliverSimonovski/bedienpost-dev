@@ -8,6 +8,7 @@ var USERNAME = SERVER = PASS = null;
 var phoneIp = "";
 var phoneUser = "";
 var phonePass = "";
+var loggedIn = false;
 
 var restUrl = "";
 
@@ -130,6 +131,11 @@ function chromeLoginPhone() {
 function connectionStatusCallback(status) {
     if (status == Strophe.Status.CONNFAIL) {
     } else if (status == Strophe.Status.DISCONNECTED) {
+        // Reconnect
+        if (loggedIn) {
+            console.log("Connection lost, reconnecting...");
+            login(listingViewModel.loginName(), listingViewModel.loginPass(), listingViewModel.loginServer());
+        }
     } else if (status == Strophe.Status.AUTHFAIL) {
         listingViewModel.authError(true);
         alert("Authentication failed. Please re-enter your username and password and try again.");
@@ -142,6 +148,7 @@ function logout() {
             keyboard: true
     })
     listingViewModel.loginPass("");
+    loggedIn = false;
 
     // Remove the between-session login information.
     var loginInfo = {};
@@ -159,6 +166,7 @@ function logout() {
 
 function gotModel(newmodel) {
     // Show interface
+    loggedIn = true;
     var loginInfo = {};
     loginInfo.loggedIn = true;
     loginInfo.username = USERNAME;

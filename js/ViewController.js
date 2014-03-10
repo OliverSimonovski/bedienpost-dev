@@ -378,17 +378,23 @@ var ListingsViewModel = function(){
     
     self.doPickup = function()
     {
-        pickupPhone();   
+        if (self.callingState() == "ringing") {
+            pickupPhone();
+        }
     }
     
     self.doHangup = function()
     {
-        hangupPhone();
+        if ((self.callingState() == "ringing") || (self.callingState() == "calling")) {
+            hangupPhone();
+        }
     }
     
     self.doTransfer = function()
     {
-        finishAttendedTransfer();    
+        if (self.callingState() == "transfer") {
+            finishAttendedTransfer();
+        }
     }
     
     self.doLogin = function()
@@ -465,6 +471,8 @@ var ListingsViewModel = function(){
     {
         if(self.callingState() == "ringing" && current == 'pick'){
              return 'btn btn-pickup';
+        } else if (self.callingState() == "ringing" && current == 'hang'){
+                return 'btn btn-hangup';
         } else if (self.callingState() == "calling" && current == 'hang'){
              return 'btn btn-hangup';
         } else if (self.callingState() == "transfer" && current =='transfer'){

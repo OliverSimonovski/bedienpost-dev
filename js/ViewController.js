@@ -225,6 +225,7 @@ var ListingsViewModel = function(){
     self.shortcutKey = ko.observable();
     self.callingState = ko.observable('onhook');
     self.authError = ko.observable(false);
+    self.numericInput = ko.observable("enter telephonenumber");
     
     
     self.currentList.subscribe(function()
@@ -344,7 +345,6 @@ var ListingsViewModel = function(){
     // another question: should you be able to mark the ones you aren't logged into as favorite?
     self.markQueueFavorite = function(favorite)
     {
-       
         favorite.favorite(!favorite.favorite()); // Toggle
         QueueListItem.saveFavs(self.waitingQueueList().entries());
     }
@@ -507,6 +507,58 @@ var ListingsViewModel = function(){
              return 'invisible';
         }
     }
+    
+    self.showKeypad = function()
+    {
+        $('#keypadModal').modal({
+                keyboard: true
+            })
+    }
+    
+    self.enterNumber = function(nr)
+    {  
+       // console.log(nr);
+        var currentTeleponeNumber = self.numericInput();
+        currentTeleponeNumber += nr;
+        self.numericInput(currentTeleponeNumber);
+    }
+    
+    self.connectTo = function()
+    {
+        console.log(self.numericInput());
+    }
+    
+    self.callDirect = function()
+    {
+        console.log(self.numericInput());
+    }
+    
+    ko.bindingHandlers.numeric = {
+        init: function (element, valueAccessor) {
+            $(element).on("keydown", function (event) {
+                console.log(event.keyCode);
+                // Allow: backspace, delete, tab, escape, and enter
+                if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                    // Allow: Ctrl A en Ctrl
+                    (event.keyCode == 86 && event.ctrlKey) ||  (event.keyCode == 86 && event.metaKey) ||
+                    (event.keyCode == 65 && event.ctrlKey) ||  (event.keyCode == 65 && event.metaKey) ||
+                    // Allow: shift +
+                    (event.keyCode == 187 && event.shiftKey == true) ||
+                    // Allow: home, end, left, right
+                    (event.keyCode >= 35 && event.keyCode <= 39)) {
+                
+                    // let it happen, don't do anything
+                    return;
+                }
+                else {
+                    // Ensure that it is a number and stop the keypress
+                    if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                        event.preventDefault();
+                    }
+                }
+            });
+        }
+    };
     
     self.setSearch = function(searchParam)
     {
@@ -698,10 +750,11 @@ var ListingsViewModel = function(){
 
     
     //Modal positioning for screen and resizing
+    /*
     function adjustModalMaxHeightAndPosition(){
         $('.modal').each(function(){
             if($(this).hasClass('in') == false){
-                $(this).show(); /* Need this to get modal dimensions */
+                $(this).show();
             };
             var contentHeight = $(window).height() - 60;
             var headerHeight = $(this).find('.modal-header').outerHeight() || 0;
@@ -728,11 +781,12 @@ var ListingsViewModel = function(){
                 }
             });
             if($(this).hasClass('in') == false){
-                $(this).hide(); /* Hide modal */
+                $(this).hide(); 
             };
         });
     };
     $(window).resize(adjustModalMaxHeightAndPosition).trigger("resize");
+    */
     }
 
 var listingViewModel = new ListingsViewModel();

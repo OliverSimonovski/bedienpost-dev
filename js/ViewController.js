@@ -131,6 +131,7 @@ function CallListItem(id, name, startTime, directionIsOut) {
     this.name = ko.observable(name                        || "");
     this.callStartTime = ko.observable(startTime          || 0);
     this.directionIsOut = ko.observable(directionIsOut    || false);
+    this.finished = ko.observable(false);
 
     this.timeConnected = ko.computed(function() 
     {
@@ -150,11 +151,21 @@ function CallListItem(id, name, startTime, directionIsOut) {
         return timeString;
         
     }, this);
+
+    this.toDisplay = ko.computed(function()
+    {
+    if (!this.finished()) {
+        return this.name();
+    } else {
+        return this.name() + " - finished";
+    }
+
+    }, this);
 }
 
 CallListItem.prototype.stopCall = function() {
     this.callStartTime(0);
-    this.name(this.name() + " - Finished");
+    this.finished(true);
     _.delay(
         function(self) {
             return function() {

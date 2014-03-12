@@ -62,13 +62,22 @@ body {
     width:25%;
 }
 
-#connectModal .modal-dialog
+#transferModal .modal-dialog
 {
     margin: 0;
     position: absolute;
     top: 50%;
     left: 50%;
     width:35%;
+}
+
+#callModal .modal-dialog
+{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:15%;
 }
 
 .modal-body {

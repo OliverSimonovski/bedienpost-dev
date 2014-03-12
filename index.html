@@ -44,7 +44,7 @@
     </head>
   <body >
     <div id="wrap">
-        <div class="container">
+        <div class="container" data-bind="drop: markUserFavorite">
              
            <div class='row nopadding'>
             
@@ -60,7 +60,7 @@
                                 <div class="btn-group">
                                 <button class="btn btn-hangup"  type="button" data-bind="click: $root.doHangup,
 
-                                                                                         attr: { class: $root.actionStateCssClass('hang') }">Hangup-up</button>
+                                                                                         attr: { class: $root.actionStateCssClass('hang') }">Hang-up</button>
                                     </div>
                                 <div class="btn-group">
                                 <button class="btn btn-transfer"  type="button" data-bind="click: $root.doTransfer,
@@ -78,21 +78,21 @@
                              <li>
                                 <span class="badge pull-right" data-bind="text: entry.timeConnected"  ></span>
                                 <div class="options todooptions">
-                                        <i class="fa fa-arrow-circle-right"></i>
+                                        <i class="fa" data-bind= "attr: { class: (entry.directionIsOut()) ? 'fa fa-arrow-circle-right' : 'fa fa-arrow-circle-left'}"></i>
                                         <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
                                  </div>
                                 <label> 
-                                    <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
-                                </label>  
+                                    <h5 class="list-group-item-heading" data-bind="text: entry.toDisplay"></h5>
+                                </label>
+                            
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div class='col-md-6'>
                         <div class="header">
-                             <div class="options todooptions">
-                                 <div class="logout"
-                                      databind="click: $root.logOut">
+                             <div class="options todooptions" data-bind="click: $root.logOut">
+                                 <div class="logout" >
                                    
                                     <i class="fa fa-arrow-circle-right pull-right"></i>
                                     <span>log out</span>
@@ -127,7 +127,7 @@
                 </div>
                  </div>
             <div class='row nopadding'>
-                 <div class='col-md-6 offset-6' data-bind="drop: markUserFavorite">
+                 <div class='col-md-6 offset-6'>
                         <div class="header">
                             <h4>Favorite List</h4>
                         </div>
@@ -139,10 +139,10 @@
                         !-->
                         <div class="list-group list">
                              <ul data-bind=" foreach: { data:  favFilteredItems, as: 'entry' },
-                                                        css: { 'curl':true }">
+                                                        css: { 'curl':true }, drop: markUserFavorite">
                                 <li class="list-group-item" data-bind="click: $root.clickItem, drag: entry" > 
                                      <div class="options todooptions">
-                                        <span class="badge pull-right" data-bind="text: ($root.search() == '') ? $root.favFilteredItems().indexOf(entry) : '' "></span>
+                                        <span class="badge pull-right" data-bind="text: ($root.search() == '') ? ($root.favFilteredItems().indexOf(entry) < 10 ? $root.favFilteredItems().indexOf(entry) : '' ) : '' "></span>
                                     </div>
                                     <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                         <div class="status">
@@ -196,7 +196,7 @@
                          <ul data-bind="foreach: { data:  filteredItems, as: 'entry' }">
                              <li class="list-group-item" data-bind="click: $root.clickItem , drag: entry">
                                  <div class="options todooptions">
-                                     <span class="badge pull-right" data-bind="text: ($root.search() != '') ? $root.filteredItems().indexOf(entry) : '' "></span>
+                                     <span class="badge pull-right" data-bind="text: ($root.search() != '') ? ($root.filteredItems().indexOf(entry) < 10 ? $root.filteredItems().indexOf(entry) : '' ) : '' "></span>
                                 </div>
                                  <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                     <div class="status">
@@ -226,18 +226,35 @@
             </div>
         
     <!-- Modal -->
-    <div class="modal fade" id="connectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="transferModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">How to connect with <span data-bind="text: $root.clickedListItemName"></span>?</h4>
+            <h4 class="modal-title" id="myModalLabel">How to transfer to <span data-bind="text: $root.clickedListItemName"></span>?</h4>
           </div>
           <div class="modal-body">
                 <div class="span3">
-                 <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionConnectThrough">Doorverbinden</button>
-                <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Bellen</button>
+                 <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionTransfer">Unattended Transfer</button>
+                <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionTransferAttended">Attended Transfer</button>
                
+            </div>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="callModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <center><h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.clickedListItemName"></span></h4></center><center>
+          </div>
+          <div class="modal-body">
+                <div class="span3">
+                 <center><button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Call</button></center>
             </div>
           </div>
         </div><!-- /.modal-content -->
@@ -253,16 +270,16 @@
           <h4 class="modal-title">Login</h4>
         </div>
         <div class="modal-body">
-           <div class="form-group has-success has-feedback"> <!--has-success -->
+           <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
               <label class="control-label">Name:</label>
               <input type="text" data-bind="value: loginName, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
-            <div class="form-group has-error has-feedback"><!--has-error -->
+            <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
               <label class="control-label">Password:</label>
               <input type="password" data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
-             <div class="form-group"><!--has-error -->
-              <label class="control-label" >Server:</label>
+             <div class="form-group" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
+              <label class="control-label">Server:</label>
               <input type="text"  data-bind="value: loginServer, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
    

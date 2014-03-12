@@ -178,6 +178,21 @@ Lisa.Call = function() {
 		return "(Call:" + this.id + ",f:" + this.source + ",t:"
 				+ this.destination + ")";
 	}
+
+	this.removeUser = function(user) {
+		if (!user) {
+			Lisa.Connection.logging.warn("MODEL::Call - Tried to remove user, but user is NULL");
+			return;	
+		}
+
+		if (this.sourceUser == user) {
+			delete this.sourceUser.calls[this.id];
+		}
+		if (this.destinationUser == user) {
+			delete this.destinationUser.calls[this.id];
+		}
+		user.observable.notify(user);
+	}
 }
 
 /**
@@ -199,7 +214,7 @@ Lisa.Model = function() {
 		var newCall = (this.calls[call.id] == null);
 		this.calls[call.id] = call;
 		
-		Lisa.Connection.logging.log("MODEL: Added or updated call " + call);
+		Lisa.Connection.logging.log("MODEL: " + ((newCall) ? "Added" : "Updated") + " call " + call);
 		if (newCall) {
 			this.callListObservable.notify(call, 'add');
 		} else {
@@ -349,6 +364,11 @@ Lisa.Connection = function() {
 	Lisa.Connection.model = new Lisa.Model();
 	Lisa.Connection.myUserId = 0;
 	Lisa.Connection.userName = "";
+    Lisa.Connection.password = "";
+    Lisa.Connection.server = "";
+	Lisa.Connection.restServer = "";
+    Lisa.Connection.restUserUrl = "";
+    Lisa.Connection.restIdentityUrl = "";
 
 	// === Local variables
 	var self = this;
@@ -380,6 +400,7 @@ Lisa.Connection = function() {
 	this.connect = function(server, username, password, resource) {
 
 		this.setupConnection(server, username);
+        Lisa.Connection.password = password;
 
 		// Configuration
 		resource = resource || "LisaApi" + "_" + randomstring(10);
@@ -389,7 +410,10 @@ Lisa.Connection = function() {
 		connection.connect(jid, password, connectionStatusChanged);
 	}
 
-	/** Attach to a previous BOSH session * */
+	/** Attach to a previous BOSH session
+     *  Note: Doesn't store the password, and as such disables
+     *  use of functions that use the REST api such as
+     *  dialNumber, dialUser, queueLogin, and queueLogout */
 	this.attach = function(server, jid, sid, rid) {
 
 		var username = jid.substring(0, jid.indexOf('@'));
@@ -418,9 +442,9 @@ Lisa.Connection = function() {
 		 * since this is typically called
 		 * onUnload.
 		 */
-		this.connection.sync = true;
-		this.connection.flush();
-		this.connection.disconnect();
+		Lisa.Connection.connection.sync = true;
+		Lisa.Connection.connection.flush();
+		Lisa.Connection.connection.disconnect();
 	},
 
 	this.sendIQ = function(iq) {
@@ -446,6 +470,7 @@ Lisa.Connection = function() {
 		var bosh_service = protocol + '://' + server + ':' + this.bosh_port
 				+ '/http-bind';
 		connection = new Strophe.Connection(bosh_service);
+		Lisa.Connection.connection = connection;
 		if (this.log_xmpp) {
 			connection.rawInput = this.logging.logInput;
 			connection.rawOutput = this.logging.logOutput;
@@ -479,74 +504,91 @@ Lisa.Connection = function() {
 
 	/*
 	 * Actions
-	 *
-	 * BEWARE: Each of these functions is UNSUPPORTED, and might disappear or stop working
-	 * at any moment, without prior notice.
 	 */
 
-	/** Have the current user dial a phone-numer. -UNSUPPORTED- */
+	/** Have the current user dial a phone-numer.*/
 	this.dialNumber = function(number) {
-		var iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
-			type : 'set',
-			id : connection.getUniqueId('lisa')
-		}).c('request', {
-			xmlns : Strophe.NS.LISA_REQUESTS,
-			type: 'ACTION',
-		}).c('action', {
-			name : 'dial'
-		}).c('destinationNumber').t(number);
-		return this.sendIQ(iq);
+		Lisa.Connection.logging.log("Calling " + number);
+        restAjaxRequest(
+            Lisa.Connection.restUserUrl + "/dialNumber",
+            {destination: number},
+            function (response){
+                Lisa.Connection.logging.log("Issued call to " + number);
+            }
+        );
 	}
 
-	/** Have the current user dial another user -UNSUPPORTED- */
-	this.dialUser = function(user) { // user-object.
-		var iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
-			type : 'set',
-			id : connection.getUniqueId('lisa')
-		}).c('request', {
-			xmlns : Strophe.NS.LISA_REQUESTS,
-			type: 'ACTION',
-		}).c('action', {
-			name : 'dial'
-		}).c('destinationUserId').t(user.id);
-		return this.sendIQ(iq);
+	/** Have the current user dial another user */
+	this.dialUser = function(user) {
+        Lisa.Connection.logging.log("Calling " + user);
+        var targetUserUrl = "https://" + Lisa.Connection.restServer + "/user/" + user.id;
+        restAjaxRequest(
+            Lisa.Connection.restUserUrl + "/dialUser",
+            {callee: targetUserUrl},
+            function (response){
+                Lisa.Connection.logging.log("Issued call to " + user);
+            }
+        );
+    }
+
+	/** Have the current user logon to a queue*/
+	this.queueLogin = function(queue) {
+        // First, see whether we have any previous settings stored for the queue.
+        var fromLs = localStorage.getItem(localStorageKeyForQueue(queue));
+        var settingsObj = (fromLs) ? JSON.parse(fromLs) : {};
+        this.queueLoginWithSettings(queue, settingsObj.priority || 1, settingsObj.callForward || false);
 	}
 
-	/** Have the current user logon to a queue -UNSUPPORTED- */
-	this.queueLogin = function(queue, user) {
-		var userId = user ? user.userId : Lisa.Connection.myUserId;
+    /** Have the current user logon to a queue with known settings*/
+    this.queueLoginWithSettings = function(queue, priority, callForward) {
+        var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
+        Lisa.Connection.logging.log("Logging in to queue " + queueId
+                                    + " with priority " + priority + " and follow-forwards " + callForward);
+        restAjaxRequest(
+            Lisa.Connection.restIdentityUrl + "/loginQueue",
+            {queue:queueId, priority:priority, callForward:callForward},
+            function (response){
+                Lisa.Connection.logging.log("Logged onto queue" + queue);
+            }
+        )
+    }
 
-		var iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
-			type : 'set',
-			id : connection.getUniqueId('lisa')
-		}).c('request', {
-			xmlns : Strophe.NS.LISA_REQUESTS,
-			type : 'ACTION',
-		}).c('action', {
-			name : 'queue-login',
-		}).c('userId').t(userId).up().c('queueId').t(queue.id);
-		return this.sendIQ(iq);
+	/** Have the current user log out of a queue */
+	this.queueLogout = function(queue) {
+
+        // First, retrieve any queue membership settings, so we can
+        // set these settings correctly upon logging in again.
+        restAjaxRequest(
+            Lisa.Connection.restIdentityUrl + "/queueMemberships",
+            null,
+            function(queue) {
+                return function (response){
+                    // Store current queue settings
+                    var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
+                    var currentSettings = _.where(response, {queue: queueId})[0];
+                    var settingsObj = {priority: currentSettings.priority, callForward: currentSettings.callForward};
+                    Lisa.Connection.logging.log("Storing settings " + JSON.stringify(settingsObj) + " for queue " + queue + " on logout.");
+                    localStorage.setItem(localStorageKeyForQueue(queue), JSON.stringify(settingsObj));
+
+                    // then, logout of the queue.
+                    Lisa.Connection.logging.log("Logging out of queue " + queueId);
+                    restAjaxRequest(
+                        Lisa.Connection.restIdentityUrl + "/logoutQueue",
+                        {queue:queueId},
+                        function (response){
+                            Lisa.Connection.logging.log("Logged out of queue" + queue);
+                        }
+                    )
+                }
+            }(queue),
+            null,
+            "GET"
+        )
 	}
 
-	/** Have the current user log out of a queue -UNSUPPORTED- */
-	this.queueLogout = function(queue, user) {
-		var userId = user ? user.userId : Lisa.Connection.myUserId;
-
-		var iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
-			type : 'set',
-			id : connection.getUniqueId('lisa')
-		}).c('request', {
-			xmlns : Strophe.NS.LISA_REQUESTS,
-			type : 'ACTION',
-		}).c('action', {
-			name : 'queue-logout',
-		}).c('userId').t(userId).up().c('queueId').t(queue.id);
-		return this.sendIQ(iq);
-	}
+    function localStorageKeyForQueue(queue) {
+        return "queueSettings_" + queue.id;
+    }
 
 	/*
 	 * One-off getters
@@ -665,7 +707,7 @@ Lisa.Connection = function() {
 			id : connection.getUniqueId('lisa')
 		}).c('request', {
 			xmlns : Strophe.NS.LISA_REQUESTS,
-			type: 'GET_COMPANY',
+			type: 'GET_COMPANY'
 		});
 		connection.sendIQ(iq, callback(onGetCompany), function() {
 			initDeferred.reject("Service is down.");
@@ -718,6 +760,41 @@ Lisa.Connection = function() {
 
 	}
 
+    function setupRest() {
+        console.log("############## Setting up rest.")
+        // Setup REST server & often-used urls
+        Lisa.Connection.restServer = Lisa.Connection.server.replace("uc.", "rest.");
+        Lisa.Connection.restUserUrl = "https://" + Lisa.Connection.restServer + "/user/" + Lisa.Connection.myUserId;
+        Lisa.Connection.restAuthHeader = "Basic " + btoa(Lisa.Connection.userName + ":" + Lisa.Connection.password);
+
+        // Retrieve the identity
+        restAjaxRequest(
+            Lisa.Connection.restUserUrl + "/identities",
+            null,
+            function(response) {
+                Lisa.Connection.restIdentityUrl = _.where(response, {order: 0})[0].self;
+            },
+            null,
+            "GET"
+        )
+    }
+
+    function restAjaxRequest(url, data, success, error, method) {
+        $.ajax
+        ({
+            type: method || "POST",
+            headers: {
+                "Authorization": Lisa.Connection.restAuthHeader,
+                "X-No-Redirect": true
+            },
+            url: url,
+            dataType: 'json',
+            data: JSON.stringify(data),
+            success: success,
+            error: error
+        });
+    }
+
 	function processUser(xml) {
 		$(xml).find('result').children().each(
 				function(idx, user) {
@@ -731,9 +808,12 @@ Lisa.Connection = function() {
 						Lisa.Connection.myUserId = userModel.id;
 						Lisa.Connection.logging.log("INFO: Found my userid: "
 								+ Lisa.Connection.myUserId);
+                        usersDone = true;
+
+                        // Now we have an User ID, Setup REST
+                        setupRest();
 					}
 				});
-		usersDone = true;
 		isModelComplete();
 	}
 
@@ -1063,7 +1143,6 @@ Lisa.Connection = function() {
 
 		notification.children().each(function(user) {
 			return function (idx, child) {
-				console.log(child);
 				if (child.nodeName == "propertyChange") {
 					var name = $(child).find("name").text();
 					var value = $(child).find("newValue").text();
@@ -1126,12 +1205,19 @@ Lisa.Connection = function() {
             	                        " already ended source. Not adding to model.");
             return null;
         }
-		callModel.source = src;
+		
+		var sourceUser = null
 		if (src.attr('type') == 'User') {
 			var userId = src.find('userId').text();
-			var user = findOrCreateUser(userId);
-			callModel.sourceUser = user;
+			var sourceUser = findOrCreateUser(userId);
 		}
+		// Remove the call from the original source user; 
+		// After changing the sourceUser, we won't remember the original sourceuser anymore.
+		if (callModel.sourceUser && (callModel.sourceUser != sourceUser)) {
+			callModel.removeUser(callModel.sourceUser);
+		}
+		callModel.sourceUser = sourceUser;
+		callModel.source = src;
 
 		// Destination
 		var dst = call.find('destination');
@@ -1140,12 +1226,20 @@ Lisa.Connection = function() {
             						    " already ended destination. Not adding to model.");
             return null;
         }
-		callModel.destination = dst;
+		
+		var destinationUser = null;
 		if (dst.attr('type') == 'User') {
 			var userId = dst.find('userId').text();
-			var user = findOrCreateUser(userId);
-			callModel.destinationUser = user;
+			var destinationUser = findOrCreateUser(userId);
+			
 		}
+		// Remove the call from the original destination user; 
+		// After changing the destinationUser, we won't remember the original destinationUser anymore.
+		if (callModel.destinationUser && (callModel.destinationUser != destinationUser)) {
+			callModel.removeUser(callModel.destinationUser);
+		}
+		callModel.destinationUser = destinationUser;
+		callModel.destination = dst;
 
         callModel.state = call.find('state').text();
 

@@ -11,6 +11,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
     this.avail = ko.observable(avail                      || false);
     this.ringing = ko.observable(ringing                  || false);
 
+    this.directionIsOut = ko.observable(true);
     this.connectedName = ko.observable("");
     this.connectedNr = ko.observable("");
     this.callStartTime = ko.observable(0);
@@ -32,18 +33,20 @@ function UserListItem(id, name, ext, log, avail, ringing) {
         if (duration < timezoneOffset) duration = timezoneOffset;
 
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
+        var directionPart = (this.directionIsOut() ? '> ' : '< ');
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
 
-        return numberPart + timePart;
+        return directionPart + numberPart + timePart;
         
     }, this);
 }
 
-UserListItem.prototype.startCall = function(number, name, startTime) {
+UserListItem.prototype.startCall = function(number, name, startTime, directionIsOut) {
     this.connectedName(name);
     this.connectedNr(number);
     this.callStartTime(startTime);
+    this.directionIsOut(directionIsOut);
 }
 
 UserListItem.prototype.noCalls = function() {
@@ -121,10 +124,14 @@ QueueListItem.storageKey = function() {
     return USERNAME + "@" + SERVER + "_QueueListFavs";
 }
 
-function CallListItem(id, name, startTime) {
+function CallListItem(id, name, startTime, directionIsOut) {
+    _.bindAll(this, 'stopCall');
+
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
     this.callStartTime = ko.observable(startTime          || 0);
+    this.directionIsOut = ko.observable(directionIsOut    || false);
+    this.finished = ko.observable(false);
 
     this.timeConnected = ko.computed(function() 
     {
@@ -144,6 +151,28 @@ function CallListItem(id, name, startTime) {
         return timeString;
         
     }, this);
+
+    this.toDisplay = ko.computed(function()
+    {
+    if (!this.finished()) {
+        return this.name();
+    } else {
+        return this.name() + " - finished";
+    }
+
+    }, this);
+}
+
+CallListItem.prototype.stopCall = function() {
+    this.callStartTime(0);
+    this.finished(true);
+    _.delay(
+        function(self) {
+            return function() {
+                incomingCallEntries.remove(self);
+            }
+        }(this)
+    , 10000);
 }
 
 
@@ -194,7 +223,8 @@ var ListingsViewModel = function(){
     self.incomingCallMailTo = ko.observable();
     self.search = ko.observable();
     self.shortcutKey = ko.observable();
-    self.callingState = ko.observable('transfer');
+    self.callingState = ko.observable('onhook');
+    self.authError = ko.observable(false);
     
     
     self.currentList.subscribe(function()
@@ -283,25 +313,31 @@ var ListingsViewModel = function(){
     
     self.clickItem = function(clickedItem) 
     {
-        if (phoneIp == "") {
-            return;
-        }
-
         self.clickedListItem(clickedItem);
         var name = clickedItem.name();
         self.clickedListItemName(name);
-       
-        $('#connectModal').modal({
-            keyboard: true
-        })
+
+        if (self.callingState() == "onhook") {
+            $('#callModal').modal({
+                keyboard: true
+            })    
+        } else if (phoneIp != "") {
+            $('#transferModal').modal({
+                keyboard: true
+            })
+        }
     }
     
     self.mailTo = function(incomingCall)
     {
         self.incomingCallMailTo(incomingCall);
-        console.log(incomingCall);
         window.open("mailto:?Subject=Gemiste oproep vanaf " + incomingCall.name());
         //perform mailto functionality upon this object.
+    }
+
+    self.logOut = function(item) {
+        console.log("Logging out");
+        logout();
     }
 
     // no updating appearing in the UI .. omehow the values do seem to update in the array.. is the accoring value missing bindings?
@@ -321,14 +357,22 @@ var ListingsViewModel = function(){
     
     self.actionCalling = function(item)
     {
-        var toCall = self.clickedListItem().ext().split(",")[0];
-        callUser(toCall);
+        //var toCall = self.clickedListItem().ext().split(",")[0];
+        conn.dialUser(model.users[self.clickedListItem().id()]);
+        //callUser(toCall);
     }
     
-    self.actionConnectThrough = function()
+    self.actionTransfer = function()
     {
         var toCall = self.clickedListItem().ext().split(",")[0];
         transferToUser(toCall);
+    }
+
+    self.actionTransferAttended = function()
+    {
+        self.callingState("transfer");
+        var toCall = self.clickedListItem().ext().split(",")[0];
+        attendedtransferToUser(toCall);
     }
     
     self.cancelLogin = function()
@@ -338,17 +382,23 @@ var ListingsViewModel = function(){
     
     self.doPickup = function()
     {
-        pickupPhone();   
+        if (self.callingState() == "ringing") {
+            pickupPhone();
+        }
     }
     
     self.doHangup = function()
     {
-        hangupPhone();
+        if ((self.callingState() == "ringing") || (self.callingState() == "calling")) {
+            hangupPhone();
+        }
     }
     
     self.doTransfer = function()
     {
-        
+        if (self.callingState() == "transfer") {
+            finishAttendedTransfer();
+        }
     }
     
     self.doLogin = function()
@@ -423,10 +473,10 @@ var ListingsViewModel = function(){
     
     self.actionStateCssClass = function( current )
     {
-        console.log(self.callingState());
-        console.log(current);
         if(self.callingState() == "ringing" && current == 'pick'){
              return 'btn btn-pickup';
+        } else if (self.callingState() == "ringing" && current == 'hang'){
+                return 'btn btn-hangup';
         } else if (self.callingState() == "calling" && current == 'hang'){
              return 'btn btn-hangup';
         } else if (self.callingState() == "transfer" && current =='transfer'){
@@ -435,10 +485,13 @@ var ListingsViewModel = function(){
             return 'btn btn-inactive';
         }
     }
+
+    self.loginFieldsCssClass = function() {
+
+    }
     
     self.firstRowCssClass = function( entry )
     {
-        console.log("TEST " + entry);
         if (entry != null && entry !=""){
              return 'first-info-small';
         } else {
@@ -461,7 +514,6 @@ var ListingsViewModel = function(){
     }
 
     self.markUserFavorite = function(item) {
-         console.log(item);
         item.favorite(true);
         UserListItem.saveFavs(self.currentList().entries());
     }
@@ -487,7 +539,6 @@ var ListingsViewModel = function(){
     
     $( "#inputField" ).keypress(function(e)
     {
-         console.log(e.which);
         var searchParam = self.search();
         if(searchParam){
            if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
@@ -506,8 +557,9 @@ var ListingsViewModel = function(){
     });
     
     $("#activecalls").on("mouseenter", function(){
-
-        $(".overlay").stop(true, true).fadeIn(250);
+        if (phoneIp != "") {
+            $(".overlay").stop(true, true).fadeIn(250);
+        }
 
     });
 
@@ -519,7 +571,9 @@ var ListingsViewModel = function(){
 
     
     self.showButton = function(){
-            $('.overlay').fadeIn(250); // slideDown(1000);
+            if (phoneIp != "") {
+                $('.overlay').fadeIn(250); // slideDown(1000);
+            }
         }
      self.hideButton = function(){
             $('.overlay').fadeOut(250);  // slideUp(1000);
@@ -528,7 +582,6 @@ var ListingsViewModel = function(){
     $( document ).keypress(function(e)
     {
         // ugly code ... should be a better way... for later to cleanup -> might make a keyFunction..
-        console.log(e.which);
         var searchParam = self.search();
         searchParam +="";
         searchParam = searchParam.toLowerCase();
@@ -684,3 +737,4 @@ var ListingsViewModel = function(){
 
 var listingViewModel = new ListingsViewModel();
 ko.applyBindings(listingViewModel);
+$('.overlay').hide();

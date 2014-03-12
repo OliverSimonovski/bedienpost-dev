@@ -1,10 +1,10 @@
 
 @import url("http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css");
 
-@media (min-width: 480px) { 
+@media (min-width: 480px) {
     .list ul
     {
-	   max-height: 900px;
+       max-height: 900px;
     }
 }
 
@@ -12,13 +12,12 @@
 @media (min-width: 768px) {
     .list ul
     {
-	   max-height: 900px;
+       max-height: 900px;
     }
 }
 
 /* Medium devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-    
 }
 
 /* Large devices (large desktops, 1200px and up) */
@@ -26,15 +25,15 @@
 }
 
 @font-face {
-  font-family: 'Glyphicons Halflings';
-  src: url('../fonts/glyphicons-halflings-regular.eot');
-  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+    font-family: 'Glyphicons Halflings';
+    src: url('../fonts/glyphicons-halflings-regular.eot');
+    src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'),     url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
 }
 
-body {  
+body {
     font-family: Helvetica, Arial;
-    background-color:#ffffff; 
-    margin:0px 
+    background-color:#ffffff;
+    margin:0px
 }
 
 #wrap > .container {
@@ -63,124 +62,35 @@ body {
 .fixed-height
 {
     height:45px;
-   
 }
 
 .overflow
 {
-     overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
- }
-
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
 .list ul
 {
-	max-height: 460px;
-	margin:10px 0 0 0;
-	padding: 0;
-	overflow-y: scroll;
+    max-height: 460px;
+    margin:10px 0 0 0;
+    padding: 0;
+    overflow-y: scroll;
     list-style: none;
-    /*box-shadow:inset 1px 2px 6px #070707;*/
 
-	-webkit-perspective: 400px;
-	   -moz-perspective: 400px;
-	    -ms-perspective: 400px;
-	     -o-perspective: 400px;
-	        perspective: 400px;
+    -webkit-perspective: 400px;
+       -moz-perspective: 400px;
+        -ms-perspective: 400px;
+         -o-perspective: 400px;
+            perspective: 400px;
 }
 
 .list li
 {
-    border: 1px solid #ffffff; 
+    border: 1px solid #ffffff;
     padding: 0px;
 }
-
-/*
-.ui-draggable-dragging
-{
-    border: 1px solid #ffffff; 
-    padding: 0px;
-}
-
-.ui-draggable-dragging  .options
-{
-    float:right;
-}
-
-.ui-draggable-dragging  .options .badge
-{
-    width: 30px;
-    margin-left:7px;
-    margin-right:10px;
-}
-
-.ui-draggable-dragging  .status
-{
-    display:inline;
-    float:left;
-    padding:10px;
-    background-color:#032739;
-    height:45px;
-}
-
-.ui-draggable-dragging  .connection
-{
-    display:inline;
-    float:left;
-    padding:10px;
-    padding-bottom: 12px;
-    height:45px;
-}
-
-.ui-draggable-dragging  .first-info-small
-{
-    display:inline-block;
-    width:43%;
-}
-
-.ui-draggable-dragging .first-info-big
-{
-    display:inline-block;
-    width:85%;
-}
-
-.ui-draggable-dragging .invisible
-{
-    display:none;
-    visibility: hidden;
-}
-
-.ui-draggable-dragging .second-info
-{
-    display:inline-block;
-    width:43%;
-}
-
-.ui-draggable-dragging .first-label
-{ 
-    margin-top: 1px;
-    padding-left:5px;
-    font-size:17px;
-    font-weight: 600;
-    display:block;
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
-}
-
-.ui-draggable-dragging .second-label
-{
-    margin-top:-3px;
-    padding-left:7px;
-    font-size:13px;
-    font-weight: 400;
-    display:block;
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
-}
-*/
 
 .list li .options
 {
@@ -237,16 +147,16 @@ body {
 }
 
 .list li .first-label
-{ 
+{
     margin-top: 1px;
     padding-left:5px;
     font-size:17px;
     font-weight: 600;
     display:block;
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
-    
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
 }
 
 .list li .second-label
@@ -256,10 +166,10 @@ body {
     font-size:13px;
     font-weight: 400;
     display:block;
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
-   
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
 }
 
 .icon-label
@@ -290,21 +200,21 @@ body {
     z-index: 1;
     position:relative;
     overflow:hidden;
-	height: 125px;
-	padding: 0;
+    height: 125px;
+    padding: 0;
     padding-top:5px;
-	overflow-y: scroll;
+    overflow-y: scroll;
     list-style: none;
     /*box-shadow:inset 1px 2px 6px #070707;*/
 
-	-webkit-perspective: 400px;
-	   -moz-perspective: 400px;
-	    -ms-perspective: 400px;
-	     -o-perspective: 400px;
-	        perspective: 400px;
+    -webkit-perspective: 400px;
+       -moz-perspective: 400px;
+        -ms-perspective: 400px;
+         -o-perspective: 400px;
+            perspective: 400px;
 }
 
-.queue_1 li 
+.queue_1 li
 {
     height: 30px;
     border: 1px solid #ffffff;
@@ -322,7 +232,7 @@ body {
     margin-right:10px;
 }
 
-.queue_2 li 
+.queue_2 li
 {
     height: 30px;
     border: 1px solid #ffffff;
@@ -354,7 +264,7 @@ body {
     z-index:2;
 }
 
-.btn-pickup 
+.btn-pickup
 {
     background-color: #428bca;
     border-color: #878787 #878787 hsl(86, 37%, 39.5%);
@@ -363,13 +273,13 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-.btn-inactive 
+.btn-inactive
 {
     border-color: #878787 #878787 hsl(225, 0%, 49.5%);
     color: #000 !important;
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.23);
     -webkit-font-smoothing: antialiased;
-   
+
 }
 
 .btn-hangup
@@ -379,7 +289,7 @@ body {
     color: #fff !important;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.09);
     -webkit-font-smoothing: antialiased;
-   
+
 }
 
 .btn-transfer
@@ -404,33 +314,33 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-.fa 
-{ 
-    font-size: 20px; 
+.fa
+{
+    font-size: 20px;
     margin-top:2px;
     display: inline-block;
-	font-family: FontAwesome;
-	font-style: normal;
-	font-weight: normal;
-	line-height: 1;
-	webkit-font-smoothing:antialiased;
-	-moz-osx-font-smoothing:grayscale;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
 }
 
 .fa-pencil-square-o
 {
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px; 
+    margin-top:0px;
 }
 
-.fa-star 
+.fa-star
 {
     margin-left: 6px;
     margin-right: 6px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px; 
+    margin-top:0px;
 
 }
 
@@ -440,7 +350,7 @@ body {
     margin-right: 6px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px; 
+    margin-top:0px;
 }
 
 .fa-sign-in
@@ -449,7 +359,7 @@ body {
     margin-right: 6px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px; 
+    margin-top:0px;
 }
 
 .fa-sign-out
@@ -495,7 +405,7 @@ body {
     color:#afafaf;
 }
 
-.list-group-item-heading 
+.list-group-item-heading
 {
     margin-top: 2px;
     margin-bottom: 0px;
@@ -504,12 +414,11 @@ body {
 .header
 {
     border-bottom:1px solid #468847;
-    padding:0px;  
+    padding:0px;
 }
 
 .header .options
 {
-    
     float:right;
 }
 
@@ -525,12 +434,11 @@ body {
 }
 
 .badge {
-  font-size: 12.025px;
-  font-weight: bold;
-  white-space: nowrap;
-
-  -webkit-border-radius: 9px;
-  -moz-border-radius: 9px;
-  border-radius: 9px;
+    font-size: 12.025px;
+    font-weight: bold;
+    white-space: nowrap;
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
 }
 

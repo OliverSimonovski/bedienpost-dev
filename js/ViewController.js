@@ -357,9 +357,8 @@ var ListingsViewModel = function(){
     
     self.actionCalling = function(item)
     {
-        //var toCall = self.clickedListItem().ext().split(",")[0];
-        conn.dialUser(model.users[self.clickedListItem().id()]);
-        //callUser(toCall);
+        var numberToCall = self.clickedListItem().ext().split(",")[0];
+        conn.dialNumber(numberToCall);
     }
     
     self.actionTransfer = function()

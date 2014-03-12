@@ -73,23 +73,19 @@
                     </div>
                
                     <div class="list-group queuelist" >
-
-                       
                          <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
                                         css: { 'queue_1':true }">
                              <li>
-                                <span class="badge pull-right"  ></span>
+                                <span class="badge pull-right" data-bind="text: entry.timeConnected"  ></span>
                                 <div class="options todooptions">
                                         <i class="fa fa-arrow-circle-right"></i>
                                         <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
                                  </div>
                                 <label> 
                                     <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
-                                </label>
-                                
+                                </label>  
                             </li>
                         </ul>
-                        
                     </div>
                 </div>
                 <div class='col-md-6'>

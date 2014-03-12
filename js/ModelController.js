@@ -161,6 +161,7 @@ function logout() {
     // Empty on-screen lists.
     userListEntries.removeAll();
     queueListEntries.removeAll();
+    incomingCallEntries.removeAll();
 
 }
 

@@ -313,16 +313,6 @@ var ListingsViewModel = function(){
     
     self.clickItem = function(clickedItem) 
     {
-        // Check whether the target user is logged-in and available
-        if (!clickedItem.avail() || !clickedItem.log()){
-            return;
-        }
-
-        // Check whether the user has paid and has access to a phone.
-        //if (phoneIp == "") {
-        //    return;
-        //}
-
         self.clickedListItem(clickedItem);
         var name = clickedItem.name();
         self.clickedListItemName(name);

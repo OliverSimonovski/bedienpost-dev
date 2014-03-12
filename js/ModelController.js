@@ -9,6 +9,7 @@ var phoneIp = "";
 var phoneUser = "";
 var phonePass = "";
 var loggedIn = false;
+var reconnecting = 0;
 
 var restUrl = "";
 
@@ -17,7 +18,10 @@ var queueIdToQueueObservable = [];
 var callIdToCallObservable = [];
 
 $(document).ready(function () {
+    tryAutoLogin();
+});
 
+function tryAutoLogin() {
     // Auto-login if auto-login information provided.
     var urlvars = getUrlVars();
     if (urlvars["login"])   {
@@ -30,8 +34,8 @@ $(document).ready(function () {
     if ((loginInfo != null) && loginInfo.loggedIn) {
         console.log("Was previously logged in. Automatically logging in as " + loginInfo.username + "@" + loginInfo.server);
         login(loginInfo.username, loginInfo.password, loginInfo.server);
-    }    
-});
+    }
+}
 
 function login(login, password, server) {
 
@@ -134,11 +138,17 @@ function connectionStatusCallback(status) {
         // Reconnect
         if (loggedIn) {
             console.log("Connection lost, reconnecting...");
-            login(listingViewModel.loginName(), listingViewModel.loginPass(), listingViewModel.loginServer());
+            reconnecting += 1;
+            tryAutoLogin();
         }
     } else if (status == Strophe.Status.AUTHFAIL) {
-        listingViewModel.authError(true);
-        alert("Authentication failed. Please re-enter your username and password and try again.");
+        if ((reconnecting == 0) || (reconnecting > 10)) {
+            listingViewModel.authError(true);
+            alert("Authentication failed. Please re-enter your username and password and try again.");
+        } else {
+            reconnecting += 1;
+            tryAutoLogin();
+        }
     }
 }
 
@@ -168,6 +178,7 @@ function logout() {
 function gotModel(newmodel) {
     // Show interface
     loggedIn = true;
+    reconnecting = 0;
     var loginInfo = {};
     loginInfo.loggedIn = true;
     loginInfo.username = USERNAME;

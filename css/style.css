@@ -1,10 +1,10 @@
 
 @import url("http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css");
 
-@media (min-width: 480px) { 
+@media (min-width: 480px) {
     .list ul
     {
-	   max-height: 900px;
+       max-height: 900px;
     }
 }
 
@@ -12,35 +12,28 @@
 @media (min-width: 768px) {
     .list ul
     {
-	   max-height: 900px;
+       max-height: 900px;
     }
 }
 
 /* Medium devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-    
 }
 
 /* Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
 }
 
-@media (max-width: 767px) {
-  .modal-dialog {
-    width: 100%;
-  }
-} 
-
 @font-face {
-  font-family: 'Glyphicons Halflings';
-  src: url('../fonts/glyphicons-halflings-regular.eot');
-  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+    font-family: 'Glyphicons Halflings';
+    src: url('../fonts/glyphicons-halflings-regular.eot');
+    src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'),     url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
 }
 
-body {  
+body {
     font-family: Helvetica, Arial;
-    background-color:#ffffff; 
-    margin:0px 
+    background-color:#ffffff;
+    margin:0px
 }
 
 #wrap > .container {
@@ -53,38 +46,11 @@ body {
     content:"";
 }
 
-#loginModal .modal-dialog
-{
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width:25%;
-}
-
-#transferModal .modal-dialog
-{
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width:35%;
-}
-
-#callModal .modal-dialog
-{
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width:15%;
-}
-
 .modal-body {
     overflow-y: auto;
 }
 .modal-footer {
-    margin-top: 0;
+    margin-top: 20px;
 }
 
 .form-control {
@@ -96,124 +62,35 @@ body {
 .fixed-height
 {
     height:45px;
-   
 }
 
 .overflow
 {
-     overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
- }
-
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
 .list ul
 {
-	max-height: 460px;
-	margin:10px 0 0 0;
-	padding: 0;
-	overflow-y: scroll;
+    max-height: 460px;
+    margin:10px 0 0 0;
+    padding: 0;
+    overflow-y: scroll;
     list-style: none;
-    /*box-shadow:inset 1px 2px 6px #070707;*/
 
-	-webkit-perspective: 400px;
-	   -moz-perspective: 400px;
-	    -ms-perspective: 400px;
-	     -o-perspective: 400px;
-	        perspective: 400px;
+    -webkit-perspective: 400px;
+       -moz-perspective: 400px;
+        -ms-perspective: 400px;
+         -o-perspective: 400px;
+            perspective: 400px;
 }
 
 .list li
 {
-    border: 1px solid #ffffff; 
+    border: 1px solid #ffffff;
     padding: 0px;
 }
-
-/*
-.ui-draggable-dragging
-{
-    border: 1px solid #ffffff; 
-    padding: 0px;
-}
-
-.ui-draggable-dragging  .options
-{
-    float:right;
-}
-
-.ui-draggable-dragging  .options .badge
-{
-    width: 30px;
-    margin-left:7px;
-    margin-right:10px;
-}
-
-.ui-draggable-dragging  .status
-{
-    display:inline;
-    float:left;
-    padding:10px;
-    background-color:#032739;
-    height:45px;
-}
-
-.ui-draggable-dragging  .connection
-{
-    display:inline;
-    float:left;
-    padding:10px;
-    padding-bottom: 12px;
-    height:45px;
-}
-
-.ui-draggable-dragging  .first-info-small
-{
-    display:inline-block;
-    width:43%;
-}
-
-.ui-draggable-dragging .first-info-big
-{
-    display:inline-block;
-    width:85%;
-}
-
-.ui-draggable-dragging .invisible
-{
-    display:none;
-    visibility: hidden;
-}
-
-.ui-draggable-dragging .second-info
-{
-    display:inline-block;
-    width:43%;
-}
-
-.ui-draggable-dragging .first-label
-{ 
-    margin-top: 1px;
-    padding-left:5px;
-    font-size:17px;
-    font-weight: 600;
-    display:block;
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
-}
-
-.ui-draggable-dragging .second-label
-{
-    margin-top:-3px;
-    padding-left:7px;
-    font-size:13px;
-    font-weight: 400;
-    display:block;
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
-}
-*/
 
 .list li .options
 {
@@ -270,16 +147,16 @@ body {
 }
 
 .list li .first-label
-{ 
+{
     margin-top: 1px;
     padding-left:5px;
     font-size:17px;
     font-weight: 600;
     display:block;
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
-    
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
 }
 
 .list li .second-label
@@ -289,10 +166,18 @@ body {
     font-size:13px;
     font-weight: 400;
     display:block;
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
-   
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+}
+
+.icon-label
+{
+    margin-top:0px;
+    padding-right:7px;
+    font-size:13px;
+    font-weight: 400;
 }
 
 .row{
@@ -315,21 +200,21 @@ body {
     z-index: 1;
     position:relative;
     overflow:hidden;
-	height: 125px;
-	padding: 0;
+    height: 125px;
+    padding: 0;
     padding-top:5px;
-	overflow-y: scroll;
+    overflow-y: scroll;
     list-style: none;
     /*box-shadow:inset 1px 2px 6px #070707;*/
 
-	-webkit-perspective: 400px;
-	   -moz-perspective: 400px;
-	    -ms-perspective: 400px;
-	     -o-perspective: 400px;
-	        perspective: 400px;
+    -webkit-perspective: 400px;
+       -moz-perspective: 400px;
+        -ms-perspective: 400px;
+         -o-perspective: 400px;
+            perspective: 400px;
 }
 
-.queue_1 li 
+.queue_1 li
 {
     height: 30px;
     border: 1px solid #ffffff;
@@ -347,7 +232,7 @@ body {
     margin-right:10px;
 }
 
-.queue_2 li 
+.queue_2 li
 {
     height: 30px;
     border: 1px solid #ffffff;
@@ -364,7 +249,8 @@ body {
     margin-left:7px;
     margin-right:10px;
 }
- .overlay {
+
+.overlay {
     position:absolute;
     background:#FFFFFF;
     border-radius:6px;
@@ -378,116 +264,83 @@ body {
     z-index:2;
 }
 
-.btn-pickup {
-/*
-  background-color: hsl(86, 37%, 41%) !important;
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#7da44b", endColorstr="#6d8f41");
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#7da44b), to(#6d8f41));
-  background-image: -moz-linear-gradient(top, #7da44b, #6d8f41);
-  background-image: -ms-linear-gradient(top, #7da44b, #6d8f41);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #7da44b), color-stop(100%, #6d8f41));
-  background-image: -webkit-linear-gradient(top, #7da44b, #6d8f41);
-  background-image: -o-linear-gradient(top, #7da44b, #6d8f41);
-  background-image: linear-gradient(#7da44b, #6d8f41);
-     */
+.btn-pickup
+{
     background-color: #428bca;
-  border-color: #878787 #878787 hsl(86, 37%, 39.5%);
-  color: #fff !important;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.09);
-  -webkit-font-smoothing: antialiased;
+    border-color: #878787 #878787 hsl(86, 37%, 39.5%);
+    color: #fff !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.09);
+    -webkit-font-smoothing: antialiased;
 }
 
-.btn-inactive {
-/*
-   background-color: hsl(225, 0%, 53%) !important;
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#aaaaaa", endColorstr="#878787");
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#aaaaaa), to(#878787));
-  background-image: -moz-linear-gradient(top, #aaaaaa, #878787);
-  background-image: -ms-linear-gradient(top, #aaaaaa, #878787);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #aaaaaa), color-stop(100%, #878787));
-  background-image: -webkit-linear-gradient(top, #aaaaaa, #878787);
-  background-image: -o-linear-gradient(top, #aaaaaa, #878787);
-  background-image: linear-gradient(#aaaaaa, #878787);
-     */
-  border-color: #878787 #878787 hsl(225, 0%, 49.5%);
-  color: #000 !important;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.23);
-  -webkit-font-smoothing: antialiased;
-   
+.btn-inactive
+{
+    border-color: #878787 #878787 hsl(225, 0%, 49.5%);
+    color: #000 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.23);
+    -webkit-font-smoothing: antialiased;
+
 }
 
 .btn-hangup
 {
-  /*   
-  background-color: hsl(0, 69%, 29%) !important;
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#961b1b", endColorstr="#7c1616");
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#961b1b), to(#7c1616));
-  background-image: -moz-linear-gradient(top, #961b1b, #7c1616);
-  background-image: -ms-linear-gradient(top, #961b1b, #7c1616);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #961b1b), color-stop(100%, #7c1616));
-  background-image: -webkit-linear-gradient(top, #961b1b, #7c1616);
-  background-image: -o-linear-gradient(top, #961b1b, #7c1616);
-  background-image: linear-gradient(#961b1b, #7c1616);
-     */
     background-color: #428bca;
- border-color: #878787 #878787 hsl(225, 0%, 49.5%);
-  color: #fff !important;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.09);
-  -webkit-font-smoothing: antialiased;
-   
+    border-color: #878787 #878787 hsl(225, 0%, 49.5%);
+    color: #fff !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.09);
+    -webkit-font-smoothing: antialiased;
+
 }
 
 .btn-transfer
 {
-    /*
-      background-color: hsl(36, 100%, 47%) !important;
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff9f0f", endColorstr="#ef8f00");
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#ff9f0f), to(#ef8f00));
-  background-image: -moz-linear-gradient(top, #ff9f0f, #ef8f00);
-  background-image: -ms-linear-gradient(top, #ff9f0f, #ef8f00);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ff9f0f), color-stop(100%, #ef8f00));
-  background-image: -webkit-linear-gradient(top, #ff9f0f, #ef8f00);
-  background-image: -o-linear-gradient(top, #ff9f0f, #ef8f00);
-  background-image: linear-gradient(#ff9f0f, #ef8f00);
-     */
     background-color: #428bca;
-  border-color: #878787 #878787 hsl(225, 0%, 49.5%);
-  color: #333 !important;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.09);
-  -webkit-font-smoothing: antialiased;
-   
+    border-color: #878787 #878787 hsl(225, 0%, 49.5%);
+    color: #333 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.09);
+    -webkit-font-smoothing: antialiased;
 }
-.fa 
-{ 
-    font-size: 20px; 
+
+.btn-circle
+{
+    width:50px;
+    height:50px;
+    border-radius: 25px;
+    margin: 5px;
+    background-color: #428bca;
+    border-color: #878787 #878787 hsl(86, 37%, 39.5%);
+    color: #fff !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.09);
+    -webkit-font-smoothing: antialiased;
+}
+
+.fa
+{
+    font-size: 20px;
     margin-top:2px;
     display: inline-block;
-	font-family: FontAwesome;
-	font-style: normal;
-	font-weight: normal;
-	line-height: 1;
-	webkit-font-smoothing:antialiased;
-	-moz-osx-font-smoothing:grayscale;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
 }
 
 .fa-pencil-square-o
 {
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px; 
+    margin-top:0px;
 }
 
-.fa-star 
+.fa-star
 {
     margin-left: 6px;
     margin-right: 6px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px; 
+    margin-top:0px;
 
 }
 
@@ -497,7 +350,7 @@ body {
     margin-right: 6px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px; 
+    margin-top:0px;
 }
 
 .fa-sign-in
@@ -506,7 +359,7 @@ body {
     margin-right: 6px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px; 
+    margin-top:0px;
 }
 
 .fa-sign-out
@@ -534,6 +387,14 @@ body {
     margin-top:0px;
 }
 
+.fa-phone
+{
+    margin-left: 6px;
+    margin-right: 6px;
+    font-size: 20px;
+    margin-top:0px;
+}
+
 .logged-in-color
 {
     color:#2d2f31;
@@ -544,7 +405,7 @@ body {
     color:#afafaf;
 }
 
-.list-group-item-heading 
+.list-group-item-heading
 {
     margin-top: 2px;
     margin-bottom: 0px;
@@ -553,12 +414,11 @@ body {
 .header
 {
     border-bottom:1px solid #468847;
-    padding:0px;  
+    padding:0px;
 }
 
 .header .options
 {
-    
     float:right;
 }
 
@@ -574,12 +434,11 @@ body {
 }
 
 .badge {
-  font-size: 12.025px;
-  font-weight: bold;
-  white-space: nowrap;
-
-  -webkit-border-radius: 9px;
-  -moz-border-radius: 9px;
-  border-radius: 9px;
+    font-size: 12.025px;
+    font-weight: bold;
+    white-space: nowrap;
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
 }
 

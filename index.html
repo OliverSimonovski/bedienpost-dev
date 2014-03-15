@@ -75,7 +75,7 @@
                                         <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
                                  </div>
                                 <label>
-                                    <h5 class="list-group-item-heading" data-bind="text: entry.toDisplay"></h5>
+                                    <h5 class="list-group-item-heading" data-bind="text: entry.toDisplay"><span data-bind="text: entry.toDisplay"></span><span data-bind= "text: { (entry.directionIsOut()) ? '- [incoming]' : '- [outgoing]"></span>  </h5>
                                 </label>
 
                             </li>
@@ -121,7 +121,15 @@
                  </div>
             <div class='row nopadding'>
                  <div class='col-md-6 offset-6'>
+                    
                         <div class="header">
+                             <div class="options todooptions" data-bind="click: $root.showKeypad">
+                                 <div class="logout" >
+
+                                    <i class="fa fa-phone pull-right"></i>
+                                    <span class="icon-label">dialpad</span>
+                                 </div>
+                             </div>
                             <h4>Favorite List</h4>
                         </div>
                         <div class="list-group list">
@@ -158,13 +166,7 @@
 
                 <div class='col-md-6' data-bind="drop: unmarkUserFavorite">
                         <div class="header">
-                            <div class="options todooptions" data-bind="click: $root.showKeypad">
-                                 <div class="logout" >
-
-                                    <i class="fa fa-phone pull-right"></i>
-                                    <span class="icon-label">dialpad</span>
-                                 </div>
-                             </div>
+                            
                             <h4>Contact / User List</h4>
                         </div>
                     <div class="list-group list">
@@ -205,13 +207,31 @@
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissTransferModal">&times;</button>
             <h4 class="modal-title" id="myModalLabel">How to transfer to <span data-bind="text: $root.clickedListItemName"></span>?</h4>
           </div>
           <div class="modal-body">
                 <div class="span3">
-                 <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionTransfer">Unattended Transfer</button>
-                <button class="btn btn-primary btn-lg connect" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionTransferAttended">Attended Transfer</button>
+                 <button class="btn btn-primary btn-lg connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransfer">Transfer</button>
+                <button class="btn btn-primary btn-lg connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransferAttended">Att. Transfer</button>
+
+            </div>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+      
+    <!-- Modal -->
+    <div class="modal fade" id="transferEndModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissEndTransferModal">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.typeOfTransfer"></span> Transfer to <span data-bind="text: $root.typeTransferItemName"></span> in Proces...</h4>
+          </div>
+          <div class="modal-body">
+                <div class="span3">
+                <button class="btn btn-primary btn-lg connect" aria-hidden="true" type="button" data-bind="click: $root.finalizeTranfer">Finalize</button>
 
             </div>
           </div>
@@ -224,12 +244,12 @@
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissCallModal">&times;</button>
             <center><h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.clickedListItemName"></span></h4></center><center>
           </div>
-          <div class="modal-body">
+          <div class="modal-body call">
                 <div class="span3">
-                 <center><button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Call</button></center>
+                 <center><button class="btn btn-primary" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Call</button></center>
             </div>
           </div>
         </div><!-- /.modal-content -->
@@ -241,7 +261,6 @@
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
              <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h4 class="modal-title">Login</h4>
         </div>
         <div class="modal-body">
@@ -260,8 +279,10 @@
 
         </div>
         <div class="modal-footer">
-          <button class="btn" type="button" data-bind="click: $root.cancelLogin">Cancel</button>
-          <button class="btn btn-primary"  type="button" data-bind="click: $root.doLogin">Submit</button>
+            <div class="text-center">
+          <button class="btn" type="button" data-bind="click: $root.dismissLoginModal">Cancel</button>
+          <button id="submitBtn" class="btn btn-primary btn-2"  type="button" data-bind="click: $root.doLogin, valueUpdate: 'afterkeydown'">Submit</button>
+                </div>
         </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
@@ -272,7 +293,7 @@
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-bind="click: $root.dismissKeypadModal">&times;</button>
             <h4 class="modal-title" id="myModalLabel">Dialpad</h4>
           </div>
            <div class="modal-body">
@@ -298,13 +319,16 @@
                                     <button class="btn btn-circle"  type="button" data-bind="click: $root.enterNumber('0') ">0</button>
                                     <button class="btn btn-circle"  type="button" data-bind="click: $root.enterNumber('+') ">+</button>
                             </div>
-             <div class="modal-footer">
+          </div>
+            <div class="modal-footer">
                  <div class="text-center">
-                       <button type="button" class="btn btn-primary btn-2" data-bind="click: $root.connectTo" >Connect to</button>
-                      <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.callDirect" >Direct Call</button>
+                     <div class="btn-group">
+                       <button type="button" class="btn btn-primary btn-2" data-bind="click: $root.attendedTransfer" >Att. Transfer</button>
+                      <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.unattendedTransfer" >Transfer</button>
+                     <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.call" >Call</button>
+                     </div>
                      </div>
                  </div>
-          </div>
         </div>
       </div>
     </div>

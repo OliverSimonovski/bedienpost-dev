@@ -597,6 +597,11 @@ var ListingsViewModel = function(){
           self.dismissKeypadModal();
     }
     
+    self.finalizeTransfer = function()
+    {
+        
+    }
+    
     ko.bindingHandlers.numeric = {
         init: function (element, valueAccessor) {
             $(element).on("keydown", function (event) {
@@ -803,7 +808,7 @@ var ListingsViewModel = function(){
                 start: function() {
                     _dragged = ko.utils.unwrapObservable(valueAccessor().value);
                 },
-                cursor: 'default',
+               
                 cursorAt: { bottom: 0 }
             };
             

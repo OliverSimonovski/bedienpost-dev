@@ -662,8 +662,12 @@ var ListingsViewModel = function(){
         $(".overlay").stop(true, true).fadeOut(250);
 
     });
-
     
+
+    $("#submitBtn").click(function() {
+         $("#submitBtn").toggleClass('active');
+    });
+
     self.showButton = function(){
         if (phoneIp != "") {
             $('.overlay').fadeIn(250); // slideDown(1000);

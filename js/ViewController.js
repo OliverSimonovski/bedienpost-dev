@@ -369,6 +369,7 @@ var ListingsViewModel = function(){
         var toCall = self.clickedListItem().ext().split(",")[0];
         transferToUser(toCall);
         self.dismissTransferModal();
+        self.showTransferEndModal();
     }
 
     self.actionTransferAttended = function()
@@ -376,7 +377,8 @@ var ListingsViewModel = function(){
         self.callingState("transfer");
         var toCall = self.clickedListItem().ext().split(",")[0];
         attendedtransferToUser(toCall);
-         self.dismissTransferModal();
+        self.dismissTransferModal();
+        self.showTransferEndModal();
     }
     
     self.cancelLogin = function()
@@ -389,6 +391,11 @@ var ListingsViewModel = function(){
     {
         $('#transferModal').modal('hide');
         $("#inputField").focus(); 
+    }
+    
+    self.showTransferEndModal = function()
+    {
+        $('#transferEndModal').modal('show');
     }
     
     self.dismissEndTransferModal = function()
@@ -786,13 +793,15 @@ var ListingsViewModel = function(){
                     //debugger;
                     return $(this).clone()},
                 revert: 'true',
+               
                 appendTo: 'body',
                 containment: 'window',
                 revertDuration: 100,
                 start: function() {
                     _dragged = ko.utils.unwrapObservable(valueAccessor().value);
                 },
-                cursor: 'default'
+                cursor: 'default',
+                cursorAt: { bottom: 0 }
             };
             
             

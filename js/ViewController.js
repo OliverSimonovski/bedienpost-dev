@@ -357,11 +357,14 @@ var ListingsViewModel = function(){
     
     self.actionCalling = function(item)
     {
-        //var toCall = self.clickedListItem().ext().split(",")[0];
-        conn.dialUser(model.users[self.clickedListItem().id()]);
+        var numberToCall = self.clickedListItem().ext().split(",")[0];
+        if (numberToCall != "") {
+            conn.dialNumber(numberToCall);
+        } else {
+            console.log("Can't call user without extension.");
+            alert("Can't call user without extension.");
+        }
         self.dismissCallModal();
-        //callUser(toCall);
-         
     }
     
     self.actionTransfer = function()

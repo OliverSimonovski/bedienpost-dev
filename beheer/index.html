@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compass</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="../css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../css/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <script src="../js/lib/jquery.min.js"></script>
+    <script src="../js/lib/jquery-ui.min.js"></script>
+    <script src="../js/lib/underscore-min.js"></script>
+    <script src="../js/lib/backbone-min.js"></script>
+    <script src="../js/lib/backbone.basicauth.js"></script>
+    <script src="../js/knockout-3.0.0.js"></script>
+
+</head>
+<body>
+<div id='gui'>
+    <center>
+        <p>
+            <br/><h2>Verify your username and password</h2><br/><br/>
+
+            <p>Username<br/>
+                <input data-bind="value: username"/>
+            </p>
+
+            <p>Server<br/>
+                <input data-bind="value: server"/>
+            </p>
+
+            <p>Password<br/>
+                <input data-bind="value: password"/>
+            </p>
+        </p>
+
+        <button data-bind="click: submitSimple">Submit</button>
+
+    </center>
+</div>
+</div>
+
+
+</div>
+</body>
+<script src="beheer.js"></script>
+</html>

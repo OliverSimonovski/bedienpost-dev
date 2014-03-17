@@ -197,6 +197,7 @@ function gotModel(newmodel) {
 
     // Hacky
     $('#loginModal').modal('hide');
+    $("#inputField").focus();
 }
 
 function getCallInfo(call, user) {

@@ -364,12 +364,14 @@ var ListingsViewModel = function(){
             console.log("Can't call user without extension.");
             alert("Can't call user without extension.");
         }
+        self.dismissCallModal();
     }
     
     self.actionTransfer = function()
     {
         var toCall = self.clickedListItem().ext().split(",")[0];
         transferToUser(toCall);
+        self.dismissTransferModal();
     }
 
     self.actionTransferAttended = function()
@@ -377,11 +379,43 @@ var ListingsViewModel = function(){
         self.callingState("transfer");
         var toCall = self.clickedListItem().ext().split(",")[0];
         attendedtransferToUser(toCall);
+         self.dismissTransferModal();
     }
     
     self.cancelLogin = function()
     {
+        $("#inputField").focus();
         //alert("cancelLogin");
+    }
+    
+    self.dismissTransferModal = function()
+    {
+        $('#transferModal').modal('hide');
+        $("#inputField").focus(); 
+    }
+    
+    self.dismissEndTransferModal = function()
+    {
+        $('#transferEndModal').modal('hide');
+        $("#inputField").focus(); 
+    }
+    
+     self.dismissCallModal = function()
+    {
+        $('#callModal').modal('hide');
+        $("#inputField").focus(); 
+    }
+     
+    self.dismissLoginModal = function()
+    {
+        $('#loginModal').modal('hide');
+        $("#inputField").focus(); 
+    }
+    
+     self.dismissKeypadModal = function()
+    {
+        $('#keypadModal').modal('hide');
+        $("#inputField").focus(); 
     }
     
     self.doPickup = function()
@@ -389,6 +423,7 @@ var ListingsViewModel = function(){
         if (self.callingState() == "ringing") {
             pickupPhone();
         }
+        $("#inputField").focus();
     }
     
     self.doHangup = function()
@@ -396,13 +431,15 @@ var ListingsViewModel = function(){
         if ((self.callingState() == "ringing") || (self.callingState() == "calling")) {
             hangupPhone();
         }
+        $("#inputField").focus();
     }
     
     self.doTransfer = function()
     {
         if (self.callingState() == "transfer") {
-            finishAttendedTransfer();
+            finishAttendedTransfer(); 
         }
+        $("#inputField").focus();
     }
     
     self.doLogin = function()
@@ -410,6 +447,7 @@ var ListingsViewModel = function(){
         console.log("Logging in as: " + self.loginName());
         login(self.loginName(), self.loginPass(), self.loginServer());
     }
+    
     
     self.favoriteCssClass = function(fav)
     {
@@ -519,6 +557,14 @@ var ListingsViewModel = function(){
             })
     }
     
+    self.showLogin = Function()
+    { 
+        $('#loginModal').modal({
+            keyboard: false
+        })
+        $("#submitBtn").focus();
+    }
+    
     self.enterNumber = function(nr)
     {  
        // console.log(nr);
@@ -526,15 +572,22 @@ var ListingsViewModel = function(){
         currentTeleponeNumber += nr;
         self.numericInput(currentTeleponeNumber);
     }
-    
-    self.connectTo = function()
+  
+    self.attendedTransfer = function()
     {
         console.log(self.numericInput());
+          self.dismissKeypadModal();
     }
     
-    self.callDirect = function()
+    self.unattendedTransfer = function()
+    {
+         self.dismissKeypadModal();
+    }
+    
+    self.call = function()
     {
         console.log(self.numericInput());
+          self.dismissKeypadModal();
     }
     
     ko.bindingHandlers.numeric = {
@@ -593,23 +646,11 @@ var ListingsViewModel = function(){
         self.incomingCallList( xmppIncomingCallList[0] );
     }
     
-    $( "#inputField" ).keypress(function(e)
+    $( "#loginModal" ).keypress(function(e)
     {
-        var searchParam = self.search();
-        if(searchParam){
-           if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
-               var shortcutKey = (e.which%48);
-               if (e.ctrlKey){
-                  
-                  var itemToClick = self.filteredItems()[shortcutKey];
-                  if (itemToClick != null)
-                   {
-                       self.clickItem(itemToClick);
-                   }
-                   event.preventDefault();
-               }
-           } 
-        }
+        if ((e.which) == 13){
+            self.doLogin();
+        } 
     });
     
     $("#activecalls").on("mouseenter", function(){
@@ -624,59 +665,107 @@ var ListingsViewModel = function(){
         $(".overlay").stop(true, true).fadeOut(250);
 
     });
+    
 
-    
+    $("#submitBtn").click(function() {
+         $("#submitBtn").toggleClass('active');
+    });
+
     self.showButton = function(){
-            if (phoneIp != "") {
-                $('.overlay').fadeIn(250); // slideDown(1000);
-            }
+        if (phoneIp != "") {
+            $('.overlay').fadeIn(250); // slideDown(1000);
         }
-     self.hideButton = function(){
-            $('.overlay').fadeOut(250);  // slideUp(1000);
-        }
+    }
     
+     self.hideButton = function(){
+        $('.overlay').fadeOut(250);  // slideUp(1000);
+    }
+     
+     self.typeOfTransfer = function()
+     {
+         return "typeOfTransfer";
+     }
+     
+     self.typeTransferItemName = function()
+     {
+         return "typeOfTransferName";
+     }
+ 
     $( document ).keypress(function(e)
     {
         // ugly code ... should be a better way... for later to cleanup -> might make a keyFunction..
         var searchParam = self.search();
         searchParam +="";
         searchParam = searchParam.toLowerCase();
+        console.log(e.which);
         if (!searchParam){
-           if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
-               var shortcutKey = (e.which%48);
-               if (e.ctrlKey){
-                  
-                  var itemToClick = self.favFilteredItems()[shortcutKey];
-                  if (itemToClick != null)
-                   {
-                       self.clickItem(itemToClick);
-                   }
-                   event.preventDefault();
-               }
-           }
+               if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
+                    var shortcutKey = (e.which%48);
+                    if (e.ctrlKey){
+                      var itemToClick = self.favFilteredItems()[shortcutKey];
+                      if (itemToClick != null)
+                       {
+                           self.clickItem(itemToClick);
+                       }
+                       event.preventDefault();
+                    }
+               } 
         } else {
             if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
-               var shortcutKey = (e.which%48);
-               if (e.ctrlKey){
-                  
-                  var itemToClick = self.filteredItems()[shortcutKey];
-                  if (itemToClick != null)
-                   {
-                       self.clickItem(itemToClick);
-                   }
+                   var shortcutKey = (e.which%48);
+                    if (e.ctrlKey){
+                      var itemToClick = self.filteredItems()[shortcutKey];
+                      if (itemToClick != null)
+                       {
+                           self.clickItem(itemToClick);
+                       }
+                       event.preventDefault();
+                    }
+                }
+        }
+         if ((e.which) == 68){
+           if (e.shiftKey ){
+                self.showKeypad();
+               event.preventDefault();
+           }
+       } else if ((e.which) == 80){
+            if (e.shiftKey ){
+                self.doPickup();
+               event.preventDefault();
+           }
+       } else if ((e.which) == 84){
+            if (e.shiftKey ){
+                self.doTransfer();
+               event.preventDefault();
+           }
+         } else if ((e.which) == 72){
+                if (e.shiftKey ){
+                    self.doHangup();
                    event.preventDefault();
                }
+           } else if ((e.which) == 67){
+                if (e.shiftKey ){
+                    self.actionCalling();
+                   event.preventDefault();
+               }
+           }  else if ((e.which) == 65){
+                if (e.shiftKey ){
+                    self.actionTransferAttended();
+                   event.preventDefault();
+               }
+           } else if ((e.which) == 85){
+                if (e.shiftKey ){
+                   self.actionTransfer();
+                   event.preventDefault();
+               }
+           }  else if ((e.which) == 76){
+               if (e.shiftKey ){
+                   self.logOut();
+                   event.preventDefault();
+               } 
            }
-        }
+    
     });
-    
-    
-    $('#loginModal').modal({
-            keyboard: false
-    })
-    
-    
-    
     /*
     $( "#inputField" ).focusin(function() {
          console.log("in");
@@ -791,6 +880,7 @@ var ListingsViewModel = function(){
     };
     $(window).resize(adjustModalMaxHeightAndPosition).trigger("resize");
     */
+    self.showLogin();
     }
 
 var listingViewModel = new ListingsViewModel();

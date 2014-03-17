@@ -48,9 +48,16 @@ body {
 
 .modal-body {
     overflow-y: auto;
+    padding:20px 20px 0 20px;
 }
+
+.call {
+    padding:20px 20px 20px 20px;
+}
+
 .modal-footer {
     margin-top: 20px;
+    padding: 19px 0 20px;
 }
 
 .form-control {
@@ -381,10 +388,15 @@ body {
 
 .fa-arrow-circle-right
 {
-        margin-left: 6px;
+    margin-left: 6px;
     margin-right: 6px;
     font-size: 20px;
     margin-top:0px;
+}
+
+.fa-refresh
+{
+    font-size: 14px;
 }
 
 .fa-phone
@@ -394,6 +406,7 @@ body {
     font-size: 20px;
     margin-top:0px;
 }
+
 
 .logged-in-color
 {
@@ -442,3 +455,22 @@ body {
     border-radius: 9px;
 }
 
+.spinner {
+  display: inline-block;
+  opacity: 0;
+  width: 0;
+}
+
+.has-spinner.active {
+  cursor:progress;
+}
+
+.has-spinner.active .spinner {
+  opacity: 1;
+  width: auto; /* This doesn't work, just fix for unkown width elements */
+}
+
+.has-spinner.btn.active .spinner {
+    text-align: left; 
+    width: 20px;
+}

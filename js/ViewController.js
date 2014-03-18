@@ -33,11 +33,10 @@ function UserListItem(id, name, ext, log, avail, ringing) {
         if (duration < timezoneOffset) duration = timezoneOffset;
 
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
-        var directionPart = (this.directionIsOut() ? '> ' : '< ');
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
 
-        return directionPart + numberPart + timePart;
+        return numberPart + timePart;
         
     }, this);
 }
@@ -492,7 +491,7 @@ var ListingsViewModel = function(){
             return 'fa fa-minus-circle';
         }                                       
     };
-    
+
     self.connectionCssClass = function(typeConnection)
     {
         if(typeConnection == false){
@@ -500,9 +499,9 @@ var ListingsViewModel = function(){
         } else if (typeConnection == true){
             return 'fa fa-arrow-circle-right';
         } else {
-          return '';  
+          return '';
         }
-        
+
     }
     
     self.colorClass = function(avail, logged, ringing)

@@ -224,7 +224,7 @@ var ListingsViewModel = function(){
     self.shortcutKey = ko.observable();
     self.callingState = ko.observable('onhook');
     self.authError = ko.observable(false);
-    self.numericInput = ko.observable("enter telephonenumber");
+    self.numericInput = ko.observable("");
     
     
     self.currentList.subscribe(function()
@@ -442,10 +442,7 @@ var ListingsViewModel = function(){
     
     self.doTransfer = function()
     {
-        if (self.callingState() == "transfer") {
-            finishAttendedTransfer(); 
-        }
-        $("#inputField").focus();
+        self.showKeypad();
     }
     
     self.doLogin = function()
@@ -561,6 +558,7 @@ var ListingsViewModel = function(){
         $('#keypadModal').modal({
                 keyboard: true
             })
+        self.clearNumber();
     }
     
     self.showLogin = Function()
@@ -572,28 +570,33 @@ var ListingsViewModel = function(){
     }
     
     self.enterNumber = function(nr)
-    {  
-       // console.log(nr);
-        var currentTeleponeNumber = self.numericInput();
-        currentTeleponeNumber += nr;
-        self.numericInput(currentTeleponeNumber);
+    {
+        self.numericInput(self.numericInput() + nr);
+    }
+
+    self.clearNumber = function()
+    {
+        self.numericInput("");
     }
   
     self.attendedTransfer = function()
     {
-        console.log(self.numericInput());
-          self.dismissKeypadModal();
+        self.callingState("transfer");
+        attendedtransferToUser(self.numericInput());
+        self.dismissKeypadModal();
+        self.showTransferEndModal();
     }
     
     self.unattendedTransfer = function()
     {
-         self.dismissKeypadModal();
+        transferToUser(self.numericInput());
+        self.dismissKeypadModal();
     }
     
     self.call = function()
     {
-        console.log(self.numericInput());
-          self.dismissKeypadModal();
+        conn.dialNumber(self.numericInput());
+        self.dismissKeypadModal();
     }
     
     self.finalizeTransfer = function()
@@ -841,47 +844,6 @@ var ListingsViewModel = function(){
     };
 
     ko.bindingHandlers.drag.options = { helper: 'clone' };
-    /* ----------------------- */
-
-    
-    //Modal positioning for screen and resizing
-    /*
-    function adjustModalMaxHeightAndPosition(){
-        $('.modal').each(function(){
-            if($(this).hasClass('in') == false){
-                $(this).show();
-            };
-            var contentHeight = $(window).height() - 60;
-            var headerHeight = $(this).find('.modal-header').outerHeight() || 0;
-            var footerHeight = $(this).find('.modal-footer').outerHeight() || 0;
-    
-            $(this).find('.modal-content').css({
-                'max-height': function () {
-                    return contentHeight;
-                }
-            });
-    
-            $(this).find('.modal-body').css({
-                'max-height': function () {
-                    return (contentHeight - (headerHeight + footerHeight));
-                }
-            });
-    
-            $(this).find('.modal-dialog').css({
-                'margin-top': function () {
-                    return -($(this).outerHeight() / 2);
-                },
-                'margin-left': function () {
-                    return -($(this).outerWidth() / 2);
-                }
-            });
-            if($(this).hasClass('in') == false){
-                $(this).hide(); 
-            };
-        });
-    };
-    $(window).resize(adjustModalMaxHeightAndPosition).trigger("resize");
-    */
     self.showLogin();
     }
 

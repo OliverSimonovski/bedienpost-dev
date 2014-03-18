@@ -81,6 +81,7 @@ function login(login, password, server) {
     conn.connect(SERVER, USERNAME, PASS); // Development
     
     getPhoneAuth(USERNAME,SERVER,PASS);
+    listingViewModel.numericInput("");
 }
 
 // Get configuration for the phone from the server.

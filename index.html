@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="btn-group">
                                     <button class="btn btn-transfer"  type="button" data-bind="click: $root.doTransfer,
-                                                                                           attr: { class: $root.actionStateCssClass('transfer') }">Transfer</button>
+                                                                                          }">Transfer</button>
                                  </div>
                             </div>
                         </div>
@@ -296,7 +296,7 @@
             <h4 class="modal-title" id="myModalLabel">Dialpad</h4>
           </div>
            <div class="modal-body">
-                            <input id="keypadInputField" type="text" class="form-control" placeholder="enter phonenumber" data-bind="numeric: numericInput,value: numericInput, valueUpdate: 'afterkeydown'">
+                            <input id="keypadInputField" type="text" class="form-control" placeholder="enter phone number" data-bind="value: $root.numericInput">
                             <p></p>
                              <div class="buttoncontainer text-center">
                                    <button class="btn btn-circle"  type="button" data-bind="click: $root.enterNumber('1')">1</button>
@@ -314,7 +314,7 @@
                                     <button class="btn btn-circle"  type="button" data-bind="click: $root.enterNumber('9') ">9</button>
                             </div>
                             <div class="buttoncontainer text-center">
-                                    <button class="btn btn-circle"  type="button" data-bind="click: $root.enterNumber('') "></button>
+                                    <button class="btn btn-circle"  type="button" data-bind="click: $root.clearNumber() ">Clr</button>
                                     <button class="btn btn-circle"  type="button" data-bind="click: $root.enterNumber('0') ">0</button>
                                     <button class="btn btn-circle"  type="button" data-bind="click: $root.enterNumber('+') ">+</button>
                             </div>
@@ -322,8 +322,8 @@
             <div class="modal-footer">
                  <div class="text-center">
                      <div class="btn-group">
-                       <button type="button" class="btn btn-primary btn-2" data-bind="click: $root.attendedTransfer" >Att. Transfer</button>
-                      <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.unattendedTransfer" >Transfer</button>
+                       <button type="button" class="btn btn-primary btn-2" data-bind="click: $root.attendedTransfer, enable: ($root.callingState() == 'calling')" >Att. Transfer</button>
+                      <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.unattendedTransfer, enable: ($root.callingState() != 'onhook')" >Transfer</button>
                      <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.call" >Call</button>
                      </div>
                      </div>

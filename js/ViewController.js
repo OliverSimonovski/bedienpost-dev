@@ -644,12 +644,12 @@ var ListingsViewModel = function(){
     }
 
     self.markUserFavorite = function(item) {
-        item.favorite(true);
+        if (item.user) item.user.favorite(true);
         UserListItem.saveFavs(self.currentList().entries());
     }
 
     self.unmarkUserFavorite = function(item) {
-        item.favorite(false);
+        if (item.fav) item.fav.favorite(false);
         UserListItem.saveFavs(self.currentList().entries());
     }
 
@@ -776,7 +776,7 @@ var ListingsViewModel = function(){
            }
     
     });
-   
+
     var _dragged;
     /* Drag and Drop handling */
     ko.bindingHandlers.drag = {

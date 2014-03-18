@@ -604,6 +604,14 @@ var ListingsViewModel = function(){
         }
         self.dismissEndTransferModal();
     }
+
+    self.cancelTransfer = function()
+    {
+        if (self.callingState() == "transfer") {
+            cancelAttendedTransfer();
+        }
+        self.dismissEndTransferModal();
+    }
     
     ko.bindingHandlers.numeric = {
         init: function (element, valueAccessor) {
@@ -695,16 +703,6 @@ var ListingsViewModel = function(){
      self.hideButton = function(){
         $('.overlay').fadeOut(250);  // slideUp(1000);
     }
-     
-     self.typeOfTransfer = function()
-     {
-         return "typeOfTransfer";
-     }
-     
-     self.typeTransferItemName = function()
-     {
-         return "typeOfTransferName";
-     }
  
     $( document ).keypress(function(e)
     {

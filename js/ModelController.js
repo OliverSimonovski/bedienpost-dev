@@ -456,6 +456,13 @@ function finishAttendedTransfer() {
     phoneCommand("TRANSFER");    
 }
 
+function cancelAttendedTransfer() {
+    phoneCommand("CANCEL");
+    _.delay(function() {
+        phoneCommand("ENTER");
+    }, 500);
+}
+
 function pickupPhone() {
     phoneCommand("ENTER");
 }

@@ -78,28 +78,23 @@ function login(login, password, server) {
     // Setup callback when receiving the company model
     conn.getModel().done(gotModel);
 
-    conn.connect(SERVER, USERNAME, PASS);
+    conn.connect(SERVER, USERNAME, PASS); // Development
     
     getPhoneAuth(USERNAME,SERVER,PASS);
 }
 
 // Get configuration for the phone from the server.
 function getPhoneAuth(user, server, pass) {
-    
-    var rawAuth = user+":"+server+":"+pass;
-    var auth = MD5.hexdigest(rawAuth);
-    //console.log("raw auth: " + rawAuth); 
-    //console.log("auth:" + auth );
 
     var postObj = {};
     postObj.username = user;
     postObj.server = server;
-    postObj.auth = auth;
+    postObj.auth = btoa(user + ":" + pass)
 
     $.ajax
       ({
         type: "POST",
-        url: "https://www.bedienpost.nl/getPhoneAuth.php",
+        url: "https://www.bedienpost.nl/retrievePhoneAuth.php",
         dataType: 'json',
         data: postObj,
         success: function (response){

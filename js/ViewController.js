@@ -615,7 +615,6 @@ var ListingsViewModel = function(){
     ko.bindingHandlers.numeric = {
         init: function (element, valueAccessor) {
             $(element).on("keydown", function (event) {
-                console.log(event.keyCode);
                 // Allow: backspace, delete, tab, escape, and enter
                 if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
                     // Allow: Ctrl A en Ctrl
@@ -709,7 +708,6 @@ var ListingsViewModel = function(){
         var searchParam = self.search();
         searchParam +="";
         searchParam = searchParam.toLowerCase();
-        console.log(e.which);
         if (!searchParam){
                if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
                     var shortcutKey = (e.which%48);
@@ -778,17 +776,7 @@ var ListingsViewModel = function(){
            }
     
     });
-    /*
-    $( "#inputField" ).focusin(function() {
-         console.log("in");
-        self.hasFocus = true;
-    });
-    
-    $( "#inputField" ).focusout(function() {
-         console.log("out");
-        self.hasFocus = false;
-    });
-    */
+   
     var _dragged;
     /* Drag and Drop handling */
     ko.bindingHandlers.drag = {

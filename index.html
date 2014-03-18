@@ -74,7 +74,7 @@
                                     <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
                                  </div>
                                 <label>
-                                    <h5 class="list-group-item-heading" ><span data-bind="text: entry.toDisplay"></span><span data-bind= "text:  entry.directionIsOut() ? ' - [outgoing]' : ' - [incoming]' "></span>  </h5>
+                                    <h5 class="list-group-item-heading" ><span data-bind="text: entry.toDisplay"></span><span data-bind= "text:  entry.directionIsOut() ? ' [outgoing]' : ' [incoming]' "></span>  </h5>
                                 </label>
 
                             </li>
@@ -225,7 +225,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissEndTransferModal">&times;</button>
-            <h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.typeOfTransfer"></span> Transfer to <span data-bind="text: $root.typeTransferItemName()"></span> in Proces...</h4>
+            <h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.typeOfTransfer"></span> Transfer to <span data-bind="text: $root.typeTransferItemName"></span> in Proces...</h4>
           </div>
           <div class="modal-body">
                 <div class="span3">

@@ -225,11 +225,11 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissEndTransferModal">&times;</button>
-            <h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.typeOfTransfer"></span> Transfer to <span data-bind="text: $root.typeTransferItemName"></span> in Proces...</h4>
+            <h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.typeOfTransfer"></span> Transfer to <span data-bind="text: $root.typeTransferItemName"></span> in Progress...</h4>
           </div>
-          <div class="modal-body">
+          <div class="modal-body call">
                 <div class="span3">
-                <button class="btn btn-primary btn-lg connect" aria-hidden="true" type="button" data-bind="click: $root.finalizeTranfer">Finalize</button>
+                    <center><button class="btn btn-primary" aria-hidden="true" type="button" data-bind="click: $root.finalizeTransfer">Finalize</button></center>
 
             </div>
           </div>
@@ -246,7 +246,7 @@
             <center><h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.clickedListItemName"></span></h4></center><center>
           </div>
           <div class="modal-body call">
-                <div class="span3">
+              <div class="text-center">
                  <center><button class="btn btn-primary" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Call</button></center>
             </div>
           </div>

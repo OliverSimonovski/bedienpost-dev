@@ -599,7 +599,10 @@ var ListingsViewModel = function(){
     
     self.finalizeTransfer = function()
     {
-        
+        if (self.callingState() == "transfer") {
+            finishAttendedTransfer();
+        }
+        self.dismissEndTransferModal();
     }
     
     ko.bindingHandlers.numeric = {

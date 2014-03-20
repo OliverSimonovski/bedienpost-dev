@@ -559,6 +559,7 @@ var ListingsViewModel = function(){
                 keyboard: true
             })
         self.clearNumber();
+       $("#keypadInputField").focus();
     }
     
     self.showLogin = Function()
@@ -566,7 +567,7 @@ var ListingsViewModel = function(){
         $('#loginModal').modal({
             keyboard: false
         })
-        $("#submitBtn").focus();
+        $("#nameInputField").focus();
     }
     
     self.enterNumber = function(nr)
@@ -577,6 +578,7 @@ var ListingsViewModel = function(){
     self.clearNumber = function()
     {
         self.numericInput("");
+         $("#keypadInputField").focus();
     }
   
     self.attendedTransfer = function()

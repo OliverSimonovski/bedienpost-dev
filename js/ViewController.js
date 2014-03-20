@@ -33,10 +33,11 @@ function UserListItem(id, name, ext, log, avail, ringing) {
         if (duration < timezoneOffset) duration = timezoneOffset;
 
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
+        var directionPart = (this.directionIsOut() ? '> ' : '< ');
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
 
-        return numberPart + timePart;
+        return directionPart + numberPart + timePart;
         
     }, this);
 }
@@ -224,7 +225,7 @@ var ListingsViewModel = function(){
     self.shortcutKey = ko.observable();
     self.callingState = ko.observable('onhook');
     self.authError = ko.observable(false);
-    self.numericInput = ko.observable("");
+    self.numericInput = ko.observable("enter telephonenumber");
     
     
     self.currentList.subscribe(function()
@@ -442,7 +443,10 @@ var ListingsViewModel = function(){
     
     self.doTransfer = function()
     {
-        self.showKeypad();
+        if (self.callingState() == "transfer") {
+            finishAttendedTransfer(); 
+        }
+        $("#inputField").focus();
     }
     
     self.doLogin = function()
@@ -488,7 +492,7 @@ var ListingsViewModel = function(){
             return 'fa fa-minus-circle';
         }                                       
     };
-
+    
     self.connectionCssClass = function(typeConnection)
     {
         if(typeConnection == false){
@@ -496,9 +500,9 @@ var ListingsViewModel = function(){
         } else if (typeConnection == true){
             return 'fa fa-arrow-circle-right';
         } else {
-          return '';
+          return '';  
         }
-
+        
     }
     
     self.colorClass = function(avail, logged, ringing)
@@ -530,10 +534,6 @@ var ListingsViewModel = function(){
             return 'btn btn-inactive';
         }
     }
-
-    self.loginFieldsCssClass = function() {
-
-    }
     
     self.firstRowCssClass = function( entry )
     {
@@ -558,7 +558,8 @@ var ListingsViewModel = function(){
         $('#keypadModal').modal({
                 keyboard: true
             })
-        self.clearNumber();
+        
+        $("#keypadInputField").focus();
     }
     
     self.showLogin = Function()
@@ -566,58 +567,43 @@ var ListingsViewModel = function(){
         $('#loginModal').modal({
             keyboard: false
         })
-        $("#submitBtn").focus();
+        $("#nameInputField").focus();
     }
     
     self.enterNumber = function(nr)
-    {
-        self.numericInput(self.numericInput() + nr);
-    }
-
-    self.clearNumber = function()
-    {
-        self.numericInput("");
+    {  
+       // console.log(nr);
+        var currentTeleponeNumber = self.numericInput();
+        currentTeleponeNumber += nr;
+        self.numericInput(currentTeleponeNumber);
     }
   
     self.attendedTransfer = function()
     {
-        self.callingState("transfer");
-        attendedtransferToUser(self.numericInput());
+        console.log(self.numericInput());
         self.dismissKeypadModal();
-        self.showTransferEndModal();
     }
     
     self.unattendedTransfer = function()
     {
-        transferToUser(self.numericInput());
-        self.dismissKeypadModal();
+         self.dismissKeypadModal();
     }
     
     self.call = function()
     {
-        conn.dialNumber(self.numericInput());
+        console.log(self.numericInput());
         self.dismissKeypadModal();
     }
     
     self.finalizeTransfer = function()
     {
-        if (self.callingState() == "transfer") {
-            finishAttendedTransfer();
-        }
-        self.dismissEndTransferModal();
-    }
-
-    self.cancelTransfer = function()
-    {
-        if (self.callingState() == "transfer") {
-            cancelAttendedTransfer();
-        }
-        self.dismissEndTransferModal();
+        
     }
     
     ko.bindingHandlers.numeric = {
         init: function (element, valueAccessor) {
             $(element).on("keydown", function (event) {
+                console.log(event.keyCode);
                 // Allow: backspace, delete, tab, escape, and enter
                 if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
                     // Allow: Ctrl A en Ctrl
@@ -647,12 +633,12 @@ var ListingsViewModel = function(){
     }
 
     self.markUserFavorite = function(item) {
-        if (item.user) item.user.favorite(true);
+        item.favorite(true);
         UserListItem.saveFavs(self.currentList().entries());
     }
 
     self.unmarkUserFavorite = function(item) {
-        if (item.fav) item.fav.favorite(false);
+        item.favorite(false);
         UserListItem.saveFavs(self.currentList().entries());
     }
 
@@ -685,7 +671,6 @@ var ListingsViewModel = function(){
     });
 
     $("#activecalls").on("mouseleave", function(){
-
         $(".overlay").stop(true, true).fadeOut(250);
 
     });
@@ -704,6 +689,16 @@ var ListingsViewModel = function(){
      self.hideButton = function(){
         $('.overlay').fadeOut(250);  // slideUp(1000);
     }
+     
+     self.typeOfTransfer = function()
+     {
+         return "typeOfTransfer";
+     }
+     
+     self.typeTransferItemName = function()
+     {
+         return "typeOfTransferName";
+     }
  
     $( document ).keypress(function(e)
     {
@@ -711,6 +706,7 @@ var ListingsViewModel = function(){
         var searchParam = self.search();
         searchParam +="";
         searchParam = searchParam.toLowerCase();
+        console.log(e.which);
         if (!searchParam){
                if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
                     var shortcutKey = (e.which%48);
@@ -777,7 +773,6 @@ var ListingsViewModel = function(){
                    event.preventDefault();
                } 
            }
-    
     });
 
     var _dragged;
@@ -786,32 +781,26 @@ var ListingsViewModel = function(){
         init: function(element, valueAccessor, allBindingsAccessor) {
             //set meta-data
             ko.utils.domData.set(element, "ko_drag_data", valueAccessor());
-             var dragElement = element;
+            var dragElement = element;
             var dragOptions = {
                 helper: function() {
                     //debugger;
                     return $(this).clone()},
-                revert: 'true',
-               
+                revert: 'true',               
                 appendTo: 'body',
                 containment: 'window',
                 revertDuration: 100,
                 start: function() {
                     _dragged = ko.utils.unwrapObservable(valueAccessor().value);
-                },
-               
-                cursorAt: { bottom: 0 }
+                }
             };
-            
-            
             //combine options passed into binding (in dragOptions binding) with global options (in ko.bindingHandlers.drag.options)
             var options = ko.utils.extend(ko.bindingHandlers.drag.options, allBindingsAccessor.dragOptions);
             
-            //$(dragElement).draggable(dragOptions);
             //initialize draggable
             $(element).draggable(dragOptions).disableSelection();
         },
-        options: {}   
+        //options: {}   
     };
 
     ko.bindingHandlers.drop = {
@@ -843,9 +832,50 @@ var ListingsViewModel = function(){
         options: {}    
     };
 
-    ko.bindingHandlers.drag.options = { helper: 'clone' };
+    //ko.bindingHandlers.drag.options = { helper: 'clone' };
+    /* ----------------------- */
+
+    
+    //Modal positioning for screen and resizing
+    /*
+    function adjustModalMaxHeightAndPosition(){
+        $('.modal').each(function(){
+            if($(this).hasClass('in') == false){
+                $(this).show();
+            };
+            var contentHeight = $(window).height() - 60;
+            var headerHeight = $(this).find('.modal-header').outerHeight() || 0;
+            var footerHeight = $(this).find('.modal-footer').outerHeight() || 0;
+    
+            $(this).find('.modal-content').css({
+                'max-height': function () {
+                    return contentHeight;
+                }
+            });
+    
+            $(this).find('.modal-body').css({
+                'max-height': function () {
+                    return (contentHeight - (headerHeight + footerHeight));
+                }
+            });
+    
+            $(this).find('.modal-dialog').css({
+                'margin-top': function () {
+                    return -($(this).outerHeight() / 2);
+                },
+                'margin-left': function () {
+                    return -($(this).outerWidth() / 2);
+                }
+            });
+            if($(this).hasClass('in') == false){
+                $(this).hide(); 
+            };
+        });
+    };
+    $(window).resize(adjustModalMaxHeightAndPosition).trigger("resize");
+    */
     self.showLogin();
-    }
+}
 
 var listingViewModel = new ListingsViewModel();
 ko.applyBindings(listingViewModel);

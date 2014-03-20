@@ -208,10 +208,10 @@
             <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissTransferModal">&times;</button>
             <h4 class="modal-title" id="myModalLabel">How to transfer to <span data-bind="text: $root.clickedListItemName"></span>?</h4>
           </div>
-          <div class="modal-body">
+          <div class="modal-body call">
                 <div class="span3">
-                 <button class="btn btn-primary btn-lg connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransfer">Transfer</button>
-                <button class="btn btn-primary btn-lg connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransferAttended, enable: ($root.callingState() == 'calling')">Att. Transfer</button>
+                 <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransfer">Transfer</button>
+                <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransferAttended, enable: ($root.callingState() == 'calling')">Att. Transfer</button>
 
             </div>
           </div>
@@ -228,10 +228,9 @@
             <h4 class="modal-title" id="myModalLabel"><span></span> Transfer to <span data-bind="text: $root.clickedListItemName"></span> in Progress...</h4>
           </div>
           <div class="modal-body call">
-                <div class="span3">
-                    <button class="btn btn-primary" aria-hidden="true" type="button" data-bind="click: $root.finalizeTransfer">Finalize</button>
-                    <button class="btn btn-primary" aria-hidden="true" type="button" data-bind="click: $root.cancelTransfer">Cancel</button>
-
+                <div class="span2">
+                     <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.cancelTransfer">Cancel</button>
+                    <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.finalizeTransfer">Finalize</button>
             </div>
           </div>
         </div><!-- /.modal-content -->
@@ -248,7 +247,7 @@
           </div>
           <div class="modal-body call">
               <div class="text-center">
-                 <center><button class="btn btn-primary" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Call</button></center>
+                 <center><button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Call</button></center>
             </div>
           </div>
         </div><!-- /.modal-content -->
@@ -265,15 +264,15 @@
         <div class="modal-body">
            <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
               <label class="control-label">Name:</label>
-              <input type="text" data-bind="value: loginName, valueUpdate: 'afterkeydown'"  class="form-control">
+              <input id="nameInputField" type="text" data-bind="value: loginName, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
             <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
               <label class="control-label">Password:</label>
-              <input type="password" data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control">
+              <input id="passwordInputField" type="password" data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
              <div class="form-group" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
               <label class="control-label">Server:</label>
-              <input type="text"  data-bind="value: loginServer, valueUpdate: 'afterkeydown'"  class="form-control">
+              <input id="serverInputField" type="text"  data-bind="value: loginServer, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
 
         </div>

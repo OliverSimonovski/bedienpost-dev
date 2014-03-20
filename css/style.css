@@ -62,8 +62,8 @@ body {
 
 .form-control {
     color:#801c78;
-    background-color: #f2e8f1;
-    border: 1px solid #801c78;
+    background-color: #DFDFDF;
+    border: 1px solid #888888;
 }
 
 .fixed-height
@@ -426,7 +426,7 @@ body {
 
 .header
 {
-    border-bottom:1px solid #468847;
+    border-bottom:1px solid #AFAFAF;
     padding:0px;
 }
 

@@ -371,7 +371,7 @@ function mergeCallEntriesList(newEntries) {
         var oldEntry = callIdToCallObservable[newEntry.id()];
         if (oldEntry) {
             console.log("Merging new call info from call: " + newEntry.id() );
-            ko.mapping.fromJS(newEntry, oldEntry);    
+            oldEntry.name(newEntry.name());
         } else {
             console.log("Adding call " + newEntry.id() );
             callIdToCallObservable[newEntry.id()] = newEntry;

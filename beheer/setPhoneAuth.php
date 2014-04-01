@@ -21,13 +21,9 @@
 	$statement->bind_param("ssssss", $username, $server, $phoneIp, $phoneUser, $phonePass, $companyName);
 	$result = $statement->execute();
 	if ($result) {
-	?>
-	Phone-authorisation stored.
-	<?
+	    echo "Phone-authorisation stored.";
 	} else {
-	?>
-	Phone-authorisation NOT stored.
-	<?
+	    echo "Phone-authorisation NOT stored.";
 	}
 
 	$statement->close();

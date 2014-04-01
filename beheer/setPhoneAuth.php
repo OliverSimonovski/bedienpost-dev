@@ -1,3 +1,5 @@
+<html>
+<body>
 <?php
 	$SQLUSER = "bedien01_main";
 	$SQLPASS = "S4sHmqxqIU";
@@ -17,8 +19,19 @@
 	$statement = $db->prepare("REPLACE INTO users VALUES (?, ?, ?, ?, ?, ?)");
 
 	$statement->bind_param("ssssss", $username, $server, $phoneIp, $phoneUser, $phonePass, $companyName);
-	$statement->execute();
+	$result = $statement->execute();
+	if ($result) {
+	?>
+	Phone-authorisation stored.
+	<?
+	} else {
+	?>
+	Phone-authorisation NOT stored.
+	<?
+	}
 
 	$statement->close();
 
 ?>
+</body>
+</html>

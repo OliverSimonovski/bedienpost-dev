@@ -508,6 +508,7 @@ Lisa.Connection = function() {
 
 	/** Have the current user dial a phone-numer.*/
 	this.dialNumber = function(number) {
+        number = number.replace(/\D/g,''); // Sanitize the number, remove all non-numeric characters
 		Lisa.Connection.logging.log("Calling " + number);
         restAjaxRequest(
             Lisa.Connection.restUserUrl + "/dialNumber",

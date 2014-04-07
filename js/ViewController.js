@@ -576,20 +576,23 @@ var ListingsViewModel = function(){
     self.attendedTransfer = function()
     {
         self.callingState("transfer");
-        attendedtransferToUser(self.numericInput());
+        var number = self.numericInput().replace(/\D/g,'');
+        attendedtransferToUser(number);
         self.dismissKeypadModal();
         self.showTransferEndModal();
     }
     
     self.unattendedTransfer = function()
     {
-        transferToUser(self.numericInput());
+        var number = self.numericInput().replace(/\D/g,'');
+        transferToUser(number);
         self.dismissKeypadModal();
     }
     
     self.call = function()
     {
-        conn.dialNumber(self.numericInput());
+        var number = self.numericInput().replace(/\D/g,'');
+        conn.dialNumber(number);
         self.dismissKeypadModal();
     }
     

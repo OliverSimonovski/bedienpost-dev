@@ -390,11 +390,10 @@ function mergeCallEntriesList(newEntries) {
         if (oldEntry) {
             console.log("Merging new call info from call: " + newEntry.id() );
             oldEntry.name(newEntry.name());
-            if (oldEntry.finished()) {
-                // Call has been removed before because the callpoint changed to something else than the current user. Restart
-                oldEntry.finished(false);
-                oldEntry.startTime(currentTime());
-            }
+            oldEntry.callStartTime(newEntry.callStartTime());
+            oldEntry.directionIsOut(newEntry.directionIsOut());
+            oldEntry.descriptionWithNumber(newEntry.descriptionWithNumber());
+            oldEntry.finished(false);
         } else {
             console.log("Adding call " + newEntry.id() );
             callIdToCallObservable[newEntry.id()] = newEntry;

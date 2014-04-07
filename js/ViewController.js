@@ -328,7 +328,8 @@ var ListingsViewModel = function(){
     self.mailTo = function(incomingCall)
     {
         self.incomingCallMailTo(incomingCall);
-        window.open("mailto:?Subject=Gemiste oproep vanaf " + incomingCall.descriptionWithNumber());
+        var mailtoUrl = "mailto:?Subject=Gemiste oproep vanaf " + incomingCall.descriptionWithNumber();
+        $('<iframe src="'+mailtoUrl+'">').appendTo('body').css("display", "none");
     }
 
     self.logOut = function(item) {

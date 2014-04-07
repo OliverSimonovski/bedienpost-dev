@@ -109,9 +109,9 @@ function getPhoneAuth(user, server, pass) {
             phonePass = responseObj.phonePass;
             console.log("Configured authentication information for phone on " + phoneIp);
             console.log(navigator.userAgent);
-            if (navigator.userAgent.indexOf("Chrome") != -1) {
-                chromeLoginPhone();
-            }
+            //if (navigator.userAgent.indexOf("Chrome") != -1) {
+            chromeLoginPhone();
+            //}
         }, 
         error: function (response) {
             console.log("User not authorized for SNOM control.")
@@ -128,7 +128,28 @@ function chromeLoginPhone() {
     document.documentElement.appendChild(iframe);
     _.delay( function() {
         iframe.parentNode.removeChild(iframe);
+        checkPhoneReachable();
     }, 5000);
+}
+
+function checkPhoneReachable() {
+    var url = "http://"+ phoneIp + "/command.htm";
+    $.ajax
+    ({
+        type: "GET",
+        url: url,
+        username: phoneUser,
+        password: phonePass,
+        error: function (response) {
+            alert("Could not connect to phone. Phone commands might not work. Check whether the phone is on," +
+                  " contact an administrator if the problem persists.");
+        },
+        success: function(response) {
+            console.log("Phone on " + phoneIp + " responding as expected.");
+        }
+
+    });
+
 }
 
 function connectionStatusCallback(status) {

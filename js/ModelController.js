@@ -57,6 +57,7 @@ function login(login, password, server) {
     // Connect over SSL
     conn.bosh_port = 7500;
     conn.use_ssl = true;
+
     // HACK for VTEL server
     if (SERVER == "uc.vhosted.vtel.nl") {
         conn.bosh_port = 7509;        
@@ -372,6 +373,11 @@ function mergeCallEntriesList(newEntries) {
         if (oldEntry) {
             console.log("Merging new call info from call: " + newEntry.id() );
             oldEntry.name(newEntry.name());
+            if (oldEntry.finished()) {
+                // Call has been removed before because the callpoint changed to something else than the current user. Restart
+                oldEntry.finished(false);
+                oldEntry.startTime(currentTime());
+            }
         } else {
             console.log("Adding call " + newEntry.id() );
             callIdToCallObservable[newEntry.id()] = newEntry;

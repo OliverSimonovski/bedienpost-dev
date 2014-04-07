@@ -160,7 +160,8 @@ CallListItem.prototype.stopCall = function() {
     _.delay(
         function(self) {
             return function() {
-                incomingCallEntries.remove(self);
+                if (self.finished())
+                    incomingCallEntries.remove(self);
             }
         }(this)
     , 10000);

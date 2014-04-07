@@ -119,7 +119,7 @@ QueueListItem.storageKey = function() {
     return USERNAME + "@" + SERVER + "_QueueListFavs";
 }
 
-function CallListItem(id, name, startTime, directionIsOut) {
+function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber) {
     _.bindAll(this, 'stopCall');
 
     this.id = ko.observable(id                            || "");
@@ -127,6 +127,7 @@ function CallListItem(id, name, startTime, directionIsOut) {
     this.callStartTime = ko.observable(currentTime());
     this.directionIsOut = ko.observable(directionIsOut    || false);
     this.finished = ko.observable(false);
+    this.descriptionWithNumber = ko.observable(descriptionWithNumber || "");
 
     this.timeConnected = ko.computed(function() 
     {
@@ -324,8 +325,7 @@ var ListingsViewModel = function(){
     self.mailTo = function(incomingCall)
     {
         self.incomingCallMailTo(incomingCall);
-        window.open("mailto:?Subject=Gemiste oproep vanaf " + incomingCall.name());
-        //perform mailto functionality upon this object.
+        window.open("mailto:?Subject=Gemiste oproep vanaf " + incomingCall.descriptionWithNumber());
     }
 
     self.logOut = function(item) {

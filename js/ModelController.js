@@ -228,7 +228,8 @@ function getCallInfo(call, user) {
             }
         }
 
-    callInfo.description = (callInfo.name != "...") ? callInfo.name : callInfo.number;
+    callInfo.description = (callInfo.name != "...") ? callInfo.name  : callInfo.number;
+    callInfo.descriptionWithNumber = (callInfo.name != "...") ? callInfo.name + " (" + callInfo.number + ")" : callInfo.number;
     callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
 
     return callInfo;
@@ -312,7 +313,7 @@ function updateUser(user) {
             var call = user.calls[key];
 
             var callInfo = getCallInfo(call, user);
-            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut);
+            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut, callInfo.descriptionWithNumber);
             newIncomingCallEntries.push(callObj);
         }
         mergeCallEntriesList(newIncomingCallEntries);

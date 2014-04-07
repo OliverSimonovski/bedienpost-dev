@@ -363,7 +363,6 @@ var ListingsViewModel = function(){
         var toCall = self.clickedListItem().ext().split(",")[0];
         transferToUser(toCall);
         self.dismissTransferModal();
-        self.showTransferEndModal();
     }
 
     self.actionTransferAttended = function()

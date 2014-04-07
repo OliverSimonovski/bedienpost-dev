@@ -26,6 +26,7 @@ function tryAutoLogin() {
     var urlvars = getUrlVars();
     if (urlvars["login"])   {
         login(urlvars.login, urlvars.pass);
+        closeLoginModal();
         return;
     }
 
@@ -34,6 +35,7 @@ function tryAutoLogin() {
     if ((loginInfo != null) && loginInfo.loggedIn) {
         console.log("Was previously logged in. Automatically logging in as " + loginInfo.username + "@" + loginInfo.server);
         login(loginInfo.username, loginInfo.password, loginInfo.server);
+        closeLoginModal();
     }
 }
 
@@ -192,6 +194,10 @@ function gotModel(newmodel) {
     model.userListObservable.addObserver(refreshModel);
     model.queueListObservable.addObserver(refreshModel);
 
+   closeLoginModal();
+}
+
+function closeLoginModal() {
     // Hacky
     $('#loginModal').modal('hide');
     $("#inputField").focus();

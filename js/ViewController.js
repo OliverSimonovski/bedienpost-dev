@@ -556,7 +556,7 @@ var ListingsViewModel = function(){
     self.showKeypad = function()
     {
         $('#keypadModal').modal({
-                keyboard: true
+                keyboard: false
             })
         self.clearNumber();
        $("#keypadInputField").focus();
@@ -578,7 +578,6 @@ var ListingsViewModel = function(){
     self.clearNumber = function()
     {
         self.numericInput("");
-         $("#keypadInputField").focus();
     }
   
     self.attendedTransfer = function()
@@ -802,7 +801,7 @@ var ListingsViewModel = function(){
                     _dragged = ko.utils.unwrapObservable(valueAccessor().value);
                 },
                
-                cursorAt: { bottom: 0 }
+                cursorAt: { top: 20 }
             };
             
             

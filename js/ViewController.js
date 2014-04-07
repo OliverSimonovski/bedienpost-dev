@@ -701,7 +701,17 @@ var ListingsViewModel = function(){
      self.hideButton = function(){
         $('.overlay').fadeOut(250);  // slideUp(1000);
     }
- 
+
+    $("#keypadModal").keyup(function (e) {
+        if (e.keyCode == 13) {
+            if (listingViewModel.callingState() == "onhook") {
+                listingViewModel.call();
+            } else {
+                listingViewModel.unattendedTransfer();
+            }
+        }
+    });
+
     $( document ).keypress(function(e)
     {
         // ugly code ... should be a better way... for later to cleanup -> might make a keyFunction..

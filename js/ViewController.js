@@ -25,14 +25,12 @@ function UserListItem(id, name, ext, log, avail, ringing) {
             return "";
         }
 
-        var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
-        var myDate = new Date();
+        var callStart = moment.utc(this.callStartTime() * 1000.);
+        var duration = (currentTime() - callStart); // duration in milliseconds
+        if (duration < 0)
+            duration = 0;
 
-        var timezoneOffset = (myDate.getTimezoneOffset() * 60 * 1000);
-        duration += timezoneOffset;
-        if (duration < timezoneOffset) duration = timezoneOffset;
-
-        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
+        var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
 
@@ -139,15 +137,12 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
             return "";
         }
 
-        var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
-        var myDate = new Date();
+        var callStart = moment.utc(this.callStartTime() * 1000.);
+        var duration = (currentTime() - callStart); // duration in milliseconds
+        if (duration < 0)
+            duration = 0;
 
-        var timezoneOffset = (myDate.getTimezoneOffset() * 60 * 1000);
-        duration += timezoneOffset;
-        if (duration < timezoneOffset) duration = timezoneOffset;
-
-        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
-
+        var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         return timeString;
         
     }, this);
@@ -187,7 +182,7 @@ currentTime = ko.observable(0);
 
 setInterval(function() {
     var myDate = new Date();
-    currentTime(myDate.getTime());
+    currentTime(moment.utc());
 }, 1000); // Update UserListItem.currentTime every second.
 
 function nameComparator(left, right) {

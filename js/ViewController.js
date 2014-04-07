@@ -25,8 +25,12 @@ function UserListItem(id, name, ext, log, avail, ringing) {
             return "";
         }
 
-        var duration = (currentTime() - this.callStartTime()); // duration in milliseconds
+        var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
         var myDate = new Date();
+
+        var timezoneOffset = (myDate.getTimezoneOffset() * 60 * 1000);
+        duration += timezoneOffset;
+        if (duration < timezoneOffset) duration = timezoneOffset;
 
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
@@ -40,7 +44,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
 UserListItem.prototype.startCall = function(number, name, startTime, directionIsOut) {
     this.connectedName(name);
     this.connectedNr(number);
-    this.callStartTime(currentTime());
+    this.callStartTime(startTime);
     this.directionIsOut(directionIsOut);
 }
 
@@ -124,7 +128,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
-    this.callStartTime = ko.observable(currentTime());
+    this.callStartTime = ko.observable(startTime          || 0);
     this.directionIsOut = ko.observable(directionIsOut    || false);
     this.finished = ko.observable(false);
     this.descriptionWithNumber = ko.observable(descriptionWithNumber || "");
@@ -135,8 +139,12 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
             return "";
         }
 
-        var duration = (currentTime() - this.callStartTime()); // duration in milliseconds
+        var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
         var myDate = new Date();
+
+        var timezoneOffset = (myDate.getTimezoneOffset() * 60 * 1000);
+        duration += timezoneOffset;
+        if (duration < timezoneOffset) duration = timezoneOffset;
 
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
 

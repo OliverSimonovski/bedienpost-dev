@@ -26,6 +26,7 @@ function tryAutoLogin() {
     var urlvars = getUrlVars();
     if (urlvars["login"])   {
         login(urlvars.login, urlvars.pass);
+        closeLoginModal();
         return;
     }
 
@@ -34,6 +35,7 @@ function tryAutoLogin() {
     if ((loginInfo != null) && loginInfo.loggedIn) {
         console.log("Was previously logged in. Automatically logging in as " + loginInfo.username + "@" + loginInfo.server);
         login(loginInfo.username, loginInfo.password, loginInfo.server);
+        closeLoginModal();
     }
 }
 
@@ -57,6 +59,7 @@ function login(login, password, server) {
     // Connect over SSL
     conn.bosh_port = 7500;
     conn.use_ssl = true;
+
     // HACK for VTEL server
     if (SERVER == "uc.vhosted.vtel.nl") {
         conn.bosh_port = 7509;        
@@ -191,6 +194,10 @@ function gotModel(newmodel) {
     model.userListObservable.addObserver(refreshModel);
     model.queueListObservable.addObserver(refreshModel);
 
+   closeLoginModal();
+}
+
+function closeLoginModal() {
     // Hacky
     $('#loginModal').modal('hide');
     $("#inputField").focus();
@@ -221,7 +228,8 @@ function getCallInfo(call, user) {
             }
         }
 
-    callInfo.description = (callInfo.name != "...") ? callInfo.name : callInfo.number;
+    callInfo.description = (callInfo.name != "...") ? callInfo.name  : callInfo.number;
+    callInfo.descriptionWithNumber = (callInfo.name != "...") ? callInfo.name + " (" + callInfo.number + ")" : callInfo.number;
     callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
 
     return callInfo;
@@ -305,7 +313,7 @@ function updateUser(user) {
             var call = user.calls[key];
 
             var callInfo = getCallInfo(call, user);
-            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut);
+            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut, callInfo.descriptionWithNumber);
             newIncomingCallEntries.push(callObj);
         }
         mergeCallEntriesList(newIncomingCallEntries);
@@ -372,6 +380,11 @@ function mergeCallEntriesList(newEntries) {
         if (oldEntry) {
             console.log("Merging new call info from call: " + newEntry.id() );
             oldEntry.name(newEntry.name());
+            if (oldEntry.finished()) {
+                // Call has been removed before because the callpoint changed to something else than the current user. Restart
+                oldEntry.finished(false);
+                oldEntry.startTime(currentTime());
+            }
         } else {
             console.log("Adding call " + newEntry.id() );
             callIdToCallObservable[newEntry.id()] = newEntry;

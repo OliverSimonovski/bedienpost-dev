@@ -25,12 +25,8 @@ function UserListItem(id, name, ext, log, avail, ringing) {
             return "";
         }
 
-        var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
+        var duration = (currentTime() - this.callStartTime()); // duration in milliseconds
         var myDate = new Date();
-
-        var timezoneOffset = (myDate.getTimezoneOffset() * 60 * 1000);
-        duration += timezoneOffset;
-        if (duration < timezoneOffset) duration = timezoneOffset;
 
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
@@ -44,7 +40,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
 UserListItem.prototype.startCall = function(number, name, startTime, directionIsOut) {
     this.connectedName(name);
     this.connectedNr(number);
-    this.callStartTime(startTime);
+    this.callStartTime(currentTime());
     this.directionIsOut(directionIsOut);
 }
 
@@ -123,14 +119,15 @@ QueueListItem.storageKey = function() {
     return USERNAME + "@" + SERVER + "_QueueListFavs";
 }
 
-function CallListItem(id, name, startTime, directionIsOut) {
+function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber) {
     _.bindAll(this, 'stopCall');
 
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
-    this.callStartTime = ko.observable(startTime          || 0);
+    this.callStartTime = ko.observable(currentTime());
     this.directionIsOut = ko.observable(directionIsOut    || false);
     this.finished = ko.observable(false);
+    this.descriptionWithNumber = ko.observable(descriptionWithNumber || "");
 
     this.timeConnected = ko.computed(function() 
     {
@@ -138,12 +135,8 @@ function CallListItem(id, name, startTime, directionIsOut) {
             return "";
         }
 
-        var duration = (currentTime() - (this.callStartTime() * 1000)); // duration in milliseconds
+        var duration = (currentTime() - this.callStartTime()); // duration in milliseconds
         var myDate = new Date();
-
-        var timezoneOffset = (myDate.getTimezoneOffset() * 60 * 1000);
-        duration += timezoneOffset;
-        if (duration < timezoneOffset) duration = timezoneOffset;
 
         var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
 
@@ -168,7 +161,8 @@ CallListItem.prototype.stopCall = function() {
     _.delay(
         function(self) {
             return function() {
-                incomingCallEntries.remove(self);
+                if (self.finished())
+                    incomingCallEntries.remove(self);
             }
         }(this)
     , 10000);
@@ -331,8 +325,7 @@ var ListingsViewModel = function(){
     self.mailTo = function(incomingCall)
     {
         self.incomingCallMailTo(incomingCall);
-        window.open("mailto:?Subject=Gemiste oproep vanaf " + incomingCall.name());
-        //perform mailto functionality upon this object.
+        window.open("mailto:?Subject=Gemiste oproep vanaf " + incomingCall.descriptionWithNumber());
     }
 
     self.logOut = function(item) {
@@ -371,7 +364,6 @@ var ListingsViewModel = function(){
         var toCall = self.clickedListItem().ext().split(",")[0];
         transferToUser(toCall);
         self.dismissTransferModal();
-        self.showTransferEndModal();
     }
 
     self.actionTransferAttended = function()
@@ -583,20 +575,23 @@ var ListingsViewModel = function(){
     self.attendedTransfer = function()
     {
         self.callingState("transfer");
-        attendedtransferToUser(self.numericInput());
+        var number = self.numericInput().replace(/\D/g,'');
+        attendedtransferToUser(number);
         self.dismissKeypadModal();
         self.showTransferEndModal();
     }
     
     self.unattendedTransfer = function()
     {
-        transferToUser(self.numericInput());
+        var number = self.numericInput().replace(/\D/g,'');
+        transferToUser(number);
         self.dismissKeypadModal();
     }
     
     self.call = function()
     {
-        conn.dialNumber(self.numericInput());
+        var number = self.numericInput().replace(/\D/g,'');
+        conn.dialNumber(number);
         self.dismissKeypadModal();
     }
     

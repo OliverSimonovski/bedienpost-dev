@@ -10,6 +10,7 @@ var phoneUser = "";
 var phonePass = "";
 var loggedIn = false;
 var reconnecting = 0;
+var serverNotExpected = false;
 
 var restUrl = "";
 
@@ -68,6 +69,14 @@ function login(login, password, server) {
     // Setup logging and status messages.
     conn.logging.setCallback(function(msg) {
         console.log(msg);
+        if ((serverNotExpected == false) &&
+            (msg.indexOf("request") != -1) &&
+            (msg.indexOf("error") != -1) &&
+            (msg.indexOf("happened") != -1)) {
+            alert("Server not responding as expected. Please check the server and try again. " +
+                "Is your internet connection working?");
+            serverNotExpected = true;
+        }
     });
 
     // Setup connection-status callback.
@@ -178,6 +187,7 @@ function gotModel(newmodel) {
     // Show interface
     loggedIn = true;
     reconnecting = 0;
+    serverNotExpected = false;
     var loginInfo = {};
     loginInfo.loggedIn = true;
     loginInfo.username = USERNAME;

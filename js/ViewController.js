@@ -25,10 +25,12 @@ function UserListItem(id, name, ext, log, avail, ringing) {
             return "";
         }
 
-        var duration = (currentTime() - this.callStartTime()); // duration in milliseconds
-        var myDate = new Date();
+        var callStart = moment.utc(this.callStartTime() * 1000.);
+        var duration = (currentTime() - callStart); // duration in milliseconds
+        if (duration < 0)
+            duration = 0;
 
-        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
+        var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
 
@@ -40,7 +42,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
 UserListItem.prototype.startCall = function(number, name, startTime, directionIsOut) {
     this.connectedName(name);
     this.connectedNr(number);
-    this.callStartTime(currentTime());
+    this.callStartTime(startTime);
     this.directionIsOut(directionIsOut);
 }
 
@@ -124,7 +126,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
-    this.callStartTime = ko.observable(currentTime());
+    this.callStartTime = ko.observable(startTime          || 0);
     this.directionIsOut = ko.observable(directionIsOut    || false);
     this.finished = ko.observable(false);
     this.descriptionWithNumber = ko.observable(descriptionWithNumber || "");
@@ -135,11 +137,12 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
             return "";
         }
 
-        var duration = (currentTime() - this.callStartTime()); // duration in milliseconds
-        var myDate = new Date();
+        var callStart = moment.utc(this.callStartTime() * 1000.);
+        var duration = (currentTime() - callStart); // duration in milliseconds
+        if (duration < 0)
+            duration = 0;
 
-        var timeString = moment(duration).format("H:mm:ss"); // Create a date object and format it.
-
+        var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         return timeString;
         
     }, this);
@@ -179,7 +182,7 @@ currentTime = ko.observable(0);
 
 setInterval(function() {
     var myDate = new Date();
-    currentTime(myDate.getTime());
+    currentTime(moment.utc());
 }, 1000); // Update UserListItem.currentTime every second.
 
 function nameComparator(left, right) {
@@ -325,7 +328,8 @@ var ListingsViewModel = function(){
     self.mailTo = function(incomingCall)
     {
         self.incomingCallMailTo(incomingCall);
-        window.open("mailto:?Subject=Gemiste oproep vanaf " + incomingCall.descriptionWithNumber());
+        var mailtoUrl = "mailto:?Subject=Gemiste oproep vanaf " + incomingCall.descriptionWithNumber();
+        $('<iframe src="'+mailtoUrl+'">').appendTo('body').css("display", "none");
     }
 
     self.logOut = function(item) {
@@ -710,7 +714,17 @@ var ListingsViewModel = function(){
      self.hideButton = function(){
         $('.overlay').fadeOut(250);  // slideUp(1000);
     }
- 
+
+    $("#keypadModal").keyup(function (e) {
+        if (e.keyCode == 13) {
+            if (listingViewModel.callingState() == "onhook") {
+                listingViewModel.call();
+            } else {
+                listingViewModel.unattendedTransfer();
+            }
+        }
+    });
+
     $( document ).keypress(function(e)
     {
         // ugly code ... should be a better way... for later to cleanup -> might make a keyFunction..

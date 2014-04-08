@@ -84,11 +84,15 @@
                 </div>
                 <div class='col-md-6'>
                         <div class="header">
-                             <div class="options todooptions" data-bind="click: $root.logOut">
-                                 <div class="logout" >
-                                    <i class="fa fa-arrow-circle-right pull-right"></i>
-                                    <span class="icon-label">log out</span>
-                                 </div>
+                             <div class="options todooptions" >
+                                    <div class="logout pull-right" data-bind="click: $root.logOut">
+                                         <i class="fa fa-arrow-circle-right pull-right"></i>
+                                        <span class="icon-label">log out</span>
+                                    </div>   
+                                     <div class="shortcuts pull-right" data-bind="click: $root.showShortcuts">
+                                          <i class="fa fa-question pull-right"></i>
+                                    <span class="icon-label">help</span>
+                                    </div> 
                              </div>
                             <h4>Waiting Queue</h4>
                         </div>
@@ -295,7 +299,7 @@
             <h4 class="modal-title" id="myModalLabel">Dialpad</h4>
           </div>
            <div class="modal-body">
-                            <input id="keypadInputField" type="text" class="form-control" placeholder="enter phone number" data-bind="value: $root.numericInput">
+                <input id="keypadInputField" type="text" class="form-control" data-bind="value: $root.numericInput">
                             <p></p>
                              <div class="buttoncontainer text-center">
                                    <button class="btn btn-circle"  type="button" data-bind="click: $root.enterNumber('1')">1</button>
@@ -324,6 +328,84 @@
                        <button type="button" class="btn btn-primary btn-2" data-bind="click: $root.attendedTransfer, enable: ($root.callingState() == 'calling')" >Att. Transfer</button>
                       <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.unattendedTransfer, enable: ($root.callingState() != 'onhook')" >Transfer</button>
                      <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.call" >Call</button>
+                     </div>
+                     </div>
+                 </div>
+        </div>
+      </div>
+    </div>
+      
+       <!-- Modal -->
+    <div class="modal fade" id="shortcutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-bg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-bind="click: $root.dismissShortcutModal">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">Help</h4>
+          </div>
+           <div class="modal-body">
+                <div class="buttoncontainer text-left">
+                       <p>Shift - Ctrl - 0 .. 9: Call Favorite / Call Contact</p>            
+                </div>
+                <div class="buttoncontainer text-left">
+                      <p>Shift - Ctrl - S : Show Help</p>            
+                </div>
+               <div class="buttoncontainer text-left">
+                      <p>Shift - Ctrl - D : Show Dialpad</p>         
+                </div>
+               <div class="buttoncontainer text-left">
+                       <p>Shift - Ctrl - P : Pickup</p>        
+                </div>
+               <div class="buttoncontainer text-left">
+                      <p>Shift - Ctrl - T : Transfer</p>            
+                </div>
+               <div class="buttoncontainer text-left">
+                       <p>Shift - Ctrl - H : Hangup</p>            
+                </div>
+               <div class="buttoncontainer text-left">
+                       <p>Shift - Ctrl - C : Calling</p>            
+                </div>
+               <div class="buttoncontainer text-left">
+                       <p>Shift - Ctrl - A : Attended Transfer</p>            
+                </div>
+               <div class="buttoncontainer text-left">
+                       <p>Shift - Ctrl - U : Unattended Transfer</p>            
+                </div>
+               <div class="buttoncontainer text-left">
+                       <p>Shift - Ctrl - L : Logout / Login</p>            
+                </div>
+               
+               
+                <div class="buttoncontainer text-left">
+                    <p>
+                      <i class="fa fa-pencil-square-o legend" ></i>
+                      Send a notification email to caller or callee</p>            
+                </div>
+                <div class="buttoncontainer text-left">
+                    <p>
+                    <i class="fa fa-arrow-circle-right legend"></i>
+                      Logout </p>            
+                </div>
+                <div class="buttoncontainer text-left">
+                    <p>
+                    <i class="fa fa-question legend"></i>
+                     Help</p>            
+                </div>
+                <div class="buttoncontainer text-left">
+                    <p>
+                    <i class="fa fa-sign-in legend"></i><i class="fa fa-sign-out legend"></i>
+                    Sign-in to a queue / Sign-out from a queue</p>            
+                </div>
+               <div class="buttoncontainer text-left">
+                   <p>
+                    <i class="fa fa-star legend"></i><i class="fa fa-star-o legend"></i>
+                    Mark as favorite queue / unmark as favorite queue</p>            
+                </div>
+          </div>
+            <div class="modal-footer">
+                 <div class="text-center">
+                     <div class="btn-group">
+                         <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissShortcutModal">Cancel</button>
                      </div>
                      </div>
                  </div>

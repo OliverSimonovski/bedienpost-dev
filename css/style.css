@@ -371,11 +371,20 @@ body {
 
 .fa-sign-out
 {
-    margin-left: 6px;
-    margin-right: 6px;
+    margin-left: 0px;
+    margin-right: 0px;
     cursor:pointer;
     font-size: 18px;
     margin-top:0px;
+}
+
+.fa-question
+{
+    margin-left: 0px;
+    margin-right: 0px;
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:2px;
 }
 
 .fa-arrow-circle-left
@@ -393,6 +402,10 @@ body {
     font-size: 20px;
     margin-top:0px;
 }
+.fa.pull-right
+{
+    margin-left: .0em;
+}
 
 .fa-refresh
 {
@@ -405,6 +418,12 @@ body {
     margin-right: 6px;
     font-size: 20px;
     margin-top:0px;
+}
+
+.legend
+{
+    margin-left: 0px;
+    margin-right: 10px;
 }
 
 
@@ -437,9 +456,17 @@ body {
 
 .header .options .logout
 {
+     padding-left:20px;
     display:inline;
     cursor:pointer;
 }
+.header .options .shortcuts
+{
+     padding-left: 10px;
+    display:inline;
+    cursor:pointer;
+}
+
 
 .connect
 {

@@ -331,6 +331,7 @@ var ListingsViewModel = function(){
     self.logOut = function(item) {
         console.log("Logging out");
         logout();
+        $("#nameInputField").focus();
     }
 
     // no updating appearing in the UI .. omehow the values do seem to update in the array.. is the accoring value missing bindings?
@@ -415,6 +416,12 @@ var ListingsViewModel = function(){
         $('#keypadModal').modal('hide');
         $("#inputField").focus(); 
     }
+     
+    self.dismissShortcutModal = function()
+    {
+        $('#shortcutModal').modal('hide');
+        $("#inputField").focus(); 
+    }
     
     self.doPickup = function()
     {
@@ -434,7 +441,7 @@ var ListingsViewModel = function(){
     
     self.doTransfer = function()
     {
-        self.showKeypad();
+        //self.showKeypad();
     }
     
     self.doLogin = function()
@@ -523,10 +530,6 @@ var ListingsViewModel = function(){
         }
     }
 
-    self.loginFieldsCssClass = function() {
-
-    }
-    
     self.firstRowCssClass = function( entry )
     {
         if (entry != null && entry !=""){
@@ -548,18 +551,25 @@ var ListingsViewModel = function(){
     self.showKeypad = function()
     {
         $('#keypadModal').modal({
-                keyboard: false
+                keyboard: true
             })
         self.clearNumber();
        $("#keypadInputField").focus();
     }
     
-    self.showLogin = Function()
+    self.showLogin = function()
     { 
         $('#loginModal').modal({
             keyboard: false
         })
         $("#nameInputField").focus();
+    }
+    
+    self.showShortcuts = function()
+     { 
+        $('#shortcutModal').modal({
+            keyboard: false
+        })
     }
     
     self.enterNumber = function(nr)
@@ -710,7 +720,7 @@ var ListingsViewModel = function(){
         if (!searchParam){
                if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
                     var shortcutKey = (e.which%48);
-                    if (e.ctrlKey){
+                    if (e.ctrlKey && e.shiftKey){
                       var itemToClick = self.favFilteredItems()[shortcutKey];
                       if (itemToClick != null)
                        {
@@ -722,7 +732,7 @@ var ListingsViewModel = function(){
         } else {
             if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
                    var shortcutKey = (e.which%48);
-                    if (e.ctrlKey){
+                    if (e.ctrlKey && e.shiftKey){
                       var itemToClick = self.filteredItems()[shortcutKey];
                       if (itemToClick != null)
                        {
@@ -732,47 +742,54 @@ var ListingsViewModel = function(){
                     }
                 }
         }
-         if ((e.which) == 68){
-           if (e.shiftKey ){
+        if ((e.which) == 19){ // S 
+            if (e.shiftKey && e.ctrlKey){
+                self.showShortcuts();
+               event.preventDefault();
+           }
+        } else if ((e.which) == 4){  // D
+           if (e.shiftKey  && e.ctrlKey){
                 self.showKeypad();
                event.preventDefault();
            }
-       } else if ((e.which) == 80){
-            if (e.shiftKey ){
+       } else if ((e.which) == 16){  // P
+            if (e.shiftKey && e.ctrlKey){
                 self.doPickup();
                event.preventDefault();
            }
-       } else if ((e.which) == 84){
-            if (e.shiftKey ){
+       } else if ((e.which) == 20){ // T
+            if (e.shiftKey && e.ctrlKey){
                 self.doTransfer();
                event.preventDefault();
            }
-         } else if ((e.which) == 72){
-                if (e.shiftKey ){
+         } else if ((e.which) == 8){  // H
+                if (e.shiftKey && e.ctrlKey){
                     self.doHangup();
                    event.preventDefault();
                }
-           } else if ((e.which) == 67){
-                if (e.shiftKey ){
+           } else if ((e.which) == 3){ ///C
+                if (e.shiftKey && e.ctrlKey){
                     self.actionCalling();
                    event.preventDefault();
                }
-           }  else if ((e.which) == 65){
-                if (e.shiftKey ){
+           }  else if ((e.which) == 1){ // A
+                if (e.shiftKey && e.ctrlKey){
                     self.actionTransferAttended();
                    event.preventDefault();
                }
-           } else if ((e.which) == 85){
-                if (e.shiftKey ){
+           } else if ((e.which) == 21){  //U
+                if (e.shiftKey && e.ctrlKey){
                    self.actionTransfer();
                    event.preventDefault();
                }
-           }  else if ((e.which) == 76){
-               if (e.shiftKey ){
+           }  else if ((e.which) == 12){ // L
+               if (e.shiftKey && e.ctrlKey){
                    self.logOut();
                    event.preventDefault();
                } 
            }
+        
+            console.log (e.which);
     
     });
 

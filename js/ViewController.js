@@ -740,8 +740,9 @@ var ListingsViewModel = function(){
         var searchParam = self.search();
         searchParam +="";
         searchParam = searchParam.toLowerCase();
+        var key = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
         if (!searchParam){
-               if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
+               if ((key) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
                     var shortcutKey = (e.which%48);
                     if (e.ctrlKey && e.shiftKey){
                       var itemToClick = self.favFilteredItems()[shortcutKey];
@@ -749,66 +750,70 @@ var ListingsViewModel = function(){
                        {
                            self.clickItem(itemToClick);
                        }
-                       event.preventDefault();
+                       e.preventDefault();
                     }
                } 
         } else {
-            if ((e.which) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
-                   var shortcutKey = (e.which%48);
+            if ((key) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
+                   var shortcutKey = (key%48);
                     if (e.ctrlKey && e.shiftKey){
                       var itemToClick = self.filteredItems()[shortcutKey];
                       if (itemToClick != null)
                        {
                            self.clickItem(itemToClick);
                        }
-                       event.preventDefault();
+                       e.preventDefault();
                     }
                 }
         }
-        if ((e.which) == 19){ // S 
+        
+        console.log (e.which);
+        console.log (e.ctrlKey);
+        console.log (e.shiftKey);
+        if ((e.which) == 19 || (e.which) == 83){ // S 
             if (e.shiftKey && e.ctrlKey){
                 self.showShortcuts();
-               event.preventDefault();
+               e.preventDefault();
            }
-        } else if ((e.which) == 4){  // D
+        } else if ((e.which) == 4 || (e.which) == 68){  // D
            if (e.shiftKey  && e.ctrlKey){
                 self.showKeypad();
-               event.preventDefault();
+               e.preventDefault();
            }
-       } else if ((e.which) == 16){  // P
+       } else if ((e.which) == 16 || (e.which) == 80){  // P
             if (e.shiftKey && e.ctrlKey){
                 self.doPickup();
-               event.preventDefault();
+               e.preventDefault();
            }
-       } else if ((e.which) == 20){ // T
+       } else if ((e.which) == 20 || (e.which) == 84){ // T
             if (e.shiftKey && e.ctrlKey){
                 self.doTransfer();
-               event.preventDefault();
+               e.preventDefault();
            }
-         } else if ((e.which) == 8){  // H
+         } else if ((e.which) == 8 || (e.which) == 72){  // H
                 if (e.shiftKey && e.ctrlKey){
                     self.doHangup();
-                   event.preventDefault();
+                   e.preventDefault();
                }
-           } else if ((e.which) == 3){ ///C
+           } else if ((e.which) == 3 || (e.which) == 67){ ///C
                 if (e.shiftKey && e.ctrlKey){
                     self.actionCalling();
-                   event.preventDefault();
+                   e.preventDefault();
                }
-           }  else if ((e.which) == 1){ // A
+           }  else if ((e.which) == 1 || (e.which) == 65){ // A
                 if (e.shiftKey && e.ctrlKey){
                     self.actionTransferAttended();
-                   event.preventDefault();
+                   e.preventDefault();
                }
-           } else if ((e.which) == 21){  //U
+           } else if ((e.which) == 21 || (e.which) == 85){  //U
                 if (e.shiftKey && e.ctrlKey){
                    self.actionTransfer();
-                   event.preventDefault();
+                   e.preventDefault();
                }
-           }  else if ((e.which) == 12){ // L
+           }  else if ((e.which) == 12 || (e.which) == 76){ // L
                if (e.shiftKey && e.ctrlKey){
                    self.logOut();
-                   event.preventDefault();
+                   e.preventDefault();
                } 
            }
         

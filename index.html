@@ -272,7 +272,7 @@
             </div>
             <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
               <label class="control-label">Password:</label>
-              <input type="password" data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control">
+              <input id="passwordInputField" type="password" data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
              <div class="form-group" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
               <label class="control-label">Server:</label>

@@ -558,8 +558,12 @@ var ListingsViewModel = function(){
                 keyboard: true
             })
         self.clearNumber();
-       $("#keypadInputField").focus();
+       
     }
+    
+    $('#keypadModal').on('shown.bs.modal', function () {
+       $("#keypadInputField").focus();
+    })
     
     self.showLogin = function()
     { 
@@ -568,6 +572,11 @@ var ListingsViewModel = function(){
         })
         $("#nameInputField").focus();
     }
+    
+    $('#loginModal').on('shown.bs.modal', function () {
+       
+            $("#passwordInputField").focus();
+    })
     
     self.showShortcuts = function()
      { 
@@ -803,7 +812,7 @@ var ListingsViewModel = function(){
                } 
            }
         
-            console.log (e.which);
+            //console.log (e.which);
     
     });
 

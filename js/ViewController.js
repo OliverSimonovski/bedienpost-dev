@@ -767,9 +767,9 @@ var ListingsViewModel = function(){
                 }
         }
         
-        console.log (e.which);
-        console.log (e.ctrlKey);
-        console.log (e.shiftKey);
+        //console.log (e.which);
+        //console.log (e.ctrlKey);
+        //console.log (e.shiftKey);
         if ((e.which) == 19 || (e.which) == 83){ // S 
             if (e.shiftKey && e.ctrlKey){
                 self.showShortcuts();

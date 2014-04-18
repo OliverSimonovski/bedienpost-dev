@@ -12,11 +12,8 @@ Requirements
 
 Run the following from the project directory :
 
-- *npm install --save-dev grunt-usemin*
-- *npm install --save-dev grunt-contrib-copy*
-- *npm install --save-dev grunt-contrib-concat*
-- *npm install --save-dev grunt-contrib-uglify*
-- *npm install --save-dev grunt-contrib-cssmin*
+*npm install*
+
 
 Build
 ---------

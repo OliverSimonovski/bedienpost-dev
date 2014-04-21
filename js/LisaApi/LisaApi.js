@@ -362,10 +362,12 @@ Lisa.Connection = function() {
 	// === Static variables
 	Lisa.Connection.connectionStatusObservable = new Lisa.Observable();
 	Lisa.Connection.model = new Lisa.Model();
-	Lisa.Connection.myUserId = 0;
-	Lisa.Connection.userName = "";
+	Lisa.Connection.myUserId = 0;		// Lisa user id.
+	Lisa.Connection.jid = "";			// bare jid (username@domain, no resource)
+	Lisa.Connection.userName = "";		// Compass username. May be with or without domain.
     Lisa.Connection.password = "";
-    Lisa.Connection.server = "";
+    Lisa.Connection.server = "";		// the XMPP server hostname
+    Lisa.Connection.domain = "";		// the domain of the user (domain part of jid)
 	Lisa.Connection.restServer = "";
     Lisa.Connection.restUserUrl = "";
     Lisa.Connection.restIdentityUrl = "";
@@ -378,8 +380,6 @@ Lisa.Connection = function() {
 	var modelCompleteDeferred = $.Deferred();
 	var usersDone = false;
 	var queuesDone = false;
-	var myUserId = Lisa.Connection.myUserId;
-	var userName = Lisa.Connection.userName;
 
 	// === Public members
 	
@@ -397,17 +397,19 @@ Lisa.Connection = function() {
 	this.model = Lisa.Connection.Model;
 	
 	/** Connect to the XMPP server through BOSH */
-	this.connect = function(server, username, password, resource) {
+	this.connect = function(server, jid, password, resource) {
 
-		this.setupConnection(server, username);
+        Lisa.Connection.userName = jid;     // We assume that the user will try to connect with his compass username.
+        jid = fixupJid(jid, server);
+        this.setupConnection(server, jid);
         Lisa.Connection.password = password;
 
 		// Configuration
 		resource = resource || "LisaApi" + "_" + randomstring(10);
-		var jid = username + '@' + server + '/' + resource;
+        var fullJid = jid + '/' + resource;
 
 		// .. and connect.
-		connection.connect(jid, password, connectionStatusChanged);
+        connection.connect(fullJid, password, connectionStatusChanged);
 	}
 
 	/** Attach to a previous BOSH session
@@ -416,8 +418,9 @@ Lisa.Connection = function() {
      *  dialNumber, dialUser, queueLogin, and queueLogout */
 	this.attach = function(server, jid, sid, rid) {
 
-		var username = jid.substring(0, jid.indexOf('@'));
-		this.setupConnection(server, username);
+        Lisa.Connection.userName = jid;     // We assume that the user will try to connect with his compass username.
+		jid = fixupJid(jid, server);
+		this.setupConnection(server, jid);
 
 		// Attach callbacks...
 		connection.addHandler(callback(function(stanza) {
@@ -459,11 +462,11 @@ Lisa.Connection = function() {
 		return deferred;
 	},
 
-	this.setupConnection = function(server, username) {
+	this.setupConnection = function(server, jid) {
 		// configuration
 		Lisa.Connection.server = server;
-		Lisa.Connection.userName = username;
-		Lisa.Connection.logging.log("My username: " + Lisa.Connection.userName);
+		Lisa.Connection.domain = jid.substring(jid.indexOf('@') + 1);
+		Lisa.Connection.jid = jid;
 
 		// Setup strophe connection
 		var protocol = this.use_ssl ? 'https' : 'http';
@@ -498,6 +501,8 @@ Lisa.Connection = function() {
 		return initDeferred;
 	};
 
+
+
 	this.getStropheConnection = function() {
 		return connection;
 	};
@@ -508,7 +513,6 @@ Lisa.Connection = function() {
 
 	/** Have the current user dial a phone-numer.*/
 	this.dialNumber = function(number) {
-        number = number.replace(/\D/g,''); // Sanitize the number, remove all non-numeric characters
 		Lisa.Connection.logging.log("Calling " + number);
         restAjaxRequest(
             Lisa.Connection.restUserUrl + "/dialNumber",
@@ -703,7 +707,7 @@ Lisa.Connection = function() {
 
 		// Get company
 		var iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
+			to : 'phone.' + Lisa.Connection.domain,
 			type : 'get',
 			id : connection.getUniqueId('lisa')
 		}).c('request', {
@@ -716,7 +720,7 @@ Lisa.Connection = function() {
 
 		// Get users
 		iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
+			to : 'phone.' + Lisa.Connection.domain,
 			type : 'get',
 			id : connection.getUniqueId('lisa')
 		}).c('request', {
@@ -731,7 +735,7 @@ Lisa.Connection = function() {
 
 		// Get queues
 		iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
+			to : 'phone.' + Lisa.Connection.domain,
 			type : 'get',
 			id : connection.getUniqueId('lisa')
 		}).c('request', {
@@ -746,7 +750,7 @@ Lisa.Connection = function() {
 
 		// Get queues
 		iq = $iq({
-			to : 'phone.' + Lisa.Connection.server,
+			to : 'phone.' + Lisa.Connection.domain,
 			type : 'get',
 			id : connection.getUniqueId('lisa')
 		}).c('request', {
@@ -761,8 +765,17 @@ Lisa.Connection = function() {
 
 	}
 
+    function fixupJid(jid, server) {
+        if (jid.indexOf("@") == -1) {
+            // Old-style: jid is username
+            return jid + "@" + server;
+        } else {
+            // New-style: jid is actual jid, server is connect hostname
+            return jid;
+        }
+    }
+
     function setupRest() {
-        console.log("############## Setting up rest.")
         // Setup REST server & often-used urls
         Lisa.Connection.restServer = Lisa.Connection.server.replace("uc.", "rest.");
         Lisa.Connection.restUserUrl = "https://" + Lisa.Connection.restServer + "/user/" + Lisa.Connection.myUserId;
@@ -805,7 +818,7 @@ Lisa.Connection = function() {
 					Lisa.Connection.model.addUser(userModel);
 
 					// Are we this user?
-					if (userModel.jid == Lisa.Connection.userName) {
+					if (userModel.jid == Lisa.Connection.jid) {
 						Lisa.Connection.myUserId = userModel.id;
 						Lisa.Connection.logging.log("INFO: Found my userid: "
 								+ Lisa.Connection.myUserId);
@@ -911,8 +924,7 @@ Lisa.Connection = function() {
 			var: 'pubsub#expire',
 			type: 'text-single'
 		}).c('value', {}, 'presence');
-		
-		
+
 		connection.sendIQ(iq, onSubscribe, callback(function() {
 			initDeferred.reject("Sending Subscription request failed.");
 		}));
@@ -1026,7 +1038,10 @@ Lisa.Connection = function() {
 		userModel.loggedIn = (user.find('loggedIn').text() == "true");
 		// assume just 1 extension, for now
 		userModel.extension = user.find('extensions').text();
-		userModel.jid = user.find('identifiers').find('xmppJid').text();
+        // Backward compatibility with the pre 05/2014 Lisa that would send a username as 'xmppJid' field.
+        var apiJid = user.find('identifiers').find('xmppJid').text();
+		userModel.jid = fixupJid(apiJid, Lisa.Connection.server);
+		userModel.username = user.find('identifiers').find('compassId').text();
 		return userModel;
 	}
 

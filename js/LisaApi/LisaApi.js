@@ -397,7 +397,14 @@ Lisa.Connection = function() {
 	this.connectionStatusObservable = Lisa.Connection.connectionStatusObservable;
 	this.model = Lisa.Connection.Model;
 	
-	/** Connect to the XMPP server through BOSH */
+	/**
+     * Connect to the XMPP server through BOSH
+     * @param server    The hostname of the BOSH server
+     * @param jid       Either the bare jid (username@hostname) or only the username,
+     *                  in which case username@server is assumed.
+     * @param password  Compass password for the account. (used for XMPP and REST)
+     * @param resource  (optional) XMPP resource string, automatically generated when left empty.
+     */
 	this.connect = function(server, jid, password, resource) {
 
         jid = fixupJid(jid, server);

@@ -47,6 +47,7 @@ Lisa.Observable = function() {
 Lisa.User = function() {
 	this.id = "";
 	this.name = "";
+    this.username = "";
 	this.jid = "";
 	this.extension = "";
 	this.calls = {};
@@ -399,7 +400,6 @@ Lisa.Connection = function() {
 	/** Connect to the XMPP server through BOSH */
 	this.connect = function(server, jid, password, resource) {
 
-        Lisa.Connection.userName = jid;     // We assume that the user will try to connect with his compass username.
         jid = fixupJid(jid, server);
         this.setupConnection(server, jid);
         Lisa.Connection.password = password;
@@ -418,7 +418,6 @@ Lisa.Connection = function() {
      *  dialNumber, dialUser, queueLogin, and queueLogout */
 	this.attach = function(server, jid, sid, rid) {
 
-        Lisa.Connection.userName = jid;     // We assume that the user will try to connect with his compass username.
 		jid = fixupJid(jid, server);
 		this.setupConnection(server, jid);
 
@@ -820,6 +819,7 @@ Lisa.Connection = function() {
 					// Are we this user?
 					if (userModel.jid == Lisa.Connection.jid) {
 						Lisa.Connection.myUserId = userModel.id;
+                        Lisa.Connection.userName = userModel.username;
 						Lisa.Connection.logging.log("INFO: Found my userid: "
 								+ Lisa.Connection.myUserId);
                         usersDone = true;

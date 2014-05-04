@@ -64,6 +64,8 @@ function login(login, password, server) {
     // HACK for VTEL server
     if (SERVER == "uc.vhosted.vtel.nl") {
         conn.bosh_port = 7509;        
+    }  else if (SERVER == "uc.smartvoice.nl") {
+        conn.bosh_port = 7513;
     }
 
     // Setup logging and status messages.

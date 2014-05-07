@@ -19,7 +19,7 @@ var queueIdToQueueObservable = [];
 var callIdToCallObservable = [];
 
 $(document).ready(function () {
-    DnsResolv.resolve("tumblecow.net", "A");
+    DnsResolv.resolve("_xmpp-server._tcp.testok.jasper.voipgw.net", "SRV");
     tryAutoLogin();
 });
 

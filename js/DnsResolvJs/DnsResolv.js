@@ -8,6 +8,8 @@
     var lib = root.DnsResolv = {};
     lib.resolvers = Array();
 
+    var resolversSorted = false;
+
     /*
      * Debugging
      */
@@ -45,18 +47,14 @@
     }
 
     /*
-     * SRV response object
-     */
-    /*
-    function SrvResponse(srv, ttl) {            // extends Response
-        _.extend(this, new Response(ttl, "SRV"));
-        this.srv = srv;
-    }*/
-
-    /*
      * Resolve a domain-name of a certain type.
      */
     lib.resolve = function (name, type) {
+        if (!resolversSorted) {
+            resolversSorted = true;
+            lib.resolvers = _.sortBy(lib.resolvers, "PRIORITY");
+        }
+
         var result = jQuery.Deferred();
         var request = new Request(name, type)
 
@@ -69,6 +67,10 @@
             result.done(function (answer) {
                 console.log("Received answer from resolver:");
                 console.log(answer);
+            });
+            result.fail(function(error) {
+                console.log("Received error from resolver:");
+                console.log(error);
             });
         }
 

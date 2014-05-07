@@ -7,7 +7,8 @@
     var lib = DnsResolv;
 
     module.SERVICENAME = "StatDns";
-    module.SUPPORTEDTYPES = ["SRV", "A", "TXT"];
+    module.PRIORITY = 10;
+    module.SUPPORTEDTYPES = ["SRV", "A", "TXT", "AAAA", "CNAME", "MX"];
 
     function checkType(type) {
         if (!_.contains(module.SUPPORTEDTYPES, type)) {
@@ -16,8 +17,8 @@
     }
 
     module.resolve = function(request) {
-        if (!request) throw "Empty Request!";
 
+        if (!request) throw "Empty Request!";
         checkType(request.type);
 
         var url = "http://api.statdns.com/" + request.name + "/" + request.type;

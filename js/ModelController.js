@@ -19,6 +19,7 @@ var queueIdToQueueObservable = [];
 var callIdToCallObservable = [];
 
 $(document).ready(function () {
+    DnsResolv.resolve("tumblecow.net", "A");
     tryAutoLogin();
 });
 
@@ -96,6 +97,10 @@ function login(login, password, server) {
     
     getPhoneAuth(USERNAME,SERVER,PASS);
     listingViewModel.numericInput("");
+}
+
+function getBoshServerForDomain(domain) {
+
 }
 
 // Get configuration for the phone from the server.

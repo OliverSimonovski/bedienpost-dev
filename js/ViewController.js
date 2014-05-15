@@ -12,6 +12,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
     this.ringing = ko.observable(ringing                  || false);
 
     this.directionIsOut = ko.observable(true);
+    
     this.connectedName = ko.observable("");
     this.connectedNr = ko.observable("");
     this.callStartTime = ko.observable(0);
@@ -207,6 +208,7 @@ var ListingsViewModel = function(){
     self.favoriteList = ko.observable();
     self.waitingQueueList = ko.observable();
     self.incomingCallList = ko.observable();
+    self.connectedPhone = ko.observable(true);
     
     self.clickedListItem = ko.observable();
     self.clickedListItemName = ko.observable();

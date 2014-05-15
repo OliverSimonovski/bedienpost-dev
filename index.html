@@ -31,6 +31,10 @@
             <div class='col-md-6 offset-6'  id="activecalls">
                    <div class="overlay col-md" >
                             <div class="btn-group btn-group-justified">
+                                <!--
+                                <div class="btn-group">
+                                    </div>
+                                !-->
                                 <div class="btn-group">
                                     <button class="btn btn-pickup"  type="button" data-bind="click: $root.doPickup,
                                                                                         attr: { class: $root.actionStateCssClass('pick') }">Pick-up</button>
@@ -46,7 +50,14 @@
                                  </div>
                             </div>
                         </div>
-                  <div class="header">
+                        <div class="header">
+                        <div class="options todooptions" >
+                                <div class="active pull-right" data-bind="">
+                                     <i class="fa fa-phone-square pull-right" databind=""></i>
+                                    <span class="icon-label"><span data-bind= "text:  connectedPhone() ? ' SNOM-telephone connected' : ' SNOM-telephone not connected' "></span></span>
+                                </div>    
+                             </div>
+                        
                         <h4>Active Calls</h4>
                     </div>
 
@@ -111,9 +122,8 @@
 
                         <div class="header">
                              <div class="options todooptions" data-bind="click: $root.showKeypad">
-                                 <div class="logout" >
-
-                                    <i class="fa fa-phone pull-right"></i>
+                                 <div class="keypad" >
+                                    <i class="fa fa-th pull-right"></i>
                                     <span class="icon-label">dialpad</span>
                                  </div>
                              </div>

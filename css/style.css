@@ -420,6 +420,14 @@ body {
     margin-top:0px;
 }
 
+.fa-th
+{
+    margin-left: 6px;
+    margin-right: 6px;
+    font-size: 16px;
+    margin-top:4px;
+}
+
 .legend
 {
     margin-left: 0px;
@@ -467,7 +475,19 @@ body {
     cursor:pointer;
 }
 
+.header .options .active
+{
+     padding-left: 10px;
+    display:inline;
+    cursor:pointer;
+}
 
+.header .options .keypad
+{
+     padding-left: 10px;
+    display:inline;
+    cursor:pointer;
+}
 .connect
 {
     width:49%;

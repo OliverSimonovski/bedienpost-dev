@@ -182,7 +182,11 @@ function getPhoneAuth(user, server, pass) {
             if (navigator.userAgent.indexOf("Chrome") != -1) {
                 chromeLoginPhone();
             }
+
+            // Check whether the phone is reachable.
+            listingViewModel.connectedPhone(false);
             checkSnomConnected();
+            setInterval(checkSnomConnected, 300000); // re-check every five minutes.
         }, 
         error: function (response) {
             console.log("User not authorized for SNOM control.")
@@ -203,13 +207,14 @@ function chromeLoginPhone() {
 }
 
 function checkSnomConnected() {
-    var url = "http://" + phoneIp + "/img/snom_logo.png";
-    console.log("Checking whether phone connected on " + url);
+    var url = "http://" + phoneIp + "/img/snom_logo.png?randomToPreventCaching=" + Math.random();
     var logoImage = new Image();
-    listingViewModel.connectedPhone(false);
+
     logoImage.onload = function() {
         listingViewModel.connectedPhone((this.width > 0) && (this.height > 0));
-        console.log("Image loaded");
+    };
+    logoImage.onerror = function() {
+        listingViewModel.connectedPhone(false);
     };
     logoImage.src = url;
 

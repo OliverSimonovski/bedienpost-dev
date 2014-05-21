@@ -58,7 +58,7 @@ UserListItem.prototype.setFavorite = function (fav) {
 }
 
 UserListItem.storageKey = function() {
-    return USERNAME + "@" + SERVER + "_UserListFavs";
+    return USERNAME + "@" + DOMAIN + "_UserListFavs";
 }
 
 UserListItem.saveFavs = function(userList) {
@@ -119,7 +119,7 @@ QueueListItem.saveFavs = function(queueList) {
 }
 
 QueueListItem.storageKey = function() {
-    return USERNAME + "@" + SERVER + "_QueueListFavs";
+    return USERNAME + "@" + DOMAIN + "_QueueListFavs";
 }
 
 function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber) {

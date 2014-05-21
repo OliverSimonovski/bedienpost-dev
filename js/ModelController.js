@@ -1,9 +1,15 @@
 
+var USERNAME = null;
+var JID = null;
+var DOMAIN = null;
+var CONNECTSERVER = null;
+var PASS = null;
+
 var conn;
 var model;
 var inAttTransfer = false;
 var me = null;
-var USERNAME = SERVER = PASS = null;
+
 
 var phoneIp = "";
 var phoneUser = "";
@@ -81,24 +87,18 @@ function connectServerFromJidDomain(jidDomain) {
 function login(login, password, server) {
 
     var loginSplit = login.split("@");
-    SERVER = loginSplit[1];
-    SERVER = SERVER || server;
-    SERVER = SERVER || "uc.pbx.speakup-telecom.com";
+    DOMAIN = loginSplit[1];
+    DOMAIN = DOMAIN || server;
+    DOMAIN = DOMAIN || "uc.pbx.speakup-telecom.com";
     PASS = password;
 
     // For user@domain users, turn the username in a full jid.
-    if (SERVER.indexOf("uc.") != -1) {
-        if (login.indexOf("@") != -1) {
-            USERNAME = login;
-        } else {
-            USERNAME = login + "@" + SERVER;
-        }
-    }
+    USERNAME = login;
 
     listingViewModel.loginName(USERNAME);
-    listingViewModel.loginServer(SERVER);
+    listingViewModel.loginServer(DOMAIN);
 
-    var serverDeferred = connectServerFromJidDomain(SERVER);
+    var serverDeferred = connectServerFromJidDomain(DOMAIN);
     serverDeferred.done(function(connectserver, connectPort){
         connect(connectserver, connectPort);
     });
@@ -107,9 +107,15 @@ function login(login, password, server) {
 
 function connect(connectServer, connectPort) {
 
-    SERVER = connectServer;
+    CONNECTSERVER = connectServer;
     connectPort = connectPort || 7500;
     listingViewModel.authError(false);
+
+    if (USERNAME.indexOf("@") != -1) {
+        JID = USERNAME;
+    } else {
+        JID = USERNAME + "@" + DOMAIN;
+    }
 
     conn = new Lisa.Connection();
     conn.log_xmpp = false;
@@ -117,13 +123,6 @@ function connect(connectServer, connectPort) {
     // Connect over SSL
     conn.bosh_port = connectPort;
     conn.use_ssl = true;
-
-    // HACK for VTEL server
-    if (SERVER == "uc.vhosted.vtel.nl") {
-        conn.bosh_port = 7509;        
-    }  else if (SERVER == "uc.smartvoice.nl") {
-        conn.bosh_port = 7513;
-    }
 
     // Setup logging and status messages.
     conn.logging.setCallback(function(msg) {
@@ -149,10 +148,10 @@ function connect(connectServer, connectPort) {
     // Setup callback when receiving the company model
     conn.getModel().done(gotModel);
 
-    console.log("Connecting to: " + SERVER + " " + USERNAME + " " + PASS);
-    conn.connect(SERVER, USERNAME, PASS);
+    console.log("Connecting to: " + CONNECTSERVER + " " + JID + " " + PASS);
+    conn.connect(CONNECTSERVER, JID, PASS);
     
-    getPhoneAuth(USERNAME,SERVER,PASS);
+    getPhoneAuth(USERNAME, DOMAIN, PASS);
     listingViewModel.numericInput("");
 }
 
@@ -266,7 +265,7 @@ function gotModel(newmodel) {
     loginInfo.loggedIn = true;
     loginInfo.username = USERNAME;
     loginInfo.password = PASS;
-    loginInfo.server = SERVER;
+    loginInfo.server = DOMAIN;
     localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
 
     

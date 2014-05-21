@@ -175,6 +175,7 @@ function getPhoneAuth(user, server, pass) {
             //console.log(response);
             var responseObj = response;
             phoneIp = responseObj.phoneIp;
+            listingViewModel.phoneIp(phoneIp);
             phoneUser = responseObj.phoneUser;
             phonePass = responseObj.phonePass;
             console.log("Configured authentication information for phone on " + phoneIp);

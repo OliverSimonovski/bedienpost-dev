@@ -521,3 +521,7 @@ body {
     text-align: left; 
     width: 20px;
 }
+
+.inactive {
+    opacity: 0;
+}

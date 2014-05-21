@@ -224,8 +224,13 @@ var ListingsViewModel = function(){
     self.callingState = ko.observable('onhook');
     self.authError = ko.observable(false);
     self.numericInput = ko.observable("");
-    
-    
+    self.phoneIp = ko.observable("");
+
+
+    self.phoneAuthAvailable = ko.computed(function(){
+        return ((self.phoneIp() != ""));
+    }, self);
+
     self.currentList.subscribe(function()
     {
         self.search(""); 
@@ -699,7 +704,7 @@ var ListingsViewModel = function(){
     });
     
     $("#activecalls").on("mouseenter", function(){
-        if (phoneIp != "") {
+        if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             $(".overlay").stop(true, true).fadeIn(250);
         }
 
@@ -717,7 +722,7 @@ var ListingsViewModel = function(){
     });
 
     self.showButton = function(){
-        if (phoneIp != "") {
+        if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             $('.overlay').fadeIn(250); // slideDown(1000);
         }
     }

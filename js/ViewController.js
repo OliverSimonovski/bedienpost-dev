@@ -208,7 +208,7 @@ var ListingsViewModel = function(){
     self.favoriteList = ko.observable();
     self.waitingQueueList = ko.observable();
     self.incomingCallList = ko.observable();
-    self.connectedPhone = ko.observable(true);
+    self.connectedPhone = ko.observable(false);
     
     self.clickedListItem = ko.observable();
     self.clickedListItemName = ko.observable();

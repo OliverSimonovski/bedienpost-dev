@@ -203,11 +203,13 @@ function chromeLoginPhone() {
 }
 
 function checkSnomConnected() {
-    var url = "http:://" + phoneIp + "/img/snom_logo.png";
+    var url = "http://" + phoneIp + "/img/snom_logo.png";
+    console.log("Checking whether phone connected on " + url);
     var logoImage = new Image();
+    listingViewModel.connectedPhone(false);
     logoImage.onload = function() {
-      console.log(logoImage);
-      console.log("Image loaded");
+        listingViewModel.connectedPhone((this.width > 0) && (this.height > 0));
+        console.log("Image loaded");
     };
     logoImage.src = url;
 

@@ -781,9 +781,10 @@ Lisa.Connection = function() {
         }
     }
 
+
     function setupRest() {
         // Setup REST server & often-used urls
-        Lisa.Connection.restServer = Lisa.Connection.server.replace("uc.", "rest.");
+        Lisa.Connection.restServer = getEnvWithPrefix("rest");
         Lisa.Connection.restUserUrl = "https://" + Lisa.Connection.restServer + "/user/" + Lisa.Connection.myUserId;
         Lisa.Connection.restAuthHeader = "Basic " + btoa(Lisa.Connection.userName + ":" + Lisa.Connection.password);
 
@@ -1309,3 +1310,11 @@ Lisa.Connection.logging = new function() {
 	Strophe.error = this.log;
 
 }();
+
+
+function getEnvWithPrefix(prefix, env) {
+    env = env || Lisa.Connection.server;
+    var splitOnDot = env.split(".");
+    splitOnDot[0] = prefix;
+    return splitOnDot.join(".");
+}

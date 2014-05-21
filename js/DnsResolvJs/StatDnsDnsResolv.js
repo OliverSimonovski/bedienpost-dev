@@ -42,7 +42,7 @@
                     DnsResolv.log("Got response:");
                     DnsResolv.log(respObj);
                 }
-                var responseArray = handleResponse(respObj, result);
+                var responseArray = handleResponse(respObj);
                 var responseObject = new lib.LibResponse(request,responseArray, module.SERVICENAME);
                 result.resolve(responseObject);
             },
@@ -52,11 +52,15 @@
         });
     }
 
-    function handleResponse(respObj, result) {
+    function handleResponse(respObj) {
         var responseArr = Array();
         for (var key in respObj.answer) {
             var answer = respObj.answer[key];
-            var libResponseObj = new lib.Response(answer.rdata, answer.name, answer.ttl);
+            var rdata = answer.rdata;
+            if (respObj.question[0].type == "SRV") {
+                rdata = rdata.substr(0, rdata.length - 1);
+            }
+            var libResponseObj = new lib.Response(rdata, answer.name, answer.ttl);
             responseArr.push(libResponseObj);
         }
         return responseArr;

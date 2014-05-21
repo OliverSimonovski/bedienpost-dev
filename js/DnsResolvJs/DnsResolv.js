@@ -3,7 +3,7 @@
     /*
      * Settings
      */
-    var resolverTimeout = 3000;     // If a resolver hasn't given a result in three seconds, move on to the next one.
+    var resolverTimeout = 4000;     // If a resolver hasn't given a result in three seconds, move on to the next one.
 
     /*
      * Attach library under DnsResolv global.

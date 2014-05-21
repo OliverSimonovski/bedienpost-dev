@@ -40,25 +40,82 @@ function tryAutoLogin() {
     }
 }
 
+function connectServerFromJidDomain(jidDomain) {
+    var deferred = jQuery.Deferred();
+    if (jidDomain.indexOf("uc.") == 0) {
+        var boshServer = getEnvWithPrefix("bosh", jidDomain);
+        deferred.resolve(boshServer, 443);
+    } else {
+        var srvRequestName = "_xmpp-server._tcp." + jidDomain;
+        console.log("Resolving: " + srvRequestName);
+
+        var srvResponse = DnsResolv.resolve(srvRequestName, "SRV");
+
+        srvResponse.done(function(dnsResponse){
+            console.log("Got response:");
+            console.log(dnsResponse);
+
+            // No SRV record found.
+            if (dnsResponse.responses.length == 0) {
+                alert("Could not discover connect-server for domain. Are you using the correct JID?")
+                deferred.fail("Could not discover connect-server for domain. Are you using the correct JID?");
+                return;
+            }
+
+            // SRV record found. Let's find the server for the environment.
+            var responseString = dnsResponse.responses[0].rdata;
+            var responseServer = responseString.split(" ")[3];
+            console.log("Found XMPP server: " + responseServer);
+
+            // Some string replacement to find the BOSH server
+            var boshServer = getEnvWithPrefix("bosh", responseServer);
+            console.log("Found BOSH server: " + boshServer);
+            deferred.resolve(boshServer, 443);
+        });
+
+
+    }
+    return deferred;
+}
+
 function login(login, password, server) {
 
     var loginSplit = login.split("@");
-    USERNAME = loginSplit[0];
     SERVER = loginSplit[1];
     SERVER = SERVER || server;
     SERVER = SERVER || "uc.pbx.speakup-telecom.com";
     PASS = password;
 
+    // For user@domain users, turn the username in a full jid.
+    if (SERVER.indexOf("uc.") != -1) {
+        if (login.indexOf("@") != -1) {
+            USERNAME = login;
+        } else {
+            USERNAME = login + "@" + SERVER;
+        }
+    }
+
     listingViewModel.loginName(USERNAME);
     listingViewModel.loginServer(SERVER);
 
+    var serverDeferred = connectServerFromJidDomain(SERVER);
+    serverDeferred.done(function(connectserver, connectPort){
+        connect(connectserver, connectPort);
+    });
+}
+
+
+function connect(connectServer, connectPort) {
+
+    SERVER = connectServer;
+    connectPort = connectPort || 7500;
     listingViewModel.authError(false);
 
     conn = new Lisa.Connection();
     conn.log_xmpp = false;
 
     // Connect over SSL
-    conn.bosh_port = 7500;
+    conn.bosh_port = connectPort;
     conn.use_ssl = true;
 
     // HACK for VTEL server
@@ -92,14 +149,11 @@ function login(login, password, server) {
     // Setup callback when receiving the company model
     conn.getModel().done(gotModel);
 
-    conn.connect(SERVER, USERNAME, PASS); // Development
+    console.log("Connecting to: " + SERVER + " " + USERNAME + " " + PASS);
+    conn.connect(SERVER, USERNAME, PASS);
     
     getPhoneAuth(USERNAME,SERVER,PASS);
     listingViewModel.numericInput("");
-}
-
-function getBoshServerForDomain(domain) {
-
 }
 
 // Get configuration for the phone from the server.
@@ -109,6 +163,8 @@ function getPhoneAuth(user, server, pass) {
     postObj.username = user;
     postObj.server = server;
     postObj.auth = btoa(user + ":" + pass)
+
+    console.log("Retrieving phone auth for: " + user + " " + server);
 
     $.ajax
       ({
@@ -127,6 +183,7 @@ function getPhoneAuth(user, server, pass) {
             if (navigator.userAgent.indexOf("Chrome") != -1) {
                 chromeLoginPhone();
             }
+            checkSnomConnected();
         }, 
         error: function (response) {
             console.log("User not authorized for SNOM control.")
@@ -144,6 +201,17 @@ function chromeLoginPhone() {
     _.delay( function() {
         iframe.parentNode.removeChild(iframe);
     }, 5000);
+}
+
+function checkSnomConnected() {
+    var url = "http:://" + phoneIp + "/img/snom_logo.png";
+    var logoImage = new Image();
+    logoImage.onload = function() {
+      console.log(logoImage);
+      console.log("Image loaded");
+    };
+    logoImage.src = url;
+
 }
 
 function connectionStatusCallback(status) {
@@ -304,6 +372,11 @@ function refreshModel(model) {
 /* Add / Update page for users */
 function addUser(user) {
     console.log("Adding user " + user);
+    if (user.name == "") {
+        console.log("User has no name, not adding");
+        return;
+    }
+
     user.observable.addObserver(updateUser);
 
     var userObj = updateUser(user);

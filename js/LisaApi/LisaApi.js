@@ -519,18 +519,25 @@ Lisa.Connection = function() {
 
 	/** Have the current user dial a phone-numer.*/
 	this.dialNumber = function(number) {
+        var deferred = jQuery.Deferred();
 		Lisa.Connection.logging.log("Calling " + number);
         restAjaxRequest(
             Lisa.Connection.restUserUrl + "/dialNumber",
             {destination: number},
             function (response){
                 Lisa.Connection.logging.log("Issued call to " + number);
+                deferred.resolve();
+            },
+            function() {
+                deferred.reject();
             }
         );
+        return deferred;
 	}
 
 	/** Have the current user dial another user */
 	this.dialUser = function(user) {
+        var deferred = jQuery.Deferred();
         Lisa.Connection.logging.log("Calling " + user);
         var targetUserUrl = "https://" + Lisa.Connection.restServer + "/user/" + user.id;
         restAjaxRequest(
@@ -538,20 +545,29 @@ Lisa.Connection = function() {
             {callee: targetUserUrl},
             function (response){
                 Lisa.Connection.logging.log("Issued call to " + user);
+                deferred.resolve();
+            },
+            function () {
+                deferred.reject();
             }
         );
+        return deferred;
     }
 
 	/** Have the current user logon to a queue*/
 	this.queueLogin = function(queue) {
+
+
         // First, see whether we have any previous settings stored for the queue.
         var fromLs = localStorage.getItem(localStorageKeyForQueue(queue));
         var settingsObj = (fromLs) ? JSON.parse(fromLs) : {};
-        this.queueLoginWithSettings(queue, settingsObj.priority || 1, settingsObj.callForward || false);
+        var deferred = this.queueLoginWithSettings(queue, settingsObj.priority || 1, settingsObj.callForward || false);
+        return deferred;
 	}
 
     /** Have the current user logon to a queue with known settings*/
     this.queueLoginWithSettings = function(queue, priority, callForward) {
+        var deferred = jQuery.Deferred();
         var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
         Lisa.Connection.logging.log("Logging in to queue " + queueId
                                     + " with priority " + priority + " and follow-forwards " + callForward);
@@ -560,12 +576,19 @@ Lisa.Connection = function() {
             {queue:queueId, priority:priority, callForward:callForward},
             function (response){
                 Lisa.Connection.logging.log("Logged onto queue" + queue);
+                deferred.resolve();
+            },
+            function (response){
+                Lisa.Connection.logging.log("Failed logging onto queue" + queue);
+                deferred.reject();
             }
         )
+        return deferred;
     }
 
 	/** Have the current user log out of a queue */
 	this.queueLogout = function(queue) {
+        var deferred = jQuery.Deferred();
 
         // First, retrieve any queue membership settings, so we can
         // set these settings correctly upon logging in again.
@@ -588,6 +611,11 @@ Lisa.Connection = function() {
                         {queue:queueId},
                         function (response){
                             Lisa.Connection.logging.log("Logged out of queue" + queue);
+                            deferred.resolve();
+                        },
+                        function (response){
+                            Lisa.Connection.logging.log("Failed logging out of queue" + queue);
+                            deferred.reject();
                         }
                     )
                 }
@@ -595,6 +623,7 @@ Lisa.Connection = function() {
             null,
             "GET"
         )
+        return deferred;
 	}
 
     function localStorageKeyForQueue(queue) {

@@ -637,6 +637,7 @@ var ListingsViewModel = function(){
     {
         if (self.callingState() == "transfer") {
             cancelAttendedTransfer();
+            self.callingState("calling");
         }
         self.dismissEndTransferModal();
     }

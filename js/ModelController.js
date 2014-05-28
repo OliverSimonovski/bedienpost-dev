@@ -51,6 +51,7 @@ function connectServerFromJidDomain(jidDomain) {
     if (jidDomain.indexOf("uc.") == 0) {
         var boshServer = getEnvWithPrefix("bosh", jidDomain);
         deferred.resolve(boshServer, 443);
+        //deferred.resolve(jidDomain, 7500);
     } else {
         var srvRequestName = "_xmpp-server._tcp." + jidDomain;
         console.log("Resolving: " + srvRequestName);
@@ -208,7 +209,7 @@ function chromeLoginPhone() {
 }
 
 function checkSnomConnected() {
-    var url = "http://" + phoneIp + "/img/snom_logo.png?randomToPreventCaching=" + Math.random();
+    var url = "http://"+phoneUser+":"+phonePass+"@" + phoneIp + "/img/snom_logo.png?noCaching=" + Math.random();
     var logoImage = new Image();
 
     logoImage.onload = function() {

@@ -392,11 +392,18 @@ var ListingsViewModel = function(){
         $("#inputField").focus();
         //alert("cancelLogin");
     }
-    
+
+    self.dismissModal = function(modalToDismiss, focusInputField) {
+        focusInputField = focusInputField || true;
+
+        modalToDismiss.modal('hide');
+        self.clickedListItem(null);
+        if (focusInputField) $("#inputField").focus();
+    }
+
     self.dismissTransferModal = function()
     {
-        $('#transferModal').modal('hide');
-        $("#inputField").focus(); 
+        self.dismissModal($('#transferModal'));
     }
     
     self.showTransferEndModal = function()
@@ -406,32 +413,27 @@ var ListingsViewModel = function(){
     
     self.dismissEndTransferModal = function()
     {
-        $('#transferEndModal').modal('hide');
-        $("#inputField").focus(); 
+        self.dismissModal($('#transferEndModal'));
     }
     
      self.dismissCallModal = function()
     {
-        $('#callModal').modal('hide');
-        $("#inputField").focus(); 
+        self.dismissModal($('#callModal'));
     }
      
     self.dismissLoginModal = function()
     {
-        $('#loginModal').modal('hide');
-        $("#inputField").focus(); 
+        self.dismissModal($('#loginModal'));
     }
     
      self.dismissKeypadModal = function()
     {
-        $('#keypadModal').modal('hide');
-        $("#inputField").focus(); 
+        self.dismissModal($('#keypadModal'));
     }
      
     self.dismissShortcutModal = function()
     {
-        $('#shortcutModal').modal('hide');
-        $("#inputField").focus(); 
+        self.dismissModal($('#shortcutModal'));
     }
     
     self.doPickup = function()
@@ -448,11 +450,6 @@ var ListingsViewModel = function(){
             hangupPhone();
         }
         $("#inputField").focus();
-    }
-    
-    self.doTransfer = function()
-    {
-        //self.showKeypad();
     }
     
     self.doLogin = function()
@@ -793,12 +790,7 @@ var ListingsViewModel = function(){
                 self.doPickup();
                e.preventDefault();
            }
-       } else if ((e.which) == 20 || (e.which) == 84){ // T
-            if (e.shiftKey && e.ctrlKey){
-                self.doTransfer();
-               e.preventDefault();
-           }
-         } else if ((e.which) == 8 || (e.which) == 72){  // H
+       }  else if ((e.which) == 8 || (e.which) == 72){  // H
                 if (e.shiftKey && e.ctrlKey){
                     self.doHangup();
                    e.preventDefault();

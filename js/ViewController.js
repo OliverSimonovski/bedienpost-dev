@@ -325,7 +325,7 @@ var ListingsViewModel = function(){
             $('#callModal').modal({
                 keyboard: true
             })    
-        } else if (phoneIp != "") {
+        } else if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             $('#transferModal').modal({
                 keyboard: true
             })

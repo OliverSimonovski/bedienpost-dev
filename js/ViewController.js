@@ -74,6 +74,7 @@ function isFav(id, storageKey) {
         global[storageKey].favs = {};
     }
 
+    // Use a deferred to set isFavObservable
     global[storageKey].deferred.done(function(storageKey, isFavObservable) {
         return function(response) {
             // Received response

@@ -69,17 +69,20 @@ function isFav(id, storageKey) {
     var isFavObservable = ko.observable(false);
     if (global[storageKey] == null) {
         // We haven't retrieved this storage-key from remote yet, let's do so now.
-        var result = remoteStorage.getItem(storageKey);
-        result.done(function(storageKey, isFavObservable) {
-            return function(response) {
-                // Received response
-                global[storageKey] = (response) ? JSON.parse(response) : {};
-                isFavObservable(_.contains(global[storageKey], id));
-            }
-        }(storageKey, isFavObservable));
-    } else {
-        isFavObservable(_.contains(global[storageKey], id));
+        global[storageKey] = {};
+        global[storageKey].deferred = remoteStorage.getItem(storageKey);
+        global[storageKey].favs = {};
     }
+
+    global[storageKey].deferred.done(function(storageKey, isFavObservable) {
+        return function(response) {
+            // Received response
+            var responseArr = (response) ? JSON.parse(response) : {};
+            global[storageKey].favs = _.union(global[storageKey].favs, responseArr); // Merge local and remote results.
+            isFavObservable(_.contains(global[storageKey].favs, id));
+        }
+    }(storageKey, isFavObservable));
+
     return isFavObservable;
 }
 
@@ -94,7 +97,7 @@ function saveFavs(list, storageKey) {
     }
     var json = JSON.stringify(favIndices);
     console.log("Saving favorite ids: " + JSON.stringify(favIndices) + " for key " + storageKey);
-    global[storageKey] = favIndices;
+    global[storageKey].favs = favIndices;
     remoteStorage.setItem(storageKey, json);
 }
 

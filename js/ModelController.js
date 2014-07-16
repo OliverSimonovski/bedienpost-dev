@@ -298,9 +298,8 @@ function gotModel(newmodel) {
 }
 
 function closeLoginModal() {
-    // Hacky
     $('#loginModal').modal('hide');
-    $("#inputField").focus();
+    shortcutsActive = true;
 }
 
 function getCallInfo(call, user) {

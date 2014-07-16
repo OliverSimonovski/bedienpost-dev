@@ -1,5 +1,6 @@
 // Overall viewmodel for this screen, along with initial state
 var global = {};
+var shortcutsActive = false;
 
 function UserListItem(id, name, ext, log, avail, ringing) {
     _.bindAll(this, 'startCall', 'noCalls', 'setFavorite');
@@ -401,16 +402,12 @@ var ListingsViewModel = function(){
     
     self.cancelLogin = function()
     {
-        $("#inputField").focus();
-        //alert("cancelLogin");
+
     }
 
     self.dismissModal = function(modalToDismiss, focusInputField) {
-        focusInputField = focusInputField || true;
-
         modalToDismiss.modal('hide');
         self.clickedListItem(null);
-        if (focusInputField) $("#inputField").focus();
     }
 
     self.dismissTransferModal = function()
@@ -435,11 +432,13 @@ var ListingsViewModel = function(){
      
     self.dismissLoginModal = function()
     {
+        shortcutsActive = true;
         self.dismissModal($('#loginModal'));
     }
     
      self.dismissKeypadModal = function()
     {
+        shortcutsActive = true;
         self.dismissModal($('#keypadModal'));
     }
      
@@ -453,7 +452,6 @@ var ListingsViewModel = function(){
         if (self.callingState() == "ringing") {
             pickupPhone();
         }
-        $("#inputField").focus();
     }
     
     self.doHangup = function()
@@ -461,7 +459,6 @@ var ListingsViewModel = function(){
         if ((self.callingState() == "ringing") || (self.callingState() == "calling")) {
             hangupPhone();
         }
-        $("#inputField").focus();
     }
     
     self.doLogin = function()
@@ -570,6 +567,7 @@ var ListingsViewModel = function(){
     
     self.showKeypad = function()
     {
+        shortcutsActive = false;
         $('#keypadModal').modal({
                 keyboard: true
             })
@@ -582,7 +580,8 @@ var ListingsViewModel = function(){
     })
     
     self.showLogin = function()
-    { 
+    {
+        shortcutsActive = false;
         $('#loginModal').modal({
             keyboard: false
         })
@@ -751,86 +750,68 @@ var ListingsViewModel = function(){
         }
     });
 
-    $( document ).keypress(function(e)
-    {
-        // ugly code ... should be a better way... for later to cleanup -> might make a keyFunction..
+    /* Give lower-case chars */
+    function matchesKey(key, targetChar) {
+        return ((key == targetChar.charCodeAt(0)) || (key == (targetChar.charCodeAt(0) - 32)));
+    }
+
+    $(document).keypress(function (e) {
+
         var searchParam = self.search();
-        searchParam +="";
+        searchParam += "";
         searchParam = searchParam.toLowerCase();
         var key = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
-        if (!searchParam){
-               if ((key) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
-                    var shortcutKey = (e.which%48);
-                    if (e.ctrlKey && e.shiftKey){
-                      var itemToClick = self.favFilteredItems()[shortcutKey];
-                      if (itemToClick != null)
-                       {
-                           self.clickItem(itemToClick);
-                       }
-                       e.preventDefault();
-                    }
-               } 
+        var list = null;
+        if (!searchParam) {
+            list = self.favFilteredItems();
         } else {
-            if ((key) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
-                   var shortcutKey = (key%48);
-                    if (e.ctrlKey && e.shiftKey){
-                      var itemToClick = self.filteredItems()[shortcutKey];
-                      if (itemToClick != null)
-                       {
-                           self.clickItem(itemToClick);
-                       }
-                       e.preventDefault();
-                    }
-                }
+            list = self.filteredItems();
         }
-        
+        if ((key >= 48) && (key <= 57 )) {
+            var shortcutKey = (e.which % 48);
+
+            if (list[shortcutKey] != null) {
+                var itemToClick = self.filteredItems()[shortcutKey];
+                self.clickItem(list[shortcutKey]);
+            }
+            e.preventDefault();
+        }
+
+        if (!shortcutsActive)
+            return;
+
         //console.log (e.which);
         //console.log (e.ctrlKey);
         //console.log (e.shiftKey);
-        if ((e.which) == 19 || (e.which) == 69){ // E
-            if (e.shiftKey && e.ctrlKey){
-                self.showShortcuts();
-               e.preventDefault();
-           }
-        } else if ((e.which) == 4 || (e.which) == 68){  // D
-           if (e.shiftKey  && e.ctrlKey){
-                self.showKeypad();
-               e.preventDefault();
-           }
-       } else if ((e.which) == 16 || (e.which) == 80){  // P
-            if (e.shiftKey && e.ctrlKey){
-                self.doPickup();
-               e.preventDefault();
-           }
-       }  else if ((e.which) == 8 || (e.which) == 72){  // H
-                if (e.shiftKey && e.ctrlKey){
-                    self.doHangup();
-                   e.preventDefault();
-               }
-           } else if ((e.which) == 3 || (e.which) == 67){ ///C
-                if (e.shiftKey && e.ctrlKey){
-                    self.actionCalling();
-                   e.preventDefault();
-               }
-           }  else if ((e.which) == 1 || (e.which) == 65){ // A
-                if (e.shiftKey && e.ctrlKey){
-                    self.actionTransferAttended();
-                   e.preventDefault();
-               }
-           } else if ((e.which) == 21 || (e.which) == 85){  //U
-                if (e.shiftKey && e.ctrlKey){
-                   self.actionTransfer();
-                   e.preventDefault();
-               }
-           }  else if ((e.which) == 12 || (e.which) == 76){ // L
-               if (e.shiftKey && e.ctrlKey){
-                   self.logOut();
-                   e.preventDefault();
-               } 
-           }
-        
-            //console.log (e.which);
-    
+
+        if (matchesKey(e.which, "e")) {         // E
+            self.showShortcuts();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "d")) {  // D
+            self.showKeypad();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "p")) {  // P
+            self.doPickup();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "h")) {  // H
+            self.doHangup();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "c")) { ///C
+            self.actionCalling();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "a")) { // A
+            self.actionTransferAttended();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "u")) {  //U
+            self.actionTransfer();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "l")) { // L
+            self.logOut();
+            e.preventDefault();
+        }  else if (matchesKey(e.which, "s")) { // S
+            $("#inputField").focus();
+            e.preventDefault();
+        }
     });
 
     var _dragged;
@@ -899,6 +880,23 @@ var ListingsViewModel = function(){
     ko.bindingHandlers.drag.options = { helper: 'clone' };
     self.showLogin();
     }
+
+/* Disable shortcuts when search-field gets focus */
+$("#inputField").focus(function() {
+    shortcutsActive = false;
+});
+
+/* Enable shortcuts when search-field loses focus */
+$("#inputField").blur(function() {
+    shortcutsActive = true;
+});
+
+/* ESC to un-focus search-field */
+$("#inputField").keydown(function (e) {
+    if (e.keyCode == 27) {
+        $("#inputField").blur();
+    }
+});
 
 var listingViewModel = new ListingsViewModel();
 ko.applyBindings(listingViewModel);

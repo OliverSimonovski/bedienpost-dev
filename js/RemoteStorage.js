@@ -34,7 +34,7 @@
             },
             error: function (response) {
                 result.reject();
-                console.log("Error remoteStorage setItem for key: " + key);
+                console.log("Error remoteStorage setItem for key: " + key + " username: " + USERNAME + " server: " + DOMAIN);
                 console.log(JSON.stringify(response));
             }
         });
@@ -60,7 +60,7 @@
                 result.resolve(response);
             },
             error: function (response) {
-                console.log("Error remoteStorage getItem for key: " + key);
+                console.log("Error remoteStorage getItem for key: " + key + " username: " + USERNAME + " server: " + DOMAIN);
                 console.log(JSON.stringify(response));
             }
         });

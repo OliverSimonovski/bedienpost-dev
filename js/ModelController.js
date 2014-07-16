@@ -64,8 +64,9 @@ function connectServerFromJidDomain(jidDomain) {
 
             // No SRV record found.
             if (dnsResponse.responses.length == 0) {
-                alert("Could not discover connect-server for domain. Are you using the correct JID?")
-                deferred.fail("Could not discover connect-server for domain. Are you using the correct JID?");
+                var msg = "Could not discover connect-server for domain. Are you using the correct JID?";
+                alert(msg)
+                deferred.fail(msg);
                 return;
             }
 
@@ -94,10 +95,14 @@ function login(login, password, server) {
     PASS = password;
 
     // For user@domain users, turn the username in a full jid.
-    USERNAME = login;
+    if (DOMAIN.indexOf("uc.") == 0) {
+        USERNAME = loginSplit[0];
+    } else {
+        USERNAME = login;
+    }
 
-    listingViewModel.loginName(USERNAME);
-    listingViewModel.loginServer(DOMAIN);
+
+    listingViewModel.loginName(login);
 
     var serverDeferred = connectServerFromJidDomain(DOMAIN);
     serverDeferred.done(function(connectserver, connectPort){
@@ -256,7 +261,7 @@ function logout() {
     // Remove the between-session login information.
     var loginInfo = {};
     loginInfo.loggedIn = false;
-    localStorage.setItem("loginInfo", JSON.stringify(loginInfo));  
+    localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
 
     // Actual disconnect
     conn.disconnect();

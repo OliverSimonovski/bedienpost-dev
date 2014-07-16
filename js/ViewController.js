@@ -1,6 +1,7 @@
 // Overall viewmodel for this screen, along with initial state
 var global = {};
 var shortcutsActive = false;
+var clockCompensation = 0; // Compensate for a misconfigured clock.
 
 function UserListItem(id, name, ext, log, avail, ringing) {
     _.bindAll(this, 'startCall', 'noCalls', 'setFavorite');
@@ -29,8 +30,11 @@ function UserListItem(id, name, ext, log, avail, ringing) {
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart); // duration in milliseconds
-        if (duration < 0)
-            duration = 0;
+        if (duration < 0) {
+            if (duration < clockCompensation)
+                clockCompensation = duration; // We want the minimum value that we've seen in clockCompensation.
+        }
+        duration -= clockCompensation;
 
         var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
@@ -154,8 +158,11 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart); // duration in milliseconds
-        if (duration < 0)
-            duration = 0;
+        if (duration < 0) {
+            if (duration < clockCompensation)
+                clockCompensation = duration; // We want the minimum value that we've seen in clockCompensation.
+        }
+        duration -= clockCompensation;
 
         var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         return timeString;

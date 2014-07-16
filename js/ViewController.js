@@ -18,7 +18,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
     this.callStartTime = ko.observable(0);
 
     var storedAsFav = isFav(id, UserListItem.storageKey());
-    this.favorite = ko.observable(storedAsFav);
+    this.favorite = storedAsFav;
 
     this.numberAndDuration = ko.computed(function() 
     {
@@ -66,12 +66,21 @@ UserListItem.saveFavs = function(userList) {
 }
 
 function isFav(id, storageKey) {
+    var isFavObservable = ko.observable(false);
     if (global[storageKey] == null) {
-        var result = localStorage.getItem(storageKey);
-        global[storageKey] = (result) ? JSON.parse(result) : {} ;
-
+        // We haven't retrieved this storage-key from remote yet, let's do so now.
+        var result = remoteStorage.getItem(storageKey);
+        result.done(function(storageKey, isFavObservable) {
+            return function(response) {
+                // Received response
+                global[storageKey] = (response) ? JSON.parse(response) : {};
+                isFavObservable(_.contains(global[storageKey], id));
+            }
+        }(storageKey, isFavObservable));
+    } else {
+        isFavObservable(_.contains(global[storageKey], id));
     }
-    return _.contains(global[storageKey], id); 
+    return isFavObservable;
 }
 
 function saveFavs(list, storageKey) {
@@ -86,7 +95,7 @@ function saveFavs(list, storageKey) {
     var json = JSON.stringify(favIndices);
     console.log("Saving favorite ids: " + JSON.stringify(favIndices) + " for key " + storageKey);
     global[storageKey] = favIndices;
-    localStorage.setItem(storageKey, json);
+    remoteStorage.setItem(storageKey, json);
 }
 
 
@@ -100,7 +109,7 @@ function QueueListItem(id, name) {
     this.waitingAmount = ko.observable(0);
     this.orderNr = 0;
 
-    this.favorite = ko.observable(isFav(id, QueueListItem.storageKey()));
+    this.favorite = isFav(id, QueueListItem.storageKey());
 }
 
 QueueListItem.prototype.queueLogin = function (amLoggingIn) {

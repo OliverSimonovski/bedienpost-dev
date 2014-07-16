@@ -150,10 +150,13 @@ function connect(connectServer, connectPort) {
     conn.getModel().done(gotModel);
 
     console.log("Connecting to: " + CONNECTSERVER + " " + JID + " " + PASS);
+
     conn.connect(CONNECTSERVER, JID, PASS);
     
     getPhoneAuth(USERNAME, DOMAIN, PASS);
     listingViewModel.numericInput("");
+
+
 }
 
 // Get configuration for the phone from the server.

@@ -797,7 +797,7 @@ var ListingsViewModel = function(){
             }
         } else {
             // Keypad key-bindings
-            if (matchesKey(e.which, "c")) {  // C for Call
+            if (matchesKey(e.which, "b")) {  // b for bellen
                 self.call();
                 console.log("Calling number");
                 e.preventDefault();
@@ -834,7 +834,7 @@ var ListingsViewModel = function(){
         } else if (matchesKey(e.which, "h")) {  // H
             self.doHangup();
             e.preventDefault();
-        } else if (matchesKey(e.which, "c")) { ///C
+        } else if (matchesKey(e.which, "b")) { /// B
             self.actionCalling();
             e.preventDefault();
         } else if (matchesKey(e.which, "a")) { // A
@@ -937,7 +937,7 @@ $("#inputField").keydown(function (e) {
 });
 
 $("#shortcutModal").keydown(function (e) {
-    if (e.keyCode == 27) {
+    if ((e.keyCode == 27) || (e.keyCode == 13)) {
         listingViewModel.dismissShortcutModal();
     }
 });

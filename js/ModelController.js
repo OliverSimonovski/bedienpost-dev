@@ -242,7 +242,7 @@ function connectionStatusCallback(status) {
     } else if (status == Strophe.Status.AUTHFAIL) {
         if ((reconnecting == 0) || (reconnecting > 10)) {
             listingViewModel.authError(true);
-            alert("Authentication failed. Please re-enter your username and password and try again.");
+            alert("Inloggen mislukt. Voer uw login en wachtwoord opnieuw in, en probeer het nog een keer.");
         } else {
             reconnecting += 1;
             tryAutoLogin();

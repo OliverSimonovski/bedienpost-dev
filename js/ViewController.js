@@ -822,31 +822,28 @@ var ListingsViewModel = function(){
         //console.log (e.ctrlKey);
         //console.log (e.shiftKey);
 
-        if (matchesKey(e.which, "e")) {         // E
+        if (matchesKey(e.which, "e")) {         // E - help
             self.showShortcuts();
             e.preventDefault();
-        } else if (matchesKey(e.which, "d")) {  // D
+        } else if (matchesKey(e.which, "d")) {  // D - dialpad
             self.showKeypad();
             e.preventDefault();
-        } else if (matchesKey(e.which, "p")) {  // P
+        } else if (matchesKey(e.which, "p")) {  // P - pickup
             self.doPickup();
             e.preventDefault();
-        } else if (matchesKey(e.which, "h")) {  // H
+        } else if (matchesKey(e.which, "h")) {  // H - hangup
             self.doHangup();
             e.preventDefault();
-        } else if (matchesKey(e.which, "b")) { /// B
+        } else if (matchesKey(e.which, "b")) { /// B - bel
             self.actionCalling();
             e.preventDefault();
-        } else if (matchesKey(e.which, "a")) { // A
+        } else if (matchesKey(e.which, "a")) { // A - attended transfer
             self.actionTransferAttended();
             e.preventDefault();
-        } else if (matchesKey(e.which, "u")) {  //U
+        } else if (matchesKey(e.which, "t")) {  // t - unattended Transfer
             self.actionTransfer();
             e.preventDefault();
-        } else if (matchesKey(e.which, "l")) { // L
-            self.logOut();
-            e.preventDefault();
-        }  else if (matchesKey(e.which, "s")) { // S
+        } else if (matchesKey(e.which, "s")) { // S - Focus zoekveld
             $("#inputField").focus();
             e.preventDefault();
         }

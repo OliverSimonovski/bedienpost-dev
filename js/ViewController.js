@@ -774,7 +774,7 @@ var ListingsViewModel = function(){
 
     $(document).keypress(function (e) {
 
-        if (!keypadActive) {
+        if (!keypadActive && shortcutsActive) {
             // Process numeric keys
             var searchParam = self.search();
             searchParam += "";

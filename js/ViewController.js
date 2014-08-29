@@ -369,6 +369,7 @@ var ListingsViewModel = function(){
     self.logOut = function(item) {
         console.log("Logging out");
         logout();
+        shortcutsActive = false;
         $("#nameInputField").focus();
     }
 

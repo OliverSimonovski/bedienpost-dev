@@ -285,7 +285,7 @@
             <h4 class="modal-title" id="myModalLabel">Dialpad</h4>
           </div>
            <div class="modal-body">
-                <input id="keypadInputField" type="text" class="form-control" data-bind="value: $root.numericInput">
+                <input id="keypadInputField" type="text" class="form-control" data-bind="value: $root.numericInput, valueUpdate: 'afterkeydown'">
                             <p></p>
                              <div class="buttoncontainer text-center">
                                    <button class="btn btn-circle"  type="button" data-bind="click: $root.enterNumber('1')">1</button>

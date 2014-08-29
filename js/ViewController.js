@@ -803,6 +803,7 @@ var ListingsViewModel = function(){
                 console.log("Unattended transfer");
                 e.preventDefault();
             }
+            return;
         }
 
 

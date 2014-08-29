@@ -1,6 +1,7 @@
 // Overall viewmodel for this screen, along with initial state
 var global = {};
 var shortcutsActive = false;
+var keypadActive = false;
 var clockCompensation = 0; // Compensate for a misconfigured clock.
 
 function UserListItem(id, name, ext, log, avail, ringing) {
@@ -446,6 +447,7 @@ var ListingsViewModel = function(){
      self.dismissKeypadModal = function()
     {
         shortcutsActive = true;
+        keypadActive = false;
         self.dismissModal($('#keypadModal'));
     }
      
@@ -575,6 +577,7 @@ var ListingsViewModel = function(){
     self.showKeypad = function()
     {
         shortcutsActive = false;
+        keypadActive = true;
         $('#keypadModal').modal({
                 keyboard: true
             })
@@ -747,7 +750,7 @@ var ListingsViewModel = function(){
         $('.overlay').fadeOut(250);  // slideUp(1000);
     }
 
-    $("#keypadModal").keyup(function (e) {
+    /*$("#keypadModal").keyup(function (e) {
         if (e.keyCode == 13) {
             if (listingViewModel.callingState() == "onhook") {
                 listingViewModel.call();
@@ -755,7 +758,7 @@ var ListingsViewModel = function(){
                 listingViewModel.unattendedTransfer();
             }
         }
-    });
+    });*/
 
     /* Give lower-case chars */
     function matchesKey(key, targetChar) {
@@ -764,25 +767,45 @@ var ListingsViewModel = function(){
 
     $(document).keypress(function (e) {
 
-        var searchParam = self.search();
-        searchParam += "";
-        searchParam = searchParam.toLowerCase();
-        var key = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
-        var list = null;
-        if (!searchParam) {
-            list = self.favFilteredItems();
-        } else {
-            list = self.filteredItems();
-        }
-        if ((key >= 48) && (key <= 57 )) {
-            var shortcutKey = (e.which % 48);
-
-            if (list[shortcutKey] != null) {
-                var itemToClick = self.filteredItems()[shortcutKey];
-                self.clickItem(list[shortcutKey]);
+        if (!keypadActive) {
+            // Process numeric keys
+            var searchParam = self.search();
+            searchParam += "";
+            searchParam = searchParam.toLowerCase();
+            var key = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
+            var list = null;
+            if (!searchParam) {
+                list = self.favFilteredItems();
+            } else {
+                list = self.filteredItems();
             }
-            e.preventDefault();
+            if ((key >= 48) && (key <= 57 )) {
+                var shortcutKey = (e.which % 48);
+
+                if (list[shortcutKey] != null) {
+                    var itemToClick = self.filteredItems()[shortcutKey];
+                    self.clickItem(list[shortcutKey]);
+                }
+                e.preventDefault();
+            }
+        } else {
+            // Keypad key-bindings
+            if (matchesKey(e.which, "c")) {  // C for Call
+                self.call();
+                console.log("Calling number");
+                e.preventDefault();
+            } else if (matchesKey(e.which, "a")) {  // a for attended transfer
+                self.attendedTransfer();
+                console.log("Attended transfer");
+                e.preventDefault();
+            } else if (matchesKey(e.which, "u")) {  // u for unattended transfer
+                self.unattendedTransfer();
+                console.log("Unattended transfer");
+                e.preventDefault();
+            }
         }
+
+
 
         if (!shortcutsActive)
             return;

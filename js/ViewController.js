@@ -935,6 +935,12 @@ $("#inputField").keydown(function (e) {
     }
 });
 
+$("#shortcutModal").keydown(function (e) {
+    if (e.keyCode == 27) {
+        listingViewModel.dismissShortcutModal();
+    }
+});
+
 var listingViewModel = new ListingsViewModel();
 ko.applyBindings(listingViewModel);
 $('.overlay').hide();

@@ -795,7 +795,7 @@ var ListingsViewModel = function(){
                 }
                 e.preventDefault();
             }
-        } else {
+        } else if (keypadActive) {
             // Keypad key-bindings
             if (matchesKey(e.which, "b")) {  // b for bellen
                 self.call();

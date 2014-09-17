@@ -56,12 +56,12 @@
             dataType: 'json',
             data: postObj,
             success: function (response){
-                console.log("getItem result: "+ JSON.stringify(response));
+                //console.log("getItem result: "+ JSON.stringify(response));
                 result.resolve(response);
             },
             error: function (response) {
                 console.log("Error remoteStorage getItem for key: " + key + " username: " + USERNAME + " server: " + DOMAIN);
-                console.log(JSON.stringify(response));
+                //console.log(JSON.stringify(response));
             }
         });
 

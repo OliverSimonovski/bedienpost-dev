@@ -2,6 +2,8 @@
 var global = {};
 var shortcutsActive = false;
 var keypadActive = false;
+var dialing = false;
+var transfering = false;
 var clockCompensation = 0; // Compensate for a misconfigured clock.
 var contactPhoneNumberPriority = ["work", "mobile", "home"];
 
@@ -337,8 +339,6 @@ var ListingsViewModel = function(){
             var filteredEntries = ko.observableArray();
             
              ko.utils.arrayForEach(self.incomingCallList().entries(), function(entry) {
-                 console.log("Pushing the following on the array: ");
-                 console.log(entry);
                  filteredEntries.push(entry);
              });
              return filteredEntries();
@@ -349,11 +349,9 @@ var ListingsViewModel = function(){
     // FIXME: foreach in html directly on array.
     self.clickedListItemPhoneNumbers = ko.computed(function()
     {
-        if (self.clickedListItem()){
+        if (self.clickedListItem() && self.clickedListItem().numbers()){
             var numbers = ko.observableArray();
             ko.utils.arrayForEach(self.clickedListItem().numbers(), function(number) {
-                console.log("Pushing the following on the array: ");
-                console.log(number);
                 numbers.push(number);
             });
 
@@ -371,7 +369,9 @@ var ListingsViewModel = function(){
         self.clickedListItemName(name);
 
         if (self.callingState() == "onhook") {
-            if (clickedItem.numbers) {
+            dialing = true;
+            console.log(clickedItem.numbers());
+            if (clickedItem.numbers() && (clickedItem.numbers().length > 1)) {
                 $('#selectNumberModal').modal({
                     keyboard: true
                 })
@@ -381,9 +381,16 @@ var ListingsViewModel = function(){
                 })
             }
         } else if ((phoneIp != "") && listingViewModel.connectedPhone()) {
-            $('#transferModal').modal({
-                keyboard: true
-            })
+            transfering = true;
+            if (clickedItem.numbers() && (clickedItem.numbers().length > 1)) {
+                $('#selectNumberModal').modal({
+                    keyboard: true
+                })
+            } else {
+                $('#transferModal').modal({
+                    keyboard: true
+                })
+            }
         }
     }
     
@@ -417,6 +424,7 @@ var ListingsViewModel = function(){
     
     self.actionCalling = function(item)
     {
+        dialing = false;
         var numberToCall = self.clickedListItem().ext().split(",")[0];
         if (numberToCall != "") {
             conn.dialNumber(numberToCall);
@@ -430,11 +438,25 @@ var ListingsViewModel = function(){
     self.actionSelectedContactNumber = function(item) {
         console.log(item);
         self.clickedListItem().ext(item.number);
-        self.actionCalling();
+
+        if (dialing) {
+            self.actionCalling();
+            /*$('#callModal').modal({
+                keyboard: true
+            })*/
+            self.dismissSelectNumberModal();
+        } else if (transfering) {
+            $('#transferModal').modal({
+                keyboard: true
+            })
+            self.dismissSelectNumberModal();
+
+        }
     }
     
     self.actionTransfer = function()
     {
+        transfering = false;
         var toCall = self.clickedListItem().ext().split(",")[0];
         transferToUser(toCall);
         self.dismissTransferModal();
@@ -442,6 +464,7 @@ var ListingsViewModel = function(){
 
     self.actionTransferAttended = function()
     {
+        transfering = false;
         self.callingState("transfer");
         var toCall = self.clickedListItem().ext().split(",")[0];
         attendedtransferToUser(toCall);
@@ -457,6 +480,8 @@ var ListingsViewModel = function(){
     self.dismissModal = function(modalToDismiss, focusInputField) {
         modalToDismiss.modal('hide');
         self.clickedListItem(null);
+        dialing = false;
+        transfering = false;
     }
 
     self.dismissTransferModal = function()
@@ -478,7 +503,13 @@ var ListingsViewModel = function(){
     {
         self.dismissModal($('#callModal'));
     }
-     
+
+    self.dismissSelectNumberModal = function() {
+        dialing = false;
+        transfering = false;
+        self.dismissModal($('#selectNumberModal'));
+    }
+
     self.dismissLoginModal = function()
     {
         shortcutsActive = true;

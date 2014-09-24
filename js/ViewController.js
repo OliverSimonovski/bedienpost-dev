@@ -3,6 +3,7 @@ var global = {};
 var shortcutsActive = false;
 var keypadActive = false;
 var clockCompensation = 0; // Compensate for a misconfigured clock.
+var contactPhoneNumberPriority = ["work", "mobile", "home"];
 
 function UserListItem(id, name, ext, log, avail, ringing) {
     _.bindAll(this, 'startCall', 'noCalls', 'setFavorite');

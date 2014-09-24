@@ -24,6 +24,8 @@ var userIdToUserObservable = [];
 var queueIdToQueueObservable = [];
 var callIdToCallObservable = [];
 
+
+
 $(document).ready(function () {
     tryAutoLogin();
 });
@@ -295,6 +297,34 @@ function gotModel(newmodel) {
     model.queueListObservable.addObserver(refreshModel);
 
    closeLoginModal();
+
+   addContactListData();
+
+}
+
+function addContactListData() {
+    var contactListData = contactUsersDemoData;
+    for (arrayIndex in contactListData) {
+        var user = contactListData[arrayIndex];
+        console.log("Considering contact user: " + user.name);
+
+        // Try the defined number-key priority to find the correct phone-number.
+        for (key in contactPhoneNumberPriority){
+            var numberKey = contactPhoneNumberPriority[key];
+            var number = _.where(user.numbers, {name: numberKey})[0];
+            if (number) {
+                user.extension = number.number;
+                break;
+            }
+        }
+
+        // If still no default number found, just pick the first available number.
+        if (!user.extension) {
+            user.extension = user.numbers[0].number;
+        }
+
+        addUser(user);
+    }
 }
 
 function closeLoginModal() {
@@ -392,7 +422,8 @@ function addUser(user) {
         return;
     }
 
-    user.observable.addObserver(updateUser);
+    if (user.observable)
+        user.observable.addObserver(updateUser);
 
     var userObj = updateUser(user);
 

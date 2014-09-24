@@ -28,3 +28,33 @@ var demoUserLists = [
          { id: 1, name: "Receptie DraadloosDraadloosDraadloos", shortcut:"", favorite:true, ext:"264,254", log:true, avail:true, ringing:true, connectedName:"Lambert Storingsdienst", connectedNr:"070123456789", callDuration:0 }] )
     }
 ];
+
+var contactUsersDemoData = [
+    {    id: "cl1",
+         name: "Tinus Testuser",
+         numbers:[
+             {name: "home", number: "0413230007"},
+             {name: "work", number: "0702040167"},
+             {name: "mobile", number: "0622130610"}
+        ]
+    },
+    {   id: "cl2",
+        name: "Tomas Testuser",
+        numbers:[
+            {name: "work", number: "0702040167"},
+            {name: "mobile", number: "0622130610"}
+        ]
+    },
+    {   id: "cl3",
+        name: "Tappie Testuser",
+        numbers:[
+            {name: "mobile", number: "0622130610"}
+        ]
+    },
+    {   id: "cl4",
+        name: "Rinus Raarnummer",
+        numbers:[
+            {name: "raarNummer", number: "1234567890"}
+        ]
+    }
+];

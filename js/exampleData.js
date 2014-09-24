@@ -32,6 +32,7 @@ var demoUserLists = [
 var contactUsersDemoData = [
     {    id: "cl1",
          name: "Tinus Testuser",
+         company: "IPerity",
          numbers:[
              {name: "home", number: "0413230007"},
              {name: "work", number: "0702040167"},
@@ -40,6 +41,7 @@ var contactUsersDemoData = [
     },
     {   id: "cl2",
         name: "Tomas Testuser",
+        company: "IPerity",
         numbers:[
             {name: "work", number: "0702040167"},
             {name: "mobile", number: "0622130610"}
@@ -47,12 +49,14 @@ var contactUsersDemoData = [
     },
     {   id: "cl3",
         name: "Tappie Testuser",
+        company: "TinkerTank",
         numbers:[
             {name: "mobile", number: "0622130610"}
         ]
     },
     {   id: "cl4",
         name: "Rinus Raarnummer",
+        company: "IPerity",
         numbers:[
             {name: "raarNummer", number: "1234567890"}
         ]

@@ -308,7 +308,7 @@ function addContactListData() {
         var user = contactListData[arrayIndex];
         console.log("Considering contact user: " + user.name);
 
-        // Try the defined number-key priority to find the correct phone-number.
+        // Try the defined contactPhoneNumberPriority order to find the correct phone-number. This means for example that the "work" number has priority over "mobile".
         for (key in contactPhoneNumberPriority){
             var numberKey = contactPhoneNumberPriority[key];
             var number = _.where(user.numbers, {name: numberKey})[0];
@@ -370,7 +370,12 @@ function userToClientModel(user, userObj) {
     userObj.log(user.loggedIn);
     userObj.avail(numcalls == 0);
 
-    
+    userObj.numbers(user.numbers);
+    //console.log(userObj.numbers());
+    userObj.company = user.company;
+
+    //console.log(userObj.numbers);
+
     if (numcalls > 0) {
         var call = user.calls[Object.keys(user.calls)[0]]; // Ugh.
         userObj.ringing((call.state != "ANSWERED"));

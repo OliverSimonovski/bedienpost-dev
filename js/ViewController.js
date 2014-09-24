@@ -20,6 +20,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
     this.connectedName = ko.observable("");
     this.connectedNr = ko.observable("");
     this.callStartTime = ko.observable(0);
+    this.numbers = ko.observableArray();
 
     var storedAsFav = isFav(id, UserListItem.storageKey());
     this.favorite = storedAsFav;
@@ -329,18 +330,38 @@ var ListingsViewModel = function(){
         self.waitingQueueList().entries(self.waitingQueueList().entries().sort(favComparator));                                   
     };
     
-    // Pretty useless to have it computed... Nothing changes with the currentIncomingList
+    // FIXME: foreach in html directly on array.
     self.incomingCallQueue = ko.computed(function()
     {
          if (self.incomingCallList()){
             var filteredEntries = ko.observableArray();
             
              ko.utils.arrayForEach(self.incomingCallList().entries(), function(entry) {
+                 console.log("Pushing the following on the array: ");
+                 console.log(entry);
                  filteredEntries.push(entry);
              });
              return filteredEntries();
         }       
         
+    }, self);
+
+    // FIXME: foreach in html directly on array.
+    self.clickedListItemPhoneNumbers = ko.computed(function()
+    {
+        if (self.clickedListItem()){
+            var numbers = ko.observableArray();
+            ko.utils.arrayForEach(self.clickedListItem().numbers(), function(number) {
+                console.log("Pushing the following on the array: ");
+                console.log(number);
+                numbers.push(number);
+            });
+
+            return numbers();
+        } else {
+            return [];
+        }
+
     }, self);
     
     self.clickItem = function(clickedItem) 
@@ -350,9 +371,15 @@ var ListingsViewModel = function(){
         self.clickedListItemName(name);
 
         if (self.callingState() == "onhook") {
-            $('#callModal').modal({
-                keyboard: true
-            })    
+            if (clickedItem.numbers) {
+                $('#selectNumberModal').modal({
+                    keyboard: true
+                })
+            } else {
+                $('#callModal').modal({
+                    keyboard: true
+                })
+            }
         } else if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             $('#transferModal').modal({
                 keyboard: true
@@ -398,6 +425,12 @@ var ListingsViewModel = function(){
             alert("Can't call user without extension.");
         }
         self.dismissCallModal();
+    }
+
+    self.actionSelectedContactNumber = function(item) {
+        console.log(item);
+        self.clickedListItem().ext(item.number);
+        self.actionCalling();
     }
     
     self.actionTransfer = function()

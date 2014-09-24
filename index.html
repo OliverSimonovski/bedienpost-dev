@@ -159,6 +159,7 @@
                             <h4>Gebruikers</h4>
                         </div>
                     <div class="list-group list">
+
                          <ul data-bind="foreach: { data:  filteredItems, as: 'entry' }">
                              <li class="list-group-item" data-bind="click: $root.clickItem , drag: {user: entry}">
                                  <div class="options todooptions">
@@ -190,6 +191,31 @@
                     </div>
                 </div>
             </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="selectNumberModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissCallModal">&times;</button>
+                    <center><h4 class="modal-title" id="myModalLabel"><span data-bind="text: 'Welk nummer van ' + $root.clickedListItemName()"></span>?</h4></center>
+                </div>
+                <div class="modal-body call">
+                    <div class="text-center">
+
+
+                        <div data-bind="foreach: { data:  clickedListItemPhoneNumbers, as: 'item' }">
+                            <p>
+                                <center><button class="btn btn-primary" aria-hidden="true" type="button" data-bind="text: item.name + ': ' + item.number, click: $root.actionSelectedContactNumber"></button></center>
+                            </p>
+                         </div>
+                        <!--<center><button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionCalling, valueUpdate: 'afterkeydown'"><u>B</u>el</button></center> -->
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
     <!-- Modal -->
     <div class="modal fade" id="transferModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -226,6 +252,7 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
 
     <!-- Modal -->
     <div class="modal fade" id="callModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -311,8 +338,8 @@
                       <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.unattendedTransfer, enable: ($root.callingState() != 'onhook')" >Doorverbinden</button>
                      <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.call" >Bel</button>
                      </div>
-                     </div>
                  </div>
+            </div>
         </div>
       </div>
     </div>

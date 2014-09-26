@@ -1,9 +1,15 @@
 
+var USERNAME = null;
+var JID = null;
+var DOMAIN = null;
+var CONNECTSERVER = null;
+var PASS = null;
+
 var conn;
 var model;
 var inAttTransfer = false;
 var me = null;
-var USERNAME = SERVER = PASS = null;
+
 
 var phoneIp = "";
 var phoneUser = "";
@@ -40,33 +46,89 @@ function tryAutoLogin() {
     }
 }
 
+function connectServerFromJidDomain(jidDomain) {
+    var deferred = jQuery.Deferred();
+    if (jidDomain.indexOf("uc.") == 0) {
+        var boshServer = getEnvWithPrefix("bosh", jidDomain);
+        deferred.resolve(boshServer, 443);
+        //deferred.resolve(jidDomain, 7500);
+    } else {
+        var srvRequestName = "_xmpp-server._tcp." + jidDomain;
+        console.log("Resolving: " + srvRequestName);
+
+        var srvResponse = DnsResolv.resolve(srvRequestName, "SRV");
+
+        srvResponse.done(function(dnsResponse){
+            console.log("Got response:");
+            console.log(dnsResponse);
+
+            // No SRV record found.
+            if (dnsResponse.responses.length == 0) {
+                var msg = "Could not discover connect-server for domain. Are you using the correct JID?";
+                alert(msg)
+                deferred.fail(msg);
+                return;
+            }
+
+            // SRV record found. Let's find the server for the environment.
+            var responseString = dnsResponse.responses[0].rdata;
+            var responseServer = responseString.split(" ")[3];
+            console.log("Found XMPP server: " + responseServer);
+
+            // Some string replacement to find the BOSH server
+            var boshServer = getEnvWithPrefix("bosh", responseServer);
+            console.log("Found BOSH server: " + boshServer);
+            deferred.resolve(boshServer, 443);
+        });
+
+
+    }
+    return deferred;
+}
+
 function login(login, password, server) {
 
     var loginSplit = login.split("@");
-    USERNAME = loginSplit[0];
-    SERVER = loginSplit[1];
-    SERVER = SERVER || server;
-    SERVER = SERVER || "uc.pbx.speakup-telecom.com";
+    DOMAIN = loginSplit[1];
+    DOMAIN = DOMAIN || server;
+    DOMAIN = DOMAIN || "uc.pbx.speakup-telecom.com";
     PASS = password;
 
-    listingViewModel.loginName(USERNAME);
-    listingViewModel.loginServer(SERVER);
+    // For user@domain users, turn the username in a full jid.
+    if (DOMAIN.indexOf("uc.") == 0) {
+        USERNAME = loginSplit[0];
+    } else {
+        USERNAME = login;
+    }
 
+
+    listingViewModel.loginName(login);
+
+    var serverDeferred = connectServerFromJidDomain(DOMAIN);
+    serverDeferred.done(function(connectserver, connectPort){
+        connect(connectserver, connectPort);
+    });
+}
+
+
+function connect(connectServer, connectPort) {
+
+    CONNECTSERVER = connectServer;
+    connectPort = connectPort || 7500;
     listingViewModel.authError(false);
+
+    if (USERNAME.indexOf("@") != -1) {
+        JID = USERNAME;
+    } else {
+        JID = USERNAME + "@" + DOMAIN;
+    }
 
     conn = new Lisa.Connection();
     conn.log_xmpp = false;
 
     // Connect over SSL
-    conn.bosh_port = 7500;
+    conn.bosh_port = connectPort;
     conn.use_ssl = true;
-
-    // HACK for VTEL server
-    if (SERVER == "uc.vhosted.vtel.nl") {
-        conn.bosh_port = 7509;        
-    }  else if (SERVER == "uc.smartvoice.nl") {
-        conn.bosh_port = 7513;
-    }
 
     // Setup logging and status messages.
     conn.logging.setCallback(function(msg) {
@@ -92,10 +154,14 @@ function login(login, password, server) {
     // Setup callback when receiving the company model
     conn.getModel().done(gotModel);
 
-    conn.connect(SERVER, USERNAME, PASS); // Development
+    console.log("Connecting to: " + CONNECTSERVER + " " + JID + " " + PASS);
+
+    conn.connect(CONNECTSERVER, JID, PASS);
     
-    getPhoneAuth(USERNAME,SERVER,PASS);
+    getPhoneAuth(USERNAME, DOMAIN, PASS);
     listingViewModel.numericInput("");
+
+
 }
 
 // Get configuration for the phone from the server.
@@ -105,6 +171,8 @@ function getPhoneAuth(user, server, pass) {
     postObj.username = user;
     postObj.server = server;
     postObj.auth = btoa(user + ":" + pass)
+
+    console.log("Retrieving phone auth for: " + user + " " + server);
 
     $.ajax
       ({
@@ -116,6 +184,7 @@ function getPhoneAuth(user, server, pass) {
             //console.log(response);
             var responseObj = response;
             phoneIp = responseObj.phoneIp;
+            listingViewModel.phoneIp(phoneIp);
             phoneUser = responseObj.phoneUser;
             phonePass = responseObj.phonePass;
             console.log("Configured authentication information for phone on " + phoneIp);
@@ -123,6 +192,11 @@ function getPhoneAuth(user, server, pass) {
             if (navigator.userAgent.indexOf("Chrome") != -1) {
                 chromeLoginPhone();
             }
+
+            // Check whether the phone is reachable.
+            listingViewModel.connectedPhone(false);
+            checkSnomConnected();
+            setInterval(checkSnomConnected, 300000); // re-check every five minutes.
         }, 
         error: function (response) {
             console.log("User not authorized for SNOM control.")
@@ -142,6 +216,20 @@ function chromeLoginPhone() {
     }, 5000);
 }
 
+function checkSnomConnected() {
+    var url = "http://"+phoneUser+":"+phonePass+"@" + phoneIp + "/img/snom_logo.png?noCaching=" + Math.random();
+    var logoImage = new Image();
+
+    logoImage.onload = function() {
+        listingViewModel.connectedPhone((this.width > 0) && (this.height > 0));
+    };
+    logoImage.onerror = function() {
+        listingViewModel.connectedPhone(false);
+    };
+    logoImage.src = url;
+
+}
+
 function connectionStatusCallback(status) {
     if (status == Strophe.Status.CONNFAIL) {
     } else if (status == Strophe.Status.DISCONNECTED) {
@@ -154,7 +242,7 @@ function connectionStatusCallback(status) {
     } else if (status == Strophe.Status.AUTHFAIL) {
         if ((reconnecting == 0) || (reconnecting > 10)) {
             listingViewModel.authError(true);
-            alert("Authentication failed. Please re-enter your username and password and try again.");
+            alert("Inloggen mislukt. Voer uw login en wachtwoord opnieuw in, en probeer het nog een keer.");
         } else {
             reconnecting += 1;
             tryAutoLogin();
@@ -173,7 +261,7 @@ function logout() {
     // Remove the between-session login information.
     var loginInfo = {};
     loginInfo.loggedIn = false;
-    localStorage.setItem("loginInfo", JSON.stringify(loginInfo));  
+    localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
 
     // Actual disconnect
     conn.disconnect();
@@ -194,7 +282,7 @@ function gotModel(newmodel) {
     loginInfo.loggedIn = true;
     loginInfo.username = USERNAME;
     loginInfo.password = PASS;
-    loginInfo.server = SERVER;
+    loginInfo.server = DOMAIN;
     localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
 
     
@@ -210,9 +298,8 @@ function gotModel(newmodel) {
 }
 
 function closeLoginModal() {
-    // Hacky
     $('#loginModal').modal('hide');
-    $("#inputField").focus();
+    shortcutsActive = true;
 }
 
 function getCallInfo(call, user) {
@@ -300,6 +387,11 @@ function refreshModel(model) {
 /* Add / Update page for users */
 function addUser(user) {
     console.log("Adding user " + user);
+    if (user.name == "") {
+        console.log("User has no name, not adding");
+        return;
+    }
+
     user.observable.addObserver(updateUser);
 
     var userObj = updateUser(user);

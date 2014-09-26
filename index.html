@@ -32,22 +32,25 @@
                    <div class="overlay col-md" >
                             <div class="btn-group btn-group-justified">
                                 <div class="btn-group">
-                                    <button class="btn btn-pickup"  type="button" data-bind="click: $root.doPickup,
-                                                                                        attr: { class: $root.actionStateCssClass('pick') }">Pick-up</button>
+                                    <button class="btn btn-hangup"  type="button" data-bind="click: $root.doPickup,
+                                                                                        attr: { class: $root.actionStateCssClass('pick') }">O<u>p</u>nemen</button>
                                 </div>
                                 <div class="btn-group">
                                     <button class="btn btn-hangup"  type="button" data-bind="click: $root.doHangup,
-
-                                                                                         attr: { class: $root.actionStateCssClass('hang') }">Hang-up</button>
+                                                                                         attr: { class: $root.actionStateCssClass('hang') }">Op<u>h</u>angen</button>
                                 </div>
-                                <div class="btn-group">
-                                    <button class="btn btn-transfer"  type="button" data-bind="click: $root.doTransfer,
-                                                                                          }">Dialpad</button>
-                                 </div>
+
                             </div>
                         </div>
-                  <div class="header">
-                        <h4>Active Calls</h4>
+                        <div class="header">
+                        <div class="options todooptions" >
+                                <div class=" pull-right" data-bind="attr: { class: ($root.phoneAuthAvailable() ? 'pull-right active' : 'pull-right inactive')  }">
+                                     <i class="fa fa-phone-square pull-right"></i>
+                                    <span class="icon-label"><span data-bind= "text:  connectedPhone() ? ' SNOM-telefoon verbonden' : ' SNOM-telefoon niet verbonden' "></span></span>
+                                </div>    
+                             </div>
+                        
+                        <h4>Actieve gesprekken</h4>
                     </div>
 
                     <div class="list-group queuelist" >
@@ -59,7 +62,7 @@
                                     <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
                                  </div>
                                 <label>
-                                    <h5 class="list-group-item-heading" ><span data-bind="text: entry.toDisplay"></span><span data-bind= "text:  entry.directionIsOut() ? ' [outgoing]' : ' [incoming]' "></span>  </h5>
+                                    <h5 class="list-group-item-heading" ><span data-bind="text: entry.toDisplay"></span><span data-bind= "text:  entry.directionIsOut() ? ' [uitgaand]' : ' [inkomend]' "></span>  </h5>
                                 </label>
 
                             </li>
@@ -71,14 +74,14 @@
                              <div class="options todooptions" >
                                     <div class="logout pull-right" data-bind="click: $root.logOut">
                                          <i class="fa fa-arrow-circle-right pull-right"></i>
-                                        <span class="icon-label">log out</span>
+                                        <span class="icon-label">uitloggen</span>
                                     </div>   
                                      <div class="shortcuts pull-right" data-bind="click: $root.showShortcuts">
                                           <i class="fa fa-question pull-right"></i>
-                                    <span class="icon-label">help</span>
+                                    <span class="icon-label">h<u>e</u>lp</span>
                                     </div> 
                              </div>
-                            <h4>Waiting Queue</h4>
+                            <h4>Wachtrijen</h4>
                         </div>
                         <div class="list-group queuelist">
 
@@ -103,7 +106,7 @@
                </div>
              <div class='row nopadding'>
                 <div class='col-md-12'>
-                    <input id="inputField" type="text" data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" placeholder="Search here!">
+                    <input id="inputField" type="text" data-bind="value: search, valueUpdate: 'afterkeydown'"  class="form-control" placeholder="Zoek hier!">
                 </div>
                  </div>
             <div class='row nopadding'>
@@ -111,13 +114,12 @@
 
                         <div class="header">
                              <div class="options todooptions" data-bind="click: $root.showKeypad">
-                                 <div class="logout" >
-
-                                    <i class="fa fa-phone pull-right"></i>
-                                    <span class="icon-label">dialpad</span>
+                                 <div class="keypad" >
+                                    <i class="fa fa-th pull-right"></i>
+                                    <u>d</u>ialpad &nbsp
                                  </div>
                              </div>
-                            <h4>Favorite List</h4>
+                            <h4>Favorieten</h4>
                         </div>
                         <div class="list-group list">
                              <ul data-bind=" foreach: { data:  favFilteredItems, as: 'entry' },
@@ -154,7 +156,7 @@
                 <div class='col-md-6' data-bind="drop: unmarkUserFavorite">
                         <div class="header">
 
-                            <h4>Contact / User List</h4>
+                            <h4>Gebruikers</h4>
                         </div>
                     <div class="list-group list">
                          <ul data-bind="foreach: { data:  filteredItems, as: 'entry' }">
@@ -195,12 +197,12 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissTransferModal">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">How to transfer to <span data-bind="text: $root.clickedListItemName"></span>?</h4>
+            <h4 class="modal-title" id="myModalLabel">Hoe wil je doorverbinden naar <span data-bind="text: $root.clickedListItemName"></span>?</h4>
           </div>
           <div class="modal-body call">
                 <div class="span3">
-                 <button class="btn btn-primary  connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransfer">Transfer</button>
-                <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransferAttended, enable: ($root.callingState() == 'calling')">Att. Transfer</button>
+                 <button class="btn btn-primary  connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransfer"><u>T</u>ransfer</button>
+                <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransferAttended, enable: ($root.callingState() == 'calling')"><u>A</u>tt. Transfer</button>
             </div>
           </div>
         </div><!-- /.modal-content -->
@@ -213,12 +215,12 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissEndTransferModal">&times;</button>
-            <h4 class="modal-title" id="myModalLabel"><span></span> Transfer to <span data-bind="text: $root.clickedListItemName"></span> in Progress...</h4>
+            <h4 class="modal-title" id="myModalLabel"><span></span> Doorverbinden naar <span data-bind="text: $root.clickedListItemName"></span> bezig...</h4>
           </div>
           <div class="modal-body call">
                 <div class="span2">
-                    <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.cancelTransfer">Cancel</button>
-                    <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.finalizeTransfer">Finalize</button>
+                    <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.cancelTransfer">Afbreken</button>
+                    <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.finalizeTransfer">Bevestigen</button>
             </div>
           </div>
         </div><!-- /.modal-content -->
@@ -235,7 +237,7 @@
           </div>
           <div class="modal-body call">
               <div class="text-center">
-                 <center><button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionCalling">Call</button></center>
+                 <center><button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionCalling, valueUpdate: 'afterkeydown'"><u>B</u>el</button></center>
             </div>
           </div>
         </div><!-- /.modal-content -->
@@ -251,23 +253,19 @@
         </div>
         <div class="modal-body">
            <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
-              <label class="control-label">Name:</label>
-              <input id="nameInputField" type="text" data-bind="value: loginName, valueUpdate: 'afterkeydown'"  class="form-control">
+              <label class="control-label">Login:</label>
+              <input id="nameInputField" type="text" placeholder="User@Domain.com" data-bind="value: loginName, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
             <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
-              <label class="control-label">Password:</label>
+              <label class="control-label">Wachtwoord:</label>
               <input id="passwordInputField" type="password" data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control">
-            </div>
-             <div class="form-group" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
-              <label class="control-label">Server:</label>
-              <input type="text"  data-bind="value: loginServer, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
 
         </div>
         <div class="modal-footer">
             <div class="text-center">
-          <button class="btn" type="button" data-bind="click: $root.dismissLoginModal">Cancel</button>
-          <button id="submitBtn" class="btn btn-primary btn-2 has-spinner"  type="button" data-bind="click: $root.doLogin, valueUpdate: 'afterkeydown'"> <span class="spinner"><i class="fa fa-refresh fa-spin"></i></span>Submit</button>
+          <button class="btn" type="button" data-bind="click: $root.dismissLoginModal">Afbreken</button>
+          <button id="submitBtn" class="btn btn-primary btn-2 has-spinner"  type="button" data-bind="click: $root.doLogin, valueUpdate: 'afterkeydown'"> <span class="spinner"><i class="fa fa-refresh fa-spin"></i></span>Inloggen</button>
                 </div>
         </div>
         </div><!-- /.modal-content -->
@@ -283,7 +281,7 @@
             <h4 class="modal-title" id="myModalLabel">Dialpad</h4>
           </div>
            <div class="modal-body">
-                <input id="keypadInputField" type="text" class="form-control" data-bind="value: $root.numericInput">
+                <input id="keypadInputField" type="text" class="form-control" data-bind="value: $root.numericInput, valueUpdate: 'afterkeydown'">
                             <p></p>
                              <div class="buttoncontainer text-center">
                                    <button class="btn btn-circle"  type="button" data-bind="click: $root.enterNumber('1')">1</button>
@@ -309,66 +307,61 @@
             <div class="modal-footer">
                  <div class="text-center">
                      <div class="btn-group">
-                       <button type="button" class="btn btn-primary btn-2" data-bind="click: $root.attendedTransfer, enable: ($root.callingState() == 'calling')" >Att. Transfer</button>
-                      <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.unattendedTransfer, enable: ($root.callingState() != 'onhook')" >Transfer</button>
-                     <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.call" >Call</button>
+                       <button type="button" class="btn btn-primary btn-2" data-bind="click: $root.attendedTransfer, enable: ($root.callingState() == 'calling')" >Doorverb. rug.</button>
+                      <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.unattendedTransfer, enable: ($root.callingState() != 'onhook')" >Doorverbinden</button>
+                     <button type="button" class="btn btn-primary btn-2"  data-bind="click: $root.call" >Bel</button>
                      </div>
                      </div>
                  </div>
         </div>
       </div>
     </div>
-      
-       <!-- Modal -->
+
     <div class="modal fade" id="shortcutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-bg">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-bind="click: $root.dismissShortcutModal">&times;</button>
+            <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissShortcutModal">&times;</button>
             <h4 class="modal-title" id="myModalLabel">Help</h4>
           </div>
            <div class="modal-body">
                 <div class="buttoncontainer text-left">
-                       <p>Shift - Ctrl - 0 .. 9: Call Favorite / Call Contact</p>            
+                       <p>0 .. 9: Bel favoriet / Bel Contact</p>
                 </div>
+               <div class="buttoncontainer text-left">
+                   <p>S : Zet de cursor op het zoekveld.</p>
+               </div>
                 <div class="buttoncontainer text-left">
-                      <p>Shift - Ctrl - S : Show Help</p>            
+                      <p>E : Laat Help zien</p>
                 </div>
                <div class="buttoncontainer text-left">
-                      <p>Shift - Ctrl - D : Show Dialpad</p>         
+                      <p>D : Laat Dialpad zien</p>
                 </div>
                <div class="buttoncontainer text-left">
-                       <p>Shift - Ctrl - P : Pickup</p>        
+                       <p>P : Opnemen</p>
                 </div>
                <div class="buttoncontainer text-left">
-                      <p>Shift - Ctrl - T : Transfer</p>            
+                       <p>H : Ophangen</p>
                 </div>
                <div class="buttoncontainer text-left">
-                       <p>Shift - Ctrl - H : Hangup</p>            
+                       <p>B : Bellen (Na het selecteren van een persoon)</p>
                 </div>
                <div class="buttoncontainer text-left">
-                       <p>Shift - Ctrl - C : Calling</p>            
+                       <p>A : Doorschakeling met ruggespraak (Na het selecteren van een persoon)</p>
                 </div>
                <div class="buttoncontainer text-left">
-                       <p>Shift - Ctrl - A : Attended Transfer</p>            
+                       <p>T : Doorschakeling zonder ruggespraak (Na het selecteren van een persoon)</p>
                 </div>
-               <div class="buttoncontainer text-left">
-                       <p>Shift - Ctrl - U : Unattended Transfer</p>            
-                </div>
-               <div class="buttoncontainer text-left">
-                       <p>Shift - Ctrl - L : Logout / Login</p>            
-                </div>
-               
                
                 <div class="buttoncontainer text-left">
                     <p>
                       <i class="fa fa-pencil-square-o legend" ></i>
-                      Send a notification email to caller or callee</p>            
+                      Verzend een notificatie-email naar beller of gebelde</p>
                 </div>
                 <div class="buttoncontainer text-left">
                     <p>
                     <i class="fa fa-arrow-circle-right legend"></i>
-                      Logout </p>            
+                      Uitloggen </p>
                 </div>
                 <div class="buttoncontainer text-left">
                     <p>
@@ -378,18 +371,18 @@
                 <div class="buttoncontainer text-left">
                     <p>
                     <i class="fa fa-sign-in legend"></i><i class="fa fa-sign-out legend"></i>
-                    Sign-in to a queue / Sign-out from a queue</p>            
+                    Inloggen in een wachtrij / Uitloggen uit een wachtrij</p>
                 </div>
                <div class="buttoncontainer text-left">
                    <p>
                     <i class="fa fa-star legend"></i><i class="fa fa-star-o legend"></i>
-                    Mark as favorite queue / unmark as favorite queue</p>            
+                    Markeer als favoriete wachtrij / Maak markering ongedaan</p>
                 </div>
           </div>
             <div class="modal-footer">
                  <div class="text-center">
                      <div class="btn-group">
-                         <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissShortcutModal">Cancel</button>
+                         <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissShortcutModal">Klaar</button>
                      </div>
                      </div>
                  </div>
@@ -420,7 +413,23 @@
 
       <script type='text/javascript' src='js/exampleData.js'></script>
       <script type='text/javascript' src='js/ViewController.js'></script>
+      <script type='text/javascript' src="js/RemoteStorage.js"></script>
       <script type='text/javascript' src="js/ModelController.js"></script>
+
+      <script type='text/javascript' src="js/DnsResolvJs/DnsResolv.js"></script>
+      <script type='text/javascript' src="js/DnsResolvJs/StatDnsDnsResolv.js"></script>
+      <script type='text/javascript' src="js/DnsResolvJs/JsonDnsDnsResolv.js"></script>
   <!-- endbuild -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51698821-1', 'bedienpost.nl');
+  ga('send', 'pageview');
+
+</script>
 
 </html>

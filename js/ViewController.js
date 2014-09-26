@@ -1,5 +1,8 @@
 // Overall viewmodel for this screen, along with initial state
 var global = {};
+var shortcutsActive = false;
+var keypadActive = false;
+var clockCompensation = 0; // Compensate for a misconfigured clock.
 
 function UserListItem(id, name, ext, log, avail, ringing) {
     _.bindAll(this, 'startCall', 'noCalls', 'setFavorite');
@@ -12,12 +15,13 @@ function UserListItem(id, name, ext, log, avail, ringing) {
     this.ringing = ko.observable(ringing                  || false);
 
     this.directionIsOut = ko.observable(true);
+    
     this.connectedName = ko.observable("");
     this.connectedNr = ko.observable("");
     this.callStartTime = ko.observable(0);
 
     var storedAsFav = isFav(id, UserListItem.storageKey());
-    this.favorite = ko.observable(storedAsFav);
+    this.favorite = storedAsFav;
 
     this.numberAndDuration = ko.computed(function() 
     {
@@ -27,12 +31,21 @@ function UserListItem(id, name, ext, log, avail, ringing) {
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart); // duration in milliseconds
-        if (duration < 0)
-            duration = 0;
+        if (duration < 0) {
+            if (duration < clockCompensation)
+                clockCompensation = duration; // We want the minimum value that we've seen in clockCompensation.
+        }
+        duration -= clockCompensation;
 
         var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
-        var numberPart = (this.connectedNr() != "") ? (this.connectedNr() + " ") : ("");
         var timePart = "[" + timeString + "]";
+
+        var numberPart = this.connectedNr();
+        if ((numberPart != "") && this.connectedName() != "") {
+            var npend = numberPart.substr(-5);
+            numberPart = numberPart.replace(npend, ".....");
+        }
+        numberPart = (numberPart != "") ? numberPart + " " : "";
 
         return numberPart + timePart;
         
@@ -57,7 +70,7 @@ UserListItem.prototype.setFavorite = function (fav) {
 }
 
 UserListItem.storageKey = function() {
-    return USERNAME + "@" + SERVER + "_UserListFavs";
+    return USERNAME + "@" + DOMAIN + "_UserListFavs";
 }
 
 UserListItem.saveFavs = function(userList) {
@@ -65,12 +78,25 @@ UserListItem.saveFavs = function(userList) {
 }
 
 function isFav(id, storageKey) {
+    var isFavObservable = ko.observable(false);
     if (global[storageKey] == null) {
-        var result = localStorage.getItem(storageKey);
-        global[storageKey] = (result) ? JSON.parse(result) : {} ;
-
+        // We haven't retrieved this storage-key from remote yet, let's do so now.
+        global[storageKey] = {};
+        global[storageKey].deferred = remoteStorage.getItem(storageKey);
+        global[storageKey].favs = {};
     }
-    return _.contains(global[storageKey], id); 
+
+    // Use a deferred to set isFavObservable
+    global[storageKey].deferred.done(function(storageKey, isFavObservable) {
+        return function(response) {
+            // Received response
+            var responseArr = (response) ? JSON.parse(response) : {};
+            global[storageKey].favs = _.union(global[storageKey].favs, responseArr); // Merge local and remote results.
+            isFavObservable(_.contains(global[storageKey].favs, id));
+        }
+    }(storageKey, isFavObservable));
+
+    return isFavObservable;
 }
 
 function saveFavs(list, storageKey) {
@@ -84,8 +110,8 @@ function saveFavs(list, storageKey) {
     }
     var json = JSON.stringify(favIndices);
     console.log("Saving favorite ids: " + JSON.stringify(favIndices) + " for key " + storageKey);
-    global[storageKey] = favIndices;
-    localStorage.setItem(storageKey, json);
+    global[storageKey].favs = favIndices;
+    remoteStorage.setItem(storageKey, json);
 }
 
 
@@ -99,7 +125,7 @@ function QueueListItem(id, name) {
     this.waitingAmount = ko.observable(0);
     this.orderNr = 0;
 
-    this.favorite = ko.observable(isFav(id, QueueListItem.storageKey()));
+    this.favorite = isFav(id, QueueListItem.storageKey());
 }
 
 QueueListItem.prototype.queueLogin = function (amLoggingIn) {
@@ -118,7 +144,7 @@ QueueListItem.saveFavs = function(queueList) {
 }
 
 QueueListItem.storageKey = function() {
-    return USERNAME + "@" + SERVER + "_QueueListFavs";
+    return USERNAME + "@" + DOMAIN + "_QueueListFavs";
 }
 
 function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber) {
@@ -139,8 +165,11 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart); // duration in milliseconds
-        if (duration < 0)
-            duration = 0;
+        if (duration < 0) {
+            if (duration < clockCompensation)
+                clockCompensation = duration; // We want the minimum value that we've seen in clockCompensation.
+        }
+        duration -= clockCompensation;
 
         var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         return timeString;
@@ -207,6 +236,7 @@ var ListingsViewModel = function(){
     self.favoriteList = ko.observable();
     self.waitingQueueList = ko.observable();
     self.incomingCallList = ko.observable();
+    self.connectedPhone = ko.observable(false);
     
     self.clickedListItem = ko.observable();
     self.clickedListItemName = ko.observable();
@@ -215,15 +245,19 @@ var ListingsViewModel = function(){
     
     self.loginName = ko.observable();
     self.loginPass = ko.observable();
-    self.loginServer = ko.observable("uc.pbx.speakup-telecom.com");
     self.incomingCallMailTo = ko.observable();
     self.search = ko.observable();
     self.shortcutKey = ko.observable();
     self.callingState = ko.observable('onhook');
     self.authError = ko.observable(false);
     self.numericInput = ko.observable("");
-    
-    
+    self.phoneIp = ko.observable("");
+
+
+    self.phoneAuthAvailable = ko.computed(function(){
+        return ((self.phoneIp() != ""));
+    }, self);
+
     self.currentList.subscribe(function()
     {
         self.search(""); 
@@ -318,7 +352,7 @@ var ListingsViewModel = function(){
             $('#callModal').modal({
                 keyboard: true
             })    
-        } else if (phoneIp != "") {
+        } else if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             $('#transferModal').modal({
                 keyboard: true
             })
@@ -335,6 +369,7 @@ var ListingsViewModel = function(){
     self.logOut = function(item) {
         console.log("Logging out");
         logout();
+        shortcutsActive = false;
         $("#nameInputField").focus();
     }
 
@@ -382,14 +417,17 @@ var ListingsViewModel = function(){
     
     self.cancelLogin = function()
     {
-        $("#inputField").focus();
-        //alert("cancelLogin");
+
     }
-    
+
+    self.dismissModal = function(modalToDismiss, focusInputField) {
+        modalToDismiss.modal('hide');
+        self.clickedListItem(null);
+    }
+
     self.dismissTransferModal = function()
     {
-        $('#transferModal').modal('hide');
-        $("#inputField").focus(); 
+        self.dismissModal($('#transferModal'));
     }
     
     self.showTransferEndModal = function()
@@ -399,32 +437,30 @@ var ListingsViewModel = function(){
     
     self.dismissEndTransferModal = function()
     {
-        $('#transferEndModal').modal('hide');
-        $("#inputField").focus(); 
+        self.dismissModal($('#transferEndModal'));
     }
     
      self.dismissCallModal = function()
     {
-        $('#callModal').modal('hide');
-        $("#inputField").focus(); 
+        self.dismissModal($('#callModal'));
     }
      
     self.dismissLoginModal = function()
     {
-        $('#loginModal').modal('hide');
-        $("#inputField").focus(); 
+        shortcutsActive = true;
+        self.dismissModal($('#loginModal'));
     }
     
      self.dismissKeypadModal = function()
     {
-        $('#keypadModal').modal('hide');
-        $("#inputField").focus(); 
+        shortcutsActive = true;
+        keypadActive = false;
+        self.dismissModal($('#keypadModal'));
     }
      
     self.dismissShortcutModal = function()
     {
-        $('#shortcutModal').modal('hide');
-        $("#inputField").focus(); 
+        self.dismissModal($('#shortcutModal'));
     }
     
     self.doPickup = function()
@@ -432,7 +468,6 @@ var ListingsViewModel = function(){
         if (self.callingState() == "ringing") {
             pickupPhone();
         }
-        $("#inputField").focus();
     }
     
     self.doHangup = function()
@@ -440,18 +475,12 @@ var ListingsViewModel = function(){
         if ((self.callingState() == "ringing") || (self.callingState() == "calling")) {
             hangupPhone();
         }
-        $("#inputField").focus();
-    }
-    
-    self.doTransfer = function()
-    {
-        //self.showKeypad();
     }
     
     self.doLogin = function()
     {
         console.log("Logging in as: " + self.loginName());
-        login(self.loginName(), self.loginPass(), self.loginServer());
+        login(self.loginName(), self.loginPass());
     }
     
     
@@ -554,6 +583,8 @@ var ListingsViewModel = function(){
     
     self.showKeypad = function()
     {
+        shortcutsActive = false;
+        keypadActive = true;
         $('#keypadModal').modal({
                 keyboard: true
             })
@@ -566,7 +597,8 @@ var ListingsViewModel = function(){
     })
     
     self.showLogin = function()
-    { 
+    {
+        shortcutsActive = false;
         $('#loginModal').modal({
             keyboard: false
         })
@@ -630,6 +662,7 @@ var ListingsViewModel = function(){
     {
         if (self.callingState() == "transfer") {
             cancelAttendedTransfer();
+            self.callingState("calling");
         }
         self.dismissEndTransferModal();
     }
@@ -697,7 +730,7 @@ var ListingsViewModel = function(){
     });
     
     $("#activecalls").on("mouseenter", function(){
-        if (phoneIp != "") {
+        if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             $(".overlay").stop(true, true).fadeIn(250);
         }
 
@@ -715,7 +748,7 @@ var ListingsViewModel = function(){
     });
 
     self.showButton = function(){
-        if (phoneIp != "") {
+        if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             $('.overlay').fadeIn(250); // slideDown(1000);
         }
     }
@@ -724,7 +757,7 @@ var ListingsViewModel = function(){
         $('.overlay').fadeOut(250);  // slideUp(1000);
     }
 
-    $("#keypadModal").keyup(function (e) {
+    /*$("#keypadModal").keyup(function (e) {
         if (e.keyCode == 13) {
             if (listingViewModel.callingState() == "onhook") {
                 listingViewModel.call();
@@ -732,93 +765,88 @@ var ListingsViewModel = function(){
                 listingViewModel.unattendedTransfer();
             }
         }
-    });
+    });*/
 
-    $( document ).keypress(function(e)
-    {
-        // ugly code ... should be a better way... for later to cleanup -> might make a keyFunction..
-        var searchParam = self.search();
-        searchParam +="";
-        searchParam = searchParam.toLowerCase();
-        var key = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
-        if (!searchParam){
-               if ((key) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
-                    var shortcutKey = (e.which%48);
-                    if (e.ctrlKey && e.shiftKey){
-                      var itemToClick = self.favFilteredItems()[shortcutKey];
-                      if (itemToClick != null)
-                       {
-                           self.clickItem(itemToClick);
-                       }
-                       e.preventDefault();
-                    }
-               } 
-        } else {
-            if ((key) == 48 || 49 || 50 || 51 || 52 || 53 || 54 || 55 || 56 || 57){
-                   var shortcutKey = (key%48);
-                    if (e.ctrlKey && e.shiftKey){
-                      var itemToClick = self.filteredItems()[shortcutKey];
-                      if (itemToClick != null)
-                       {
-                           self.clickItem(itemToClick);
-                       }
-                       e.preventDefault();
-                    }
+    /* Give lower-case chars */
+    function matchesKey(key, targetChar) {
+        return ((key == targetChar.charCodeAt(0)) || (key == (targetChar.charCodeAt(0) - 32)));
+    }
+
+    $(document).keypress(function (e) {
+
+        if (!keypadActive && shortcutsActive) {
+            // Process numeric keys
+            var searchParam = self.search();
+            searchParam += "";
+            searchParam = searchParam.toLowerCase();
+            var key = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
+            var list = null;
+            if (!searchParam) {
+                list = self.favFilteredItems();
+            } else {
+                list = self.filteredItems();
+            }
+            if ((key >= 48) && (key <= 57 )) {
+                var shortcutKey = (e.which % 48);
+
+                if (list[shortcutKey] != null) {
+                    var itemToClick = self.filteredItems()[shortcutKey];
+                    self.clickItem(list[shortcutKey]);
                 }
+                e.preventDefault();
+            }
+        } else if (keypadActive) {
+            // Keypad key-bindings
+            if (matchesKey(e.which, "b")) {  // b for bellen
+                self.call();
+                console.log("Calling number");
+                e.preventDefault();
+            } else if (matchesKey(e.which, "a")) {  // a for attended transfer
+                self.attendedTransfer();
+                console.log("Attended transfer");
+                e.preventDefault();
+            } else if (matchesKey(e.which, "u")) {  // u for unattended transfer
+                self.unattendedTransfer();
+                console.log("Unattended transfer");
+                e.preventDefault();
+            }
+            return;
         }
-        
+
+
+
+        if (!shortcutsActive)
+            return;
+
         //console.log (e.which);
         //console.log (e.ctrlKey);
         //console.log (e.shiftKey);
-        if ((e.which) == 19 || (e.which) == 83){ // S 
-            if (e.shiftKey && e.ctrlKey){
-                self.showShortcuts();
-               e.preventDefault();
-           }
-        } else if ((e.which) == 4 || (e.which) == 68){  // D
-           if (e.shiftKey  && e.ctrlKey){
-                self.showKeypad();
-               e.preventDefault();
-           }
-       } else if ((e.which) == 16 || (e.which) == 80){  // P
-            if (e.shiftKey && e.ctrlKey){
-                self.doPickup();
-               e.preventDefault();
-           }
-       } else if ((e.which) == 20 || (e.which) == 84){ // T
-            if (e.shiftKey && e.ctrlKey){
-                self.doTransfer();
-               e.preventDefault();
-           }
-         } else if ((e.which) == 8 || (e.which) == 72){  // H
-                if (e.shiftKey && e.ctrlKey){
-                    self.doHangup();
-                   e.preventDefault();
-               }
-           } else if ((e.which) == 3 || (e.which) == 67){ ///C
-                if (e.shiftKey && e.ctrlKey){
-                    self.actionCalling();
-                   e.preventDefault();
-               }
-           }  else if ((e.which) == 1 || (e.which) == 65){ // A
-                if (e.shiftKey && e.ctrlKey){
-                    self.actionTransferAttended();
-                   e.preventDefault();
-               }
-           } else if ((e.which) == 21 || (e.which) == 85){  //U
-                if (e.shiftKey && e.ctrlKey){
-                   self.actionTransfer();
-                   e.preventDefault();
-               }
-           }  else if ((e.which) == 12 || (e.which) == 76){ // L
-               if (e.shiftKey && e.ctrlKey){
-                   self.logOut();
-                   e.preventDefault();
-               } 
-           }
-        
-            //console.log (e.which);
-    
+
+        if (matchesKey(e.which, "e")) {         // E - help
+            self.showShortcuts();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "d")) {  // D - dialpad
+            self.showKeypad();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "p")) {  // P - pickup
+            self.doPickup();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "h")) {  // H - hangup
+            self.doHangup();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "b")) { /// B - bel
+            self.actionCalling();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "a")) { // A - attended transfer
+            self.actionTransferAttended();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "t")) {  // t - unattended Transfer
+            self.actionTransfer();
+            e.preventDefault();
+        } else if (matchesKey(e.which, "s")) { // S - Focus zoekveld
+            $("#inputField").focus();
+            e.preventDefault();
+        }
     });
 
     var _dragged;
@@ -887,6 +915,29 @@ var ListingsViewModel = function(){
     ko.bindingHandlers.drag.options = { helper: 'clone' };
     self.showLogin();
     }
+
+/* Disable shortcuts when search-field gets focus */
+$("#inputField").focus(function() {
+    shortcutsActive = false;
+});
+
+/* Enable shortcuts when search-field loses focus */
+$("#inputField").blur(function() {
+    shortcutsActive = true;
+});
+
+/* ESC to un-focus search-field */
+$("#inputField").keydown(function (e) {
+    if (e.keyCode == 27) {
+        $("#inputField").blur();
+    }
+});
+
+$("#shortcutModal").keydown(function (e) {
+    if ((e.keyCode == 27) || (e.keyCode == 13)) {
+        listingViewModel.dismissShortcutModal();
+    }
+});
 
 var listingViewModel = new ListingsViewModel();
 ko.applyBindings(listingViewModel);

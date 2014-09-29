@@ -517,7 +517,7 @@ var ListingsViewModel = function(){
         if (logged == true) {
             return 'fa fa-check-circle';
         } else {
-            return 'fa fa-minus-circle';
+            return 'fa fa-circle';
         }                                       
     };
 
@@ -544,7 +544,8 @@ var ListingsViewModel = function(){
                 return 'red'
             } 
         } else {
-            return 'white';
+            // #a0a0a0 is a mid-grey color
+            return '#a0a0a0';
         }  
     }
     

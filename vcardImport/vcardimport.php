@@ -16,8 +16,25 @@
     $vCard = new vCard(false, $uploadedFileContents);
     foreach ($vCard as $vCardPart)
     {
-        print_r($vCardPart);
-        print_r($vCardPart -> n);
-        print_r($vCardPart -> tel);
+
+
+        //print_r($vCardPart);
+        //print_r($vCardPart -> n);
+        //print_r($vCardPart -> tel);
+
+        $names = $vCardPart -> n [0];
+        $firstName = $names[FirstName];
+        $lastName = $names[LastName];
+        echo "For " . $firstName . " " . $lastName . "\n";
+
+        foreach ($vCardPart -> tel as $number) {
+            $num = $number[Value];
+            $type = $number[Type][0];
+            print_r($type);
+            echo ":";
+            print_r($num);
+            echo "\n";
+        }
+        echo "\n";
     }
 ?>

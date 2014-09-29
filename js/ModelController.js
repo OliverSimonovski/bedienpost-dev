@@ -163,7 +163,9 @@ function connect(connectServer, connectPort) {
     getPhoneAuth(USERNAME, DOMAIN, PASS);
     listingViewModel.numericInput("");
 
-
+    conn.getCompanyId().done(function(companyId){
+        getContactListData(USERNAME, DOMAIN, PASS, companyId);
+    });
 }
 
 // Get configuration for the phone from the server.
@@ -297,13 +299,42 @@ function gotModel(newmodel) {
     model.queueListObservable.addObserver(refreshModel);
 
    closeLoginModal();
+}
 
-   addContactListData();
+function getContactListData(user, server, pass, companyId) {
+    var postObj = {};
+    postObj.username = user;
+    postObj.server = server;
+    postObj.auth = btoa(user + ":" + pass);
+    postObj.company_id = companyId;
+
+
+    console.log("Retrieving contact-list for: " + user + " " + server + " " + postObj.company_id);
+
+    $.ajax
+    ({
+        type: "POST",
+        url: "https://www.bedienpost.nl/retrieveContacts.php",
+        dataType: 'json',
+        data: postObj,
+        success: function (response){
+            //console.log(response);
+            var responseObj = response;
+            //console.log("Received Contacts");
+            //console.log(responseObj);
+            addContactListData(responseObj);
+        },
+        error: function (response) {
+            console.warn("Failure trying to receive additional contacts for company.")
+        }
+    });
 
 }
 
-function addContactListData() {
-    var contactListData = contactUsersDemoData;
+function addContactListData(contactListData) {
+    var contactListData = contactListData || contactUsersDemoData;
+
+
     for (arrayIndex in contactListData) {
         var user = contactListData[arrayIndex];
         console.log("Considering contact user: " + user.name);

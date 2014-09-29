@@ -33,7 +33,8 @@
     // Retrieve results.
     while ($statement->fetch()) {
 
-        //echo "Got: " . $id . " " . $firstname . " " . $lastname . "\n";
+        $fullname = trim($firstname . " " . $lastname);
+        //echo "Got: " . $id . " " . $fullname . "\n";
         $numbers = array();
 
         // Execute inner query.
@@ -48,7 +49,7 @@
             $numbers[] = array('name' => $numberType, 'number' => $number);
         }
 
-        $data[] = array('id' => $id, 'name' => $firstname . " " . $lastname, 'company' => $company, 'numbers' => $numbers);
+        $data[] = array('id' => $id, 'name' => $fullname, 'company' => $company, 'numbers' => $numbers);
     }
 
 

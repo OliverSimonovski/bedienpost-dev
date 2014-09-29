@@ -33,8 +33,8 @@
     foreach ($vCard as $vCardPart)
     {
         //print_r($vCardPart);
-        //print_r($vCardPart -> n);
-        //print_r($vCardPart -> tel);
+        print_r($vCardPart -> n);
+        print_r($vCardPart -> tel);
 
         $names = $vCardPart -> n [0];
         $firstName = $names[FirstName];
@@ -51,8 +51,14 @@
         //echo "Contact ID: " . $contactId;
 
         foreach ($vCardPart -> tel as $number) {
-            $num = $number[Value];
-            $type = $number[Type][0];
+
+            if (is_array($number)) {
+                $num = $number[Value];
+                $type = $number[Type][0];
+            } else {
+                $num = $number;
+                $type = "other";
+            }
 
             // Insert numbers
             $numberstatement->bind_param("sss", $contactId, $type, $num);

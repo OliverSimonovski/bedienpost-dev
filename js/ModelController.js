@@ -351,7 +351,9 @@ function addContactListData(contactListData) {
 
         // If still no default number found, just pick the first available number.
         if (!user.extension) {
-            user.extension = user.numbers[0].number;
+            if (user.numbers[0]) {
+                user.extension = user.numbers[0].number;
+            }
         }
 
         addUser(user);

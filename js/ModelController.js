@@ -326,7 +326,6 @@ function getContactListData(user, server, pass, companyId) {
         dataType: 'json',
         data: postObj,
         success: function (response){
-            //console.log(response);
             var responseObj = response;
             //console.log("Received Contacts");
             //console.log(responseObj);

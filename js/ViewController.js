@@ -374,27 +374,14 @@ var ListingsViewModel = function(){
 
         if (self.callingState() == "onhook") {
             dialing = true;
-            console.log(clickedItem.numbers());
-            if (clickedItem.numbers() && (clickedItem.numbers().length > 1)) {
-                $('#selectNumberModal').modal({
-                    keyboard: true
-                })
-            } else {
-                $('#callModal').modal({
-                    keyboard: true
-                })
-            }
+            $('#selectNumberModal').modal({
+                keyboard: true
+            })
         } else if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             transfering = true;
-            if (clickedItem.numbers() && (clickedItem.numbers().length > 1)) {
-                $('#selectNumberModal').modal({
-                    keyboard: true
-                })
-            } else {
-                $('#transferModal').modal({
-                    keyboard: true
-                })
-            }
+            $('#selectNumberModal').modal({
+                keyboard: true
+            })
         }
     }
     
@@ -440,7 +427,6 @@ var ListingsViewModel = function(){
     }
 
     self.actionSelectedContactNumber = function(item) {
-        console.log(item);
         self.clickedListItem().ext(item.number);
 
         if (dialing) {

@@ -386,11 +386,10 @@ Lisa.Connection = function() {
 	
 	/*
      * Connecting without SSL makes you vulnerable for eavesdropping and connection hijacking. 
-     * Please look up the port-number for you Compass environment in the documentation,
-     * set bosh_port to this value, and set use_ssl to true using your client.
+     * Please use a SSL / HTTPS connection.
      */
-	this.bosh_port = 5280;
-	this.use_ssl = false;
+	this.bosh_port = 443;
+	this.use_ssl = true;
 
 	this.retrieve_model = true;
 	this.log_xmpp = false;
@@ -662,7 +661,7 @@ Lisa.Connection = function() {
 	 */
 	this.getCompanyName = function() {
 		var deferred = $.Deferred();
-        modelCompleteDeferred.done(function(deferred) {
+		modelCompleteDeferred.done(function(deferred) {
 			return function() {
 				deferred.resolve(companyName);
 			};

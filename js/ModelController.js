@@ -24,6 +24,7 @@ var restUrl = "";
 var userIdToUserObservable = [];
 var queueIdToQueueObservable = [];
 var callIdToCallObservable = [];
+var userPhoneNumberToUserObservable = [];
 
 
 
@@ -375,28 +376,34 @@ function closeLoginModal() {
 function getCallInfo(call, user) {
     callInfo = {};
 
+    // Get info specific to incoming call or outgoing call, and determine whether the other party is an user on the platform.
     if ((call.sourceUser) && (call.sourceUser == user)) {
-            // Outgoing call
-            callInfo.directionIsOut = true;
-            if (call.destinationUser) {
-                callInfo.number = call.destinationUser.extension;
-                callInfo.name = call.destinationUser.name;
-            } else {
-                callInfo.name = "...";
-                callInfo.number = call.destination.find('number').text();// + " - [" + timeString + "]";
-            }
-        } else {
-            // Incoming call
-            callInfo.directionIsOut = false;
-            if (call.sourceUser) {
-                callInfo.number = call.sourceUser.extension;
-                callInfo.name = call.sourceUser.name;
-            } else {
-                callInfo.name = "...";
-                callInfo.number = call.source.find('number').text();// + " - [" + timeString + "]";
-            }
+        // Outgoing call
+        callInfo.directionIsOut = true;
+        if (call.destinationUser) {
+            callInfo.number = call.destinationUser.extension;
         }
+    } else {
+        // Incoming call
+        callInfo.directionIsOut = false;
+        if (call.sourceUser) {
+            callInfo.number = call.sourceUser.extension;
+        }
+    }
 
+    // Set name and number for the call.
+    callInfo.name = "...";
+    if (!callInfo.number) {
+        callInfo.number = call.source.find('number').text();// + " - [" + timeString + "]";
+    }
+
+    // Try to find a user with this phone-number in the list, and display its name if found.
+    var userObj = userPhoneNumberToUserObservable[callInfo.number];
+    if (userObj) {
+        callInfo.name = userObj.name();
+    }
+
+    // Set description.
     callInfo.description = (callInfo.name != "...") ? callInfo.name  : callInfo.number;
     callInfo.descriptionWithNumber = (callInfo.name != "...") ? callInfo.name + " (" + callInfo.number + ")" : callInfo.number;
     callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
@@ -410,13 +417,23 @@ function userToClientModel(user, userObj) {
     userObj.log(user.loggedIn);
     userObj.avail(numcalls == 0);
 
-    userObj.numbers(user.numbers);
+    // Handle user-numbers
+    if (user.numbers) {
+        // User from contact-list import
+        userObj.numbers(user.numbers);
+    } else {
+        // User from XMPP
+        userObj.numbers([{name: "work", number: user.extension}]);
+    }
+    //console.log("Numbers for " + userObj.name());
     //console.log(userObj.numbers());
+
+    // Handle user companies.
     if (user.numbers) {
         userObj.company(user.company);
-        console.log("Setting company for contact user to " + user.company);
+        //console.log("Setting company for contact user to " + user.company);
     } else {
-        console.log("Setting company for regular user to " + COMPANYNAME);
+        //console.log("Setting company for regular user to " + COMPANYNAME);
         userObj.company(COMPANYNAME);
     }
 
@@ -480,7 +497,13 @@ function addUser(user) {
 
     userListEntries.push(userObj);
     userIdToUserObservable[user.id] = userObj;
-    
+
+    // Store users belonging to a certain phone-number
+    for (numberKey in userObj.numbers()) {
+        var number = userObj.numbers()[numberKey].number;
+        userPhoneNumberToUserObservable[number] = userObj;
+    }
+
 }
 
 // Make-up the user entry.

@@ -645,7 +645,7 @@ Lisa.Connection = function() {
 	 */
 	this.getCompanyId = function() {
 		var deferred = $.Deferred();
-		initDeferred.done(function(deferred) {
+		modelCompleteDeferred.done(function(deferred) {
 			return function() {
 				deferred.resolve(companyId);
 			};
@@ -662,7 +662,7 @@ Lisa.Connection = function() {
 	 */
 	this.getCompanyName = function() {
 		var deferred = $.Deferred();
-		initDeferred.done(function(deferred) {
+        modelCompleteDeferred.done(function(deferred) {
 			return function() {
 				deferred.resolve(companyName);
 			};

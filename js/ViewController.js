@@ -7,7 +7,7 @@ var transfering = false;
 var clockCompensation = 0; // Compensate for a misconfigured clock.
 var contactPhoneNumberPriority = ["work", "mobile", "home"];
 
-function UserListItem(id, name, ext, log, avail, ringing) {
+function UserListItem(id, name, ext, log, avail, ringing, company) {
     _.bindAll(this, 'startCall', 'noCalls', 'setFavorite');
 
     this.id = ko.observable(id                            || 0);
@@ -16,6 +16,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
     this.log = ko.observable(log                          || false);
     this.avail = ko.observable(avail                      || false);
     this.ringing = ko.observable(ringing                  || false);
+    this.company = ko.observable(company                  || "");
 
     this.directionIsOut = ko.observable(true);
     
@@ -23,6 +24,7 @@ function UserListItem(id, name, ext, log, avail, ringing) {
     this.connectedNr = ko.observable("");
     this.callStartTime = ko.observable(0);
     this.numbers = ko.observableArray();
+
 
     var storedAsFav = isFav(id, UserListItem.storageKey());
     this.favorite = storedAsFav;
@@ -282,9 +284,11 @@ var ListingsViewModel = function(){
 
        searchParam = searchParam.toLowerCase();  
        var filteredEntries = [];
- 
+
        ko.utils.arrayForEach(list, function(entry) {
-         if ((entry.name().toLowerCase()).indexOf(searchParam) > -1) {
+
+         var entrySearchString = entry.name().toLowerCase() + (entry.company() ? " " + entry.company().toLowerCase() : "");
+         if (entrySearchString.indexOf(searchParam) > -1) {
            filteredEntries.push(entry); 
          }  
        });

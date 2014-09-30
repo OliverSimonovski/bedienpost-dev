@@ -4,6 +4,7 @@ var JID = null;
 var DOMAIN = null;
 var CONNECTSERVER = null;
 var PASS = null;
+var COMPANYNAME = null;
 
 var conn;
 var model;
@@ -153,6 +154,14 @@ function connect(connectServer, connectPort) {
         console.log("Error occured: " + reqStatus);
     }
 
+    // Setup callback for various pieces needed information
+    conn.getCompanyId().done(function(companyId){
+        getContactListData(USERNAME, DOMAIN, PASS, companyId);
+    });
+    conn.getCompanyName().done(function(companyName){
+        COMPANYNAME = companyName;
+    });
+
     // Setup callback when receiving the company model
     conn.getModel().done(gotModel);
 
@@ -163,9 +172,7 @@ function connect(connectServer, connectPort) {
     getPhoneAuth(USERNAME, DOMAIN, PASS);
     listingViewModel.numericInput("");
 
-    conn.getCompanyId().done(function(companyId){
-        getContactListData(USERNAME, DOMAIN, PASS, companyId);
-    });
+
 }
 
 // Get configuration for the phone from the server.
@@ -405,7 +412,13 @@ function userToClientModel(user, userObj) {
 
     userObj.numbers(user.numbers);
     //console.log(userObj.numbers());
-    userObj.company = user.company;
+    if (user.numbers) {
+        userObj.company(user.company);
+        console.log("Setting company for contact user to " + user.company);
+    } else {
+        console.log("Setting company for regular user to " + COMPANYNAME);
+        userObj.company(COMPANYNAME);
+    }
 
     //console.log(userObj.numbers);
 

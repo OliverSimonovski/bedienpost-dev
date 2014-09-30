@@ -7,6 +7,7 @@ module.exports = function(grunt) {
             dist: {
                     files: [
                         {src: 'index.html', dest: 'dist/public_html/index.html'},
+                        {src: 'index-https.html', dest: 'dist/private_html/index.html'},
                         {src: 'retrievePhoneAuth.php', dest: 'dist/private_html/retrievePhoneAuth.php'},
                         {src: 'retrieveContacts.php', dest: 'dist/private_html/retrieveContacts.php'},
                         {src: 'remoteStorage.php', dest: 'dist/private_html/remoteStorage.php'},
@@ -14,6 +15,8 @@ module.exports = function(grunt) {
                         {src: 'beheer/index.html', dest: 'dist/private_html/beheer/index.html'},
                         {src: 'beheer/setPhoneAuth.php', dest: 'dist/private_html/beheer/setPhoneAuth.php'},
                         {src: 'beheer/index.html', dest: 'dist/private_html/beheer/index.html'},
+                        {src: 'vcardImport/index.php', dest: 'dist/private_html/vcardImport/index.php'},
+                        {src: 'vcardImport/.htaccess', dest: 'dist/private_html/vcardImport/.htaccess'},
                         {src: 'vcardImport/vcardImport.php', dest: 'dist/private_html/vcardImport/vcardImport.php'},
                         {src: 'vcardImport/lib/vCard.php', dest: 'dist/private_html/vcardImport/lib/vCard.php'}
                     ]

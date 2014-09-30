@@ -8,10 +8,14 @@ module.exports = function(grunt) {
                     files: [
                         {src: 'index.html', dest: 'dist/public_html/index.html'},
                         {src: 'retrievePhoneAuth.php', dest: 'dist/private_html/retrievePhoneAuth.php'},
+                        {src: 'retrieveContacts.php', dest: 'dist/private_html/retrieveContacts.php'},
                         {src: 'remoteStorage.php', dest: 'dist/private_html/remoteStorage.php'},
                         {src: 'generic.php', dest: 'dist/private_html/generic.php'},
                         {src: 'beheer/index.html', dest: 'dist/private_html/beheer/index.html'},
-                        {src: 'beheer/setPhoneAuth.php', dest: 'dist/private_html/beheer/setPhoneAuth.php'}
+                        {src: 'beheer/setPhoneAuth.php', dest: 'dist/private_html/beheer/setPhoneAuth.php'},
+                        {src: 'beheer/index.html', dest: 'dist/private_html/beheer/index.html'},
+                        {src: 'vcardImport/vcardImport.php', dest: 'dist/private_html/vcardImport/vcardImport.php'},
+                        {src: 'vcardImport/lib/vCard.php', dest: 'dist/private_html/vcardImport/lib/vCard.php'}
                     ]
             }
         },

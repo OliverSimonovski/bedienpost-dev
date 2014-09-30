@@ -2,7 +2,7 @@
 
     function checkRestAuth($username, $server, $auth) {
             $restServer = str_replace("uc.", "rest.", $server);
-            $url = "https://".$restServer."/user";
+            $url = "https://".$restServer."/company";
             $authHeader = "Authorization: Basic " . $auth;
 
             $ch = curl_init();
@@ -16,6 +16,21 @@
             $result = curl_exec($ch);
 
             return $result;
+    }
+
+    function checkUser($login, $pass) {
+        $loginsplit = explode("@", $login);
+        $username = $loginsplit[0];
+        $server = null;
+
+        if ($loginsplit[1] == null) {
+            $server = "uc.pbx.speakup-telecom.com";
+        } else {
+            $server = $loginsplit[1];
+        }
+
+        $auth = base64_encode($username.":".$pass);
+        return checkRestAuth($username, $server, $auth);
     }
 
     $SQLUSER = "bedien01_main";

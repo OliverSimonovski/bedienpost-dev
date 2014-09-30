@@ -344,7 +344,7 @@ function addContactListData(contactListData) {
 
     for (arrayIndex in contactListData) {
         var user = contactListData[arrayIndex];
-        console.log("Considering contact user: " + user.name);
+        //console.log("Considering contact user: " + user.name);
 
         // Try the defined contactPhoneNumberPriority order to find the correct phone-number. This means for example that the "work" number has priority over "mobile".
         for (key in contactPhoneNumberPriority){
@@ -480,6 +480,7 @@ function refreshModel(model) {
     }
 }
 
+var userListEntriesArray = [];
 
 /* Add / Update page for users */
 function addUser(user) {
@@ -494,7 +495,8 @@ function addUser(user) {
 
     var userObj = updateUser(user);
 
-    userListEntries.push(userObj);
+
+
     userIdToUserObservable[user.id] = userObj;
 
     // Store users belonging to a certain phone-number
@@ -503,11 +505,21 @@ function addUser(user) {
         userPhoneNumberToUserObservable[number] = userObj;
     }
 
+    // We are caching results in an own (fast) javascript array, and pushing new users out to the knockout observablearray periodically for performance reasons.
+    userListEntriesArray.push(userObj);
+    var updateUserListEntries = _.debounce(updateUserListEntriesFunc, 300);
+    updateUserListEntries();
+}
+
+function updateUserListEntriesFunc() {
+    //console.log(userListEntriesArray);
+    userListEntriesArray = _.sortBy(userListEntriesArray, function(entry){ return entry.name(); });
+    userListEntries(userListEntriesArray);
 }
 
 // Make-up the user entry.
 function updateUser(user) {
-    console.log("Updating user " + user);
+    //console.log("Updating user " + user);
     var userObj = userIdToUserObservable[user.id];
     userObj = userToClientModel(user, userObj);
 
@@ -714,3 +726,4 @@ function phoneCommand(cmdString) {
     var url = "http://"+phoneUser+":"+phonePass+"@" + phoneIp + "/command.htm?key=" + cmdString;
     openUrl(url);    
 }
+

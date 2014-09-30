@@ -252,7 +252,7 @@ var ListingsViewModel = function(){
     self.loginName = ko.observable();
     self.loginPass = ko.observable();
     self.incomingCallMailTo = ko.observable();
-    self.search = ko.observable();
+    self.search = ko.observable().extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
     self.shortcutKey = ko.observable();
     self.callingState = ko.observable('onhook');
     self.authError = ko.observable(false);
@@ -277,32 +277,32 @@ var ListingsViewModel = function(){
        if (!list) {
          return null;
        }
- 
+
        if (!searchParam) {
          return list;
        }
 
+       console.log("Searching...");
+
        searchParam = searchParam.toLowerCase();  
        var filteredEntries = [];
 
-       ko.utils.arrayForEach(list, function(entry) {
-
-         var entrySearchString = entry.name().toLowerCase() + (entry.company() ? " " + entry.company().toLowerCase() : "");
-         if (entrySearchString.indexOf(searchParam) > -1) {
-           filteredEntries.push(entry); 
-         }  
-       });
+       for (entryKey in list) {
+           var entry = list[entryKey];
+           var company = entry.company();
+           var entrySearchString = entry.name().toLowerCase() + (company ? " " + company.toLowerCase() : "");
+           if (entrySearchString.indexOf(searchParam) > -1) {
+               filteredEntries.push(entry);
+           }
+       }
  
        return filteredEntries;
      }
- 
 
-    self.filteredItems = ko.computed(function() 
+
+    self.filteredItems = ko.computed(function()
     {
         if (self.currentList()){
-            // Sort the current list
-            self.currentList().entries.sort(nameComparator);
-
             var searchParam = self.search();
             var result = filterListByName(self.currentList().entries(), searchParam);
             return result;
@@ -776,7 +776,7 @@ var ListingsViewModel = function(){
         self.waitingQueueList( xmppWaitingQueueList[0] );
         self.incomingCallList( xmppIncomingCallList[0] );
     }
-    
+
     $( "#loginModal" ).keypress(function(e)
     {
         if ((e.which) == 13){

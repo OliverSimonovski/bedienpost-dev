@@ -271,6 +271,12 @@ body {
     z-index:2;
 }
 
+.btn-call
+{
+    display: block;
+    margin-bottom: 5px;
+}
+
 .btn-pickup
 {
     background-color: #428bca;

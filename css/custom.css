@@ -24,8 +24,3 @@
         float: right;
     }
 }
-
-/* Contact list */
-.list li .status {
-    background-color: transparent !important;
-}

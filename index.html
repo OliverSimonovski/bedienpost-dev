@@ -172,7 +172,7 @@
                 <div class='col-md-6' data-bind="drop: unmarkUserFavorite">
                         <div class="header">
 
-                            <h4>Gebruikers</h4>
+                            <h4>Contacten</h4>
                         </div>
                     <div class="list-group list">
 
@@ -211,24 +211,20 @@
 
     <!-- Modal -->
     <div class="modal fade" id="selectNumberModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
+        <div class="modal-dialog modal-bg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissSelectNumberModal">&times;</button>
-                    <center><h4 class="modal-title" id="myModalLabel"><span data-bind="text: 'Welk nummer van ' + $root.clickedListItemName()"></span>?</h4></center>
-                    <div data-bind="text: clickedListItem() ? clickedListItem().company : ''"></div>
+                    <h4 class="modal-title" id="myModalLabel"><span data-bind="text: 'Welk nummer van ' + $root.clickedListItemName()"></span>?</h4>
+                    <h5 data-bind="text: clickedListItem() ? clickedListItem().company : ''"></h5>
                 </div>
                 <div class="modal-body call">
-                    <div class="text-center">
-
 
                         <div data-bind="foreach: { data:  $root.clickedListItemPhoneNumbers, as: 'item' }">
-                            <p>
-                                <center><button class="btn btn-primary" aria-hidden="true" type="button" data-bind="text: $root.clickedListItemPhoneNumbers().indexOf(item) + ': ' + item.name + ': ' + item.number, click: $root.actionSelectedContactNumber"></button></center>
-                            </p>
-                         </div>
+                            <button class="btn btn-primary btn-call" aria-hidden="true" type="button" data-bind="text: $root.clickedListItemPhoneNumbers().indexOf(item) + ': ' + item.name + ': ' + item.number, click: $root.actionSelectedContactNumber"></button>
+                        </div>
                         <!--<center><button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionCalling, valueUpdate: 'afterkeydown'"><u>B</u>el</button></center> -->
-                    </div>
+
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

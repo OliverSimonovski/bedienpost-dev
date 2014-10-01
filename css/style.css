@@ -271,6 +271,12 @@ body {
     z-index:2;
 }
 
+.btn-call
+{
+    display: block;
+    margin-bottom: 5px;
+}
+
 .btn-pickup
 {
     background-color: #428bca;
@@ -324,7 +330,7 @@ body {
 .fa
 {
     font-size: 20px;
-    margin-top:2px;
+    margin-top: 0px;
     display: inline-block;
     font-family: FontAwesome;
     font-style: normal;
@@ -418,6 +424,11 @@ body {
     margin-right: 6px;
     font-size: 20px;
     margin-top:0px;
+}
+
+.fa-male
+{
+    padding: 0 3px;
 }
 
 .fa-th

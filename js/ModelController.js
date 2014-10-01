@@ -397,7 +397,8 @@ function getCallInfo(call, user) {
     }
 
     // Try to find a user with this phone-number in the list, and display its name if found.
-    var userObj = userPhoneNumberToUserObservable[callInfo.number];
+    var lastSevenNumbers = callInfo.number.substr(-7);
+    var userObj = userPhoneNumberToUserObservable[lastSevenNumbers];
     if (userObj) {
         callInfo.name = userObj.name();
     }
@@ -505,7 +506,8 @@ function addUser(user) {
     for (numberKey in userObj.numbers()) {
         var number = userObj.numbers()[numberKey].number;
         if ((number != null) && (number != "")) {
-            userPhoneNumberToUserObservable[number] = userObj;
+            var lastSevenNumbers = number.substr(-7);
+            userPhoneNumberToUserObservable[lastSevenNumbers] = userObj;
         }
     }
 

@@ -504,7 +504,9 @@ function addUser(user) {
     // Store users belonging to a certain phone-number
     for (numberKey in userObj.numbers()) {
         var number = userObj.numbers()[numberKey].number;
-        userPhoneNumberToUserObservable[number] = userObj;
+        if ((number != null) && (number != "")) {
+            userPhoneNumberToUserObservable[number] = userObj;
+        }
     }
 
     // We are caching results in an own (fast) javascript array, and pushing new users out to the knockout observablearray periodically for performance reasons.

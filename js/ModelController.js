@@ -414,12 +414,14 @@ function userToClientModel(user, userObj) {
     var numcalls = _.size(user.calls);
     var userObj = userObj || new UserListItem(+user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
     userObj.log(user.loggedIn);
+
     userObj.avail(numcalls == 0);
 
     // Handle user-numbers
     if (user.numbers) {
         // User from contact-list import
         userObj.numbers(user.numbers);
+        userObj.amImportedContact(true);
     } else {
         // User from XMPP
         userObj.numbers([{name: "work", number: user.extension}]);

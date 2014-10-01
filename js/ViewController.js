@@ -23,7 +23,9 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
     this.connectedName = ko.observable("");
     this.connectedNr = ko.observable("");
     this.callStartTime = ko.observable(0);
+    this.amImportedContact = ko.observable(false);
     this.numbers = ko.observableArray();
+
 
 
     var storedAsFav = isFav(id, UserListItem.storageKey());
@@ -567,10 +569,12 @@ var ListingsViewModel = function(){
         }
     }
 
-    self.logCssClass = function(logged)
+    self.logCssClass = function(entry)
     {
-        if (logged == true) {
+        if (entry.log() == true) {
             return 'fa fa-check-circle';
+        } else if (entry.amImportedContact()) {
+            return 'fa fa-male';
         } else {
             return 'fa fa-circle';
         }                                       

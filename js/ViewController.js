@@ -4,6 +4,7 @@ var shortcutsActive = false;
 var keypadActive = false;
 var dialing = false;
 var transfering = false;
+var selectingNumber = false;
 var clockCompensation = 0; // Compensate for a misconfigured clock.
 var contactPhoneNumberPriority = ["work", "mobile", "home"];
 
@@ -376,11 +377,13 @@ var ListingsViewModel = function(){
 
         if (self.callingState() == "onhook") {
             dialing = true;
+            selectingNumber = true;
             $('#selectNumberModal').modal({
                 keyboard: true
             })
         } else if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             transfering = true;
+            selectingNumber = true;
             $('#selectNumberModal').modal({
                 keyboard: true
             })
@@ -429,6 +432,7 @@ var ListingsViewModel = function(){
     }
 
     self.actionSelectedContactNumber = function(item) {
+        selectingNumber = false;
         self.clickedListItem().ext(item.number);
 
         if (dialing) {
@@ -849,7 +853,10 @@ var ListingsViewModel = function(){
             if ((key >= 48) && (key <= 57 )) {
                 var shortcutKey = (e.which % 48);
 
-                if (list[shortcutKey] != null) {
+                if (selectingNumber) {
+                    var itemToClick = self.clickedListItemPhoneNumbers()[shortcutKey];
+                    self.actionSelectedContactNumber(itemToClick);
+                } else  if (list[shortcutKey] != null) {
                     var itemToClick = self.filteredItems()[shortcutKey];
                     self.clickItem(list[shortcutKey]);
                 }

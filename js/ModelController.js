@@ -397,7 +397,8 @@ function getCallInfo(call, user) {
     }
 
     // Try to find a user with this phone-number in the list, and display its name if found.
-    var userObj = userPhoneNumberToUserObservable[callInfo.number];
+    var lastSevenNumbers = callInfo.number.substr(-7);
+    var userObj = userPhoneNumberToUserObservable[lastSevenNumbers];
     if (userObj) {
         callInfo.name = userObj.name();
     }
@@ -504,7 +505,10 @@ function addUser(user) {
     // Store users belonging to a certain phone-number
     for (numberKey in userObj.numbers()) {
         var number = userObj.numbers()[numberKey].number;
-        userPhoneNumberToUserObservable[number] = userObj;
+        if ((number != null) && (number != "")) {
+            var lastSevenNumbers = number.substr(-7);
+            userPhoneNumberToUserObservable[lastSevenNumbers] = userObj;
+        }
     }
 
     // We are caching results in an own (fast) javascript array, and pushing new users out to the knockout observablearray periodically for performance reasons.

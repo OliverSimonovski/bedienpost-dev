@@ -7,6 +7,7 @@ module.exports = function(grunt) {
             dist: {
                     files: [
                         {src: 'index.html', dest: 'dist/public_html/index.html'},
+                        {src: 'img/logo.png', dest: 'dist/public_html/img/logo.png'},
                         {src: 'index-https.html', dest: 'dist/private_html/index.html'},
                         {src: 'retrievePhoneAuth.php', dest: 'dist/private_html/retrievePhoneAuth.php'},
                         {src: 'retrieveContacts.php', dest: 'dist/private_html/retrieveContacts.php'},

@@ -271,10 +271,17 @@ body {
     z-index:2;
 }
 
+.selectnumber button + h5 {
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
 .btn-call
 {
     display: block;
     margin-bottom: 5px;
+    width: 100%;
+    text-align: left;
 }
 
 .btn-pickup

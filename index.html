@@ -211,11 +211,12 @@
 
     <!-- Modal -->
     <div class="modal fade" id="selectNumberModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-bg">
+        <div class="modal-dialog modal-sm">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header selectnumber">
                     <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissSelectNumberModal">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel"><span data-bind="text: 'Welk nummer van ' + $root.clickedListItemName()"></span>?</h4>
+                    <h5>Welk nummer van</h5>
+                    <h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.clickedListItemName()"></span>?</h4>
                     <h5 data-bind="text: clickedListItem() ? clickedListItem().company : ''"></h5>
                 </div>
                 <div class="modal-body call">

@@ -49,8 +49,14 @@
 
         $contactCount = 0;
         $numberCount = 0;
+
         foreach ($vCard as $vCardPart)
         {
+            if (count($vCard) == 1) {
+                $vCardPart = $vCard;
+            }
+
+
             //print_r($vCardPart);
             //print_r($vCardPart -> n);
             //print_r($vCardPart -> tel);
@@ -93,6 +99,10 @@
                 */
             }
             //echo "\n";
+
+            if (count($vCard) == 1) {
+                break;
+            }
         }
 
         // Commit

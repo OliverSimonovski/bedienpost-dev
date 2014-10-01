@@ -603,8 +603,8 @@ var ListingsViewModel = function(){
                 return 'red'
             } 
         } else {
-            // #a0a0a0 is a mid-grey color
-            return '#a0a0a0';
+            // #c0c0c0 is a mid-grey color
+            return '#c0c0c0';
         }  
     }
     

@@ -375,19 +375,21 @@ var ListingsViewModel = function(){
         var name = clickedItem.name();
         self.clickedListItemName(name);
 
-        if (self.callingState() == "onhook") {
-            dialing = true;
-            selectingNumber = true;
-            $('#selectNumberModal').modal({
-                keyboard: true
-            })
-        } else if ((phoneIp != "") && listingViewModel.connectedPhone()) {
+        if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             transfering = true;
             selectingNumber = true;
             $('#selectNumberModal').modal({
                 keyboard: true
             })
+        } else {
+            dialing = true;
+            selectingNumber = true;
+            $('#selectNumberModal').modal({
+                keyboard: true
+            })
         }
+
+
     }
     
     self.mailTo = function(incomingCall)
@@ -573,14 +575,22 @@ var ListingsViewModel = function(){
         }
     }
 
-    self.logCssClass = function(entry)
+    self.userCssClass = function(entry)
     {
         if (entry.log() == true) {
-            return 'fa fa-check-circle';
+            var cssClass = 'fa fa-check-circle';
+            if (entry.avail()) {
+                cssClass += " contact-available";
+            } else if (entry.ringing()) {
+                cssClass += " contact-ringing";
+            } else {
+                cssClass += " contact-on-phone";
+            }
+            return cssClass;
         } else if (entry.amImportedContact()) {
-            return 'fa fa-male';
+            return 'fa fa-male contact-imported';
         } else {
-            return 'fa fa-circle';
+            return 'fa fa-circle contact-logged-out';
         }                                       
     };
 
@@ -594,22 +604,6 @@ var ListingsViewModel = function(){
           return '';
         }
 
-    }
-    
-    self.colorClass = function(avail, logged, ringing)
-    {
-        if (logged == true) {
-            if (avail == true){
-                 return 'green';
-            } else if(ringing == true) {
-                return 'orange';
-            } else {
-                return 'red'
-            } 
-        } else {
-            // #c0c0c0 is a mid-grey color
-            return '#c0c0c0';
-        }  
     }
     
     self.actionStateCssClass = function( current )

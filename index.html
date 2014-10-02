@@ -146,8 +146,7 @@
                                     </div>
                                     <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                         <div class="status">
-                                         <i data-bind=      "attr: { class: $root.logCssClass(entry)  },
-                                                            style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
+                                         <i data-bind="attr: { class: $root.userCssClass(entry)  }"></i>
                                         </div>
                                          <div class="fixed-height">
                                             <div class="first-label" data-bind="text: entry.name"></div>
@@ -183,8 +182,7 @@
                                 </div>
                                  <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                     <div class="status">
-                                        <i data-bind=      "attr: { class: $root.logCssClass(entry)  },
-                                                            style: { color: $root.colorClass(entry.avail(), entry.log(), entry.ringing()) }"></i>
+                                        <i data-bind=      "attr: { class: $root.userCssClass(entry)}"></i>
                                     </div>
                                     <div class="fixed-height">
                                          <div class="first-label" data-bind="text: entry.name"></div>

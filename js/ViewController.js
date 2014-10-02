@@ -477,7 +477,6 @@ var ListingsViewModel = function(){
 
     self.dismissModal = function(modalToDismiss, focusInputField) {
         modalToDismiss.modal('hide');
-        self.clickedListItem(null);
         dialing = false;
         transfering = false;
     }
@@ -485,6 +484,7 @@ var ListingsViewModel = function(){
     self.dismissTransferModal = function()
     {
         self.dismissModal($('#transferModal'));
+        self.clickedListItem(null);
     }
     
     self.showTransferEndModal = function()
@@ -495,11 +495,13 @@ var ListingsViewModel = function(){
     self.dismissEndTransferModal = function()
     {
         self.dismissModal($('#transferEndModal'));
+        self.clickedListItem(null);
     }
     
      self.dismissCallModal = function()
     {
         self.dismissModal($('#callModal'));
+        self.clickedListItem(null);
     }
 
     self.dismissSelectNumberModal = function() {
@@ -512,6 +514,7 @@ var ListingsViewModel = function(){
     {
         shortcutsActive = true;
         self.dismissModal($('#loginModal'));
+        self.clickedListItem(null);
     }
     
      self.dismissKeypadModal = function()
@@ -519,11 +522,13 @@ var ListingsViewModel = function(){
         shortcutsActive = true;
         keypadActive = false;
         self.dismissModal($('#keypadModal'));
+        self.clickedListItem(null);
     }
      
     self.dismissShortcutModal = function()
     {
         self.dismissModal($('#shortcutModal'));
+        self.clickedListItem(null);
     }
     
     self.doPickup = function()

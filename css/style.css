@@ -334,6 +334,31 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+.contact-available
+{
+    color: green;
+}
+
+.contact-ringing
+{
+    color: orange;
+}
+
+.contact-on-phone
+{
+    color: red;
+}
+
+.contact-imported
+{
+    color: white;
+}
+
+.contact-logged-out
+{
+    color: white;
+}
+
 .fa
 {
     font-size: 20px;

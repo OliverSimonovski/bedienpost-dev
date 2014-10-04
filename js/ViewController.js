@@ -375,6 +375,15 @@ var ListingsViewModel = function(){
         var name = clickedItem.name();
         self.clickedListItemName(name);
 
+        if (self.callingState() == "onhook") {
+            dialing = true;
+            selectingNumber = true;
+            $('#selectNumberModal').modal({
+                keyboard: true
+            })
+            return;
+        }
+
         if ((phoneIp != "") && listingViewModel.connectedPhone()) {
             transfering = true;
             selectingNumber = true;

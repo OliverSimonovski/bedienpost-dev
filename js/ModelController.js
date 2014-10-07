@@ -697,7 +697,7 @@ function attendedtransferToUser(number) {
 }
 
 function finishAttendedTransfer() {
-    phoneCommand("TRANSFER");    
+    phoneCommand("TRANSFER;CANCEL");
 }
 
 function cancelAttendedTransfer() {

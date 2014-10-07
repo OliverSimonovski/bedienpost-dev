@@ -658,11 +658,11 @@ function transferToUser(number) {
     }
 
     // Work-around for current bug in Compass platform. Every transfer is an attended transfer.
-    attendedtransferToUser(number);
-    _.delay(finishAttendedTransfer, 2000);
+    /*attendedtransferToUser(number);
+    _.delay(finishAttendedTransfer, 2000);*/
 
     // Prev method: 'real' unattended transfer.
-    /*var url = "TRANSFER;";
+    var url = "TRANSFER;";
 
     var extension = number;
     for ( var i = 0; i < extension.length; i++ ) {
@@ -670,7 +670,7 @@ function transferToUser(number) {
     }
     url += "ENTER";
 
-    phoneCommand(url);*/
+    phoneCommand(url);
 }
 
 function attendedtransferToUser(number) {

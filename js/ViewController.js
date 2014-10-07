@@ -465,7 +465,12 @@ var ListingsViewModel = function(){
     {
         transfering = false;
         var toCall = self.clickedListItem().ext().split(",")[0];
-        transferToUser(toCall);
+        if (self.callingState() == "ringing") {
+            transferToUser(toCall);
+        } else {
+            attendedtransferToUser(toCall);
+            _.delay(finishAttendedTransfer, 2000);
+        }
         self.dismissTransferModal();
     }
 
@@ -703,7 +708,12 @@ var ListingsViewModel = function(){
     {
         self.callingState("transfer");
         var number = self.numericInput().replace(/\D/g,'');
-        attendedtransferToUser(number);
+
+        if (self.callingState() == "ringing") {
+            transferToUser(number);
+        } else {
+            attendedtransferToUser(number);
+        }
         self.dismissKeypadModal();
         self.showTransferEndModal();
     }
@@ -711,7 +721,12 @@ var ListingsViewModel = function(){
     self.unattendedTransfer = function()
     {
         var number = self.numericInput().replace(/\D/g,'');
-        transferToUser(number);
+        if (self.callingState() == "ringing") {
+            transferToUser(number);
+        } else {
+            attendedtransferToUser(number);
+            _.delay(finishAttendedTransfer, 2000);
+        }
         self.dismissKeypadModal();
     }
     

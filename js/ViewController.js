@@ -469,7 +469,7 @@ var ListingsViewModel = function(){
             transferToUser(toCall);
         } else {
             attendedtransferToUser(toCall);
-            _.delay(finishAttendedTransfer, 2000);
+            _.delay(finishAttendedTransfer, 4000);
         }
         self.dismissTransferModal();
     }

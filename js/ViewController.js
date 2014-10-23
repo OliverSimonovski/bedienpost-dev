@@ -725,7 +725,7 @@ var ListingsViewModel = function(){
             transferToUser(number);
         } else {
             attendedtransferToUser(number);
-            _.delay(finishAttendedTransfer, 2000);
+            _.delay(finishAttendedTransfer, 4000);
         }
         self.dismissKeypadModal();
     }

@@ -167,13 +167,13 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
     this.descriptionWithNumber = ko.observable(descriptionWithNumber || "");
 
     /* We use the destroy-property to hide calls that have lasted less than 2 seconds */
+    // Hacky solution for hunkemoller
     this._destroy = ko.computed(function() {
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart) - clockCompensation; // duration in milliseconds
 
 
-        var visible = (duration > 2000);
-        console.log("call visible: " + visible);
+        var visible = (duration > 1500);
         return !visible;
     }, this);
 
@@ -208,16 +208,25 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 }
 
 CallListItem.prototype.stopCall = function() {
-    this.callStartTime(0);
+
     this.finished(true);
-    _.delay(
-        function(self) {
-            return function() {
-                if (self.finished())
-                    incomingCallEntries.remove(self);
-            }
-        }(this)
-    , 10000);
+
+    // Hacky solution for hunkemoller
+    var callStart = moment.utc(this.callStartTime() * 1000.);
+    var duration = (currentTime() - callStart) - clockCompensation; // duration in milliseconds
+    if (duration < 1500) {
+        incomingCallEntries.remove(this);
+    } else {
+        this.callStartTime(0);
+        _.delay(
+            function (self) {
+                return function () {
+                    if (self.finished())
+                        incomingCallEntries.remove(self);
+                }
+            }(this)
+            , 10000);
+    }
 }
 
 
@@ -479,8 +488,8 @@ var ListingsViewModel = function(){
         if (self.callingState() == "ringing") {
             transferToUser(toCall);
         } else {
-            attendedtransferToUser(toCall);
-            _.delay(finishAttendedTransfer, 4000);
+            attendedTransferToUserWithAutoFinish(toCall);
+            _.delay(finishAttendedTransfer, 5000);
         }
         self.dismissTransferModal();
     }
@@ -735,8 +744,8 @@ var ListingsViewModel = function(){
         if (self.callingState() == "ringing") {
             transferToUser(number);
         } else {
-            attendedtransferToUser(number);
-            _.delay(finishAttendedTransfer, 4000);
+            attendedTransferToUserWithAutoFinish(number);
+            _.delay(finishAttendedTransfer, 5000);
         }
         self.dismissKeypadModal();
     }

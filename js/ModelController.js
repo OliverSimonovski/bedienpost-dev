@@ -25,6 +25,7 @@ var userIdToUserObservable = [];
 var queueIdToQueueObservable = [];
 var callIdToCallObservable = [];
 var userPhoneNumberToUserObservable = [];
+var pendingAttendedTransfer = null;
 
 
 
@@ -673,6 +674,11 @@ function transferToUser(number) {
     phoneCommand(url);
 }
 
+function attendedTransferToUserWithAutoFinish(number) {
+    pendingAttendedTransfer = number;
+    return attendedtransferToUser(number);
+}
+
 function attendedtransferToUser(number) {
      if (phoneIp == "") {
         return;
@@ -697,6 +703,7 @@ function attendedtransferToUser(number) {
 }
 
 function finishAttendedTransfer() {
+    pendingAttendedTransfer = null;
     phoneCommand("TRANSFER;CANCEL");
 }
 

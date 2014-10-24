@@ -166,6 +166,17 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
     this.finished = ko.observable(false);
     this.descriptionWithNumber = ko.observable(descriptionWithNumber || "");
 
+    /* We use the destroy-property to hide calls that have lasted less than 2 seconds */
+    this._destroy = ko.computed(function() {
+        var callStart = moment.utc(this.callStartTime() * 1000.);
+        var duration = (currentTime() - callStart) - clockCompensation; // duration in milliseconds
+
+
+        var visible = (duration > 2000);
+        console.log("call visible: " + visible);
+        return !visible;
+    }, this);
+
     this.timeConnected = ko.computed(function() 
     {
         if (this.callStartTime() == 0) {

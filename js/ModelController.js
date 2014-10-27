@@ -397,6 +397,15 @@ function getCallInfo(call, user) {
         callInfo.number = call.source.find('number').text();// + " - [" + timeString + "]";
     }
 
+    /*
+     * After using attendedTransferToUserWithAutoFinish, automatically finalize  if the call is answered.
+     */
+    //console.log("actual callInfo.number: " + callInfo.number);
+    //console.log("finalize transfer if callInfo.number is: " + pendingAttendedTransfer);
+    if ((callInfo.number == pendingAttendedTransfer)) {
+        finishAttendedTransfer();
+    }
+
     // Try to find a user with this phone-number in the list, and display its name if found.
     var lastSevenNumbers = callInfo.number.substr(-7);
     var userObj = userPhoneNumberToUserObservable[lastSevenNumbers];
@@ -708,6 +717,7 @@ function finishAttendedTransfer() {
 }
 
 function cancelAttendedTransfer() {
+    pendingAttendedTransfer = null;
     phoneCommand("CANCEL");
     _.delay(function() {
         phoneCommand("ENTER");

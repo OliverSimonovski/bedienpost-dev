@@ -396,6 +396,9 @@ function getCallInfo(call, user) {
     if (!callInfo.number) {
         callInfo.number = call.source.find('number').text();// + " - [" + timeString + "]";
     }
+    if (!callInfo.number) {
+        callInfo.number = call.destination.find('number').text();// + " - [" + timeString + "]";
+    }
 
     /*
      * After using attendedTransferToUserWithAutoFinish, automatically finalize  if the call is answered.
@@ -403,6 +406,7 @@ function getCallInfo(call, user) {
     //console.log("actual callInfo.number: " + callInfo.number);
     //console.log("finalize transfer if callInfo.number is: " + pendingAttendedTransfer);
     //console.log(call);
+
     if ((callInfo.number == pendingAttendedTransfer) && (call.state == "ANSWERED") && ((call.sourceUser == user))) {
         finishAttendedTransfer();
     }

@@ -173,7 +173,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
         var duration = (currentTime() - callStart) - clockCompensation; // duration in milliseconds
 
 
-        var visible = (duration > 1500);
+        var visible = ((duration > 1500) || (incomingCallEntries().length == 0));
         return !visible;
     }, this);
 

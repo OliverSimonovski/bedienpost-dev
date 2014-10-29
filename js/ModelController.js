@@ -555,6 +555,7 @@ function updateUser(user) {
 
             var callInfo = getCallInfo(call, user);
             var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut, callInfo.descriptionWithNumber);
+            callObj.originalCallModel = call;
             newIncomingCallEntries.push(callObj);
         }
         mergeCallEntriesList(newIncomingCallEntries);
@@ -625,6 +626,7 @@ function mergeCallEntriesList(newEntries) {
             oldEntry.directionIsOut(newEntry.directionIsOut());
             oldEntry.descriptionWithNumber(newEntry.descriptionWithNumber());
             oldEntry.finished(false);
+            oldEntry.originalCallModel = newEntry.originalCallModel;
         } else {
             console.log("Adding call " + newEntry.id() );
             callIdToCallObservable[newEntry.id()] = newEntry;

@@ -174,6 +174,7 @@ Lisa.Call = function() {
 	this.destination = null;
 	this.destinationUser = null;
 	this.observable = new Lisa.Observable();
+    this.queueCallForCall = null;
 
 	this.toString = function() {
 		return "(Call:" + this.id + ",f:" + this.source + ",t:"
@@ -1294,6 +1295,11 @@ Lisa.Connection = function() {
 		callModel.destination = dst;
 
         callModel.state = call.find('state').text();
+
+        var queueCallElement = call.find('properties').find('QueueCallForCall');
+        if (queueCallElement) {
+            callModel.queueCallForCall = queueCallElement.text();
+        }
 
 		return callModel;
 	}

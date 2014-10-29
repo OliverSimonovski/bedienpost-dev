@@ -172,8 +172,10 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart) - clockCompensation; // duration in milliseconds
 
+        var longEnough = ((duration > 1500));
+        var firstCall = (_.size(model.users[Lisa.Connection.myUserId].calls) == 1);
+        var visible = ((firstCall) || (longEnough));
 
-        var visible = ((duration > 1500) || (incomingCallEntries().length == 0));
         return !visible;
     }, this);
 
@@ -211,10 +213,8 @@ CallListItem.prototype.stopCall = function() {
 
     this.finished(true);
 
-    // Hacky solution for hunkemoller
-    var callStart = moment.utc(this.callStartTime() * 1000.);
-    var duration = (currentTime() - callStart) - clockCompensation; // duration in milliseconds
-    if (duration < 1500) {
+    // Don't show 'finished' for queue-calls.
+    if ((this.originalCallModel.queueCallForCall != null) && (this.originalCallModel.queueCallForCall != "")) { // Is this a queue-call?
         incomingCallEntries.remove(this);
     } else {
         this.callStartTime(0);

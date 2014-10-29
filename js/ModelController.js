@@ -719,11 +719,13 @@ function attendedtransferToUser(number) {
 function finishAttendedTransfer() {
     pendingAttendedTransfer = null;
     phoneCommand("TRANSFER;CANCEL");
+    listingViewModel.search("");
 }
 
 function cancelAttendedTransfer() {
     pendingAttendedTransfer = null;
     phoneCommand("CANCEL");
+    listingViewModel.search("");
     _.delay(function() {
         phoneCommand("ENTER");
     }, 500);

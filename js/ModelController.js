@@ -171,7 +171,7 @@ function connect(connectServer, connectPort) {
 
     conn.connect(CONNECTSERVER, JID, PASS);
     
-    getPhoneAuth(USERNAME, DOMAIN, PASS);
+//    getPhoneAuth(USERNAME, DOMAIN, PASS);
     listingViewModel.numericInput("");
 
 
@@ -216,6 +216,81 @@ function getPhoneAuth(user, server, pass) {
         }
     });    
 }
+
+function getPhoneAuthFromCompass(user, server, pass) {
+
+    var data = {};
+    var method = "GET";
+
+
+    var restCompanyUrl = "https://" + Lisa.Connection.restServer + "/company";
+    // Retrieve company-info to retrieve company shortname which is used as phone username
+    var companyReceived = function(response) {
+        //console.log(response);
+        phoneUser = response.shortname;
+    }
+
+    $.ajax
+    ({
+        type: method || "POST",
+        headers: {
+            "Authorization": Lisa.Connection.restAuthHeader,
+            "X-No-Redirect": true
+        },
+        url: restCompanyUrl,
+        dataType: 'json',
+        data: JSON.stringify(data),
+        success: companyReceived
+    });
+
+
+    // After user-status is received, retrieve the phone-info.
+    var statusReceived = function(response) {
+        //console.log(response.phone);
+        var url = response.phone;
+        var phoneUrlReceived = function(response) {
+            //console.log(response);
+            phonePass = response.resourceId;
+            phoneIp = response.NATIP;
+            console.log("phone user: " + phoneUser + " pass: " + phonePass + " ip: " + phoneIp);
+
+            listingViewModel.connectedPhone(false);
+            checkSnomConnected();
+            setInterval(checkSnomConnected, 300000); // re-check every five minutes.
+
+        }
+        $.ajax
+        ({
+            type: method || "POST",
+            headers: {
+                "Authorization": Lisa.Connection.restAuthHeader,
+                "X-No-Redirect": true
+            },
+            url: url,
+            dataType: 'json',
+            data: JSON.stringify(data),
+            success: phoneUrlReceived
+        });
+    }
+
+    // Retrieve user-status to receive phone url that we can use to read the phone-ip on the LAN.
+    var url = Lisa.Connection.restUserUrl + "/status";
+    $.ajax
+    ({
+        type: method || "POST",
+        headers: {
+            "Authorization": Lisa.Connection.restAuthHeader,
+            "X-No-Redirect": true
+        },
+        url: url,
+        dataType: 'json',
+        data: JSON.stringify(data),
+        success: statusReceived
+    });
+
+}
+
+
 
 // Bit of a hack to allow Chrome to logon to the phone automatically.
 function chromeLoginPhone() {
@@ -287,6 +362,9 @@ function logout() {
 }
 
 function gotModel(newmodel) {
+
+    getPhoneAuthFromCompass(USERNAME, DOMAIN, PASS);
+
     // Show interface
     loggedIn = true;
     reconnecting = 0;

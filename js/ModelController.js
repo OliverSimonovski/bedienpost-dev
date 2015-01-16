@@ -177,8 +177,27 @@ function connect(connectServer, connectPort) {
 
 }
 
-// Get configuration for the phone from the server.
+/*
+ * At first, try to get the phone-auth information from Compass.
+ *
+ * If hasn' worked after 10 seconds, try the 'old' method of retrieving phone-auth information from the
+ * DB at the Bedienpost server.
+ */
 function getPhoneAuth(user, server, pass) {
+    // Try to retieve auth-information from Compass
+    getPhoneAuthFromCompass(user, server, pass);
+
+    _.delay(function(user, server, pass){
+        // The previous attempt wasn't fruitful. try to retrieve auth-information from the bedienpost server.
+        if (phoneIp == "") {
+            console.log("Wasn't able to retrieve phone-auth information from Compass. Trying our own server.")
+            getPhoneAuthFromBedienpostServer(user,server,pass);
+        }
+    }, 10000, user, server, pass);
+}
+
+// Get configuration for the phone from the server.
+function getPhoneAuthFromBedienpostServer(user, server, pass) {
 
     var postObj = {};
     postObj.username = user;
@@ -253,6 +272,9 @@ function getPhoneAuthFromCompass(user, server, pass) {
             phonePass = response.resourceId;
             phoneIp = response.NATIP;
             console.log("phone user: " + phoneUser + " pass: " + phonePass + " ip: " + phoneIp);
+            if (navigator.userAgent.indexOf("Chrome") != -1) {
+                chromeLoginPhone();
+            }
 
             listingViewModel.connectedPhone(false);
             checkSnomConnected();
@@ -363,7 +385,7 @@ function logout() {
 
 function gotModel(newmodel) {
 
-    getPhoneAuthFromCompass(USERNAME, DOMAIN, PASS);
+    getPhoneAuth(USERNAME, DOMAIN, PASS);
 
     // Show interface
     loggedIn = true;

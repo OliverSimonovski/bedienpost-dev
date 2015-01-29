@@ -226,6 +226,7 @@ function getPhoneAuthFromBedienpostServer(user, server, pass) {
             }
 
             // Check whether the phone is reachable.
+            listingViewModel.phoneIp(phoneIp);
             listingViewModel.connectedPhone(false);
             checkSnomConnected();
             setInterval(checkSnomConnected, 300000); // re-check every five minutes.
@@ -270,12 +271,18 @@ function getPhoneAuthFromCompass(user, server, pass) {
         var phoneUrlReceived = function(response) {
             //console.log(response);
             phonePass = response.resourceId;
-            phoneIp = response.NATIP;
+            var ip = response.pubIP;
+            if (ip) {
+                phoneIp = ip.split(":")[0];
+            }
+            //phoneIp = response.pubIP;
+            console.log(response);
             console.log("phone user: " + phoneUser + " pass: " + phonePass + " ip: " + phoneIp);
             if (navigator.userAgent.indexOf("Chrome") != -1) {
                 chromeLoginPhone();
             }
 
+            listingViewModel.phoneIp(phoneIp);
             listingViewModel.connectedPhone(false);
             checkSnomConnected();
             setInterval(checkSnomConnected, 300000); // re-check every five minutes.
@@ -337,7 +344,6 @@ function checkSnomConnected() {
         listingViewModel.connectedPhone(false);
     };
     logoImage.src = url;
-
 }
 
 function connectionStatusCallback(status) {

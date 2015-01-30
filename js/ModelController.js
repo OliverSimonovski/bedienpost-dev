@@ -187,13 +187,13 @@ function getPhoneAuth(user, server, pass) {
     // Try to retieve auth-information from Compass
     getPhoneAuthFromCompass(user, server, pass);
 
-    _.delay(function(user, server, pass){
+    /*_.delay(function(user, server, pass){
         // The previous attempt wasn't fruitful. try to retrieve auth-information from the bedienpost server.
         if (phoneIp == "") {
             console.log("Wasn't able to retrieve phone-auth information from Compass. Trying our own server.")
             getPhoneAuthFromBedienpostServer(user,server,pass);
         }
-    }, 10000, user, server, pass);
+    }, 10000, user, server, pass);*/
 }
 
 // Get configuration for the phone from the server.
@@ -238,85 +238,117 @@ function getPhoneAuthFromBedienpostServer(user, server, pass) {
 }
 
 function getPhoneAuthFromCompass(user, server, pass) {
+    // Get the company.
+    var getCompany = function() {
 
-    var data = {};
-    var method = "GET";
-
-
-    var restCompanyUrl = "https://" + Lisa.Connection.restServer + "/company";
-    // Retrieve company-info to retrieve company shortname which is used as phone username
-    var companyReceived = function(response) {
-        //console.log(response);
-        phoneUser = response.shortname;
-    }
-
-    $.ajax
-    ({
-        type: method || "POST",
-        headers: {
-            "Authorization": Lisa.Connection.restAuthHeader,
-            "X-No-Redirect": true
-        },
-        url: restCompanyUrl,
-        dataType: 'json',
-        data: JSON.stringify(data),
-        success: companyReceived
-    });
-
-
-    // After user-status is received, retrieve the phone-info.
-    var statusReceived = function(response) {
-        //console.log(response.phone);
-        var url = response.phone;
-        var phoneUrlReceived = function(response) {
+        var restCompanyUrl = "https://" + Lisa.Connection.restServer + "/company";
+        // Retrieve company-info to retrieve company shortname which is used as phone username
+        var companyReceived = function(response) {
             //console.log(response);
-            phonePass = response.resourceId;
-            var ip = response.pubIP;
-            if (ip) {
-                phoneIp = ip.split(":")[0];
-            }
-            //phoneIp = response.pubIP;
-            console.log(response);
-            console.log("phone user: " + phoneUser + " pass: " + phonePass + " ip: " + phoneIp);
-            if (navigator.userAgent.indexOf("Chrome") != -1) {
-                chromeLoginPhone();
-            }
-
-            listingViewModel.phoneIp(phoneIp);
-            listingViewModel.connectedPhone(false);
-            checkSnomConnected();
-            setInterval(checkSnomConnected, 300000); // re-check every five minutes.
-
+            phoneUser = response.shortname;
         }
+
         $.ajax
         ({
-            type: method || "POST",
+            type: "GET",
+            headers: {
+                "Authorization": Lisa.Connection.restAuthHeader,
+                "X-No-Redirect": true
+            },
+            url: restCompanyUrl,
+            success: companyReceived
+        });
+    }
+
+    var getPhoneConnectionEnabledForUser = function() {
+    // Get phone-auth to see whether phone-connection is enabled for this user.
+        var phoneAuthReceived = function(response) {
+            if (response.phoneIp == "auto") {
+                // next step
+                getPhoneStatus();
+            } else if (response.phoneIp != null) {
+                // phoneIP is filled out and not 'auto'. Use the legacy method of retrieving the phone-auth information from the Bedienpost server.
+                console.log("Using legacy-mechanism to retrieve phone-auth.");
+                getPhoneAuthFromBedienpostServer(USERNAME, DOMAIN, PASS);
+            }
+        }
+
+        var postObj = {};
+        postObj.username = user;
+        postObj.server = server;
+        postObj.auth = btoa(user + ":" + pass)
+
+        $.ajax
+        ({
+            type: "POST",
+            url: "https://www.bedienpost.nl/retrievePhoneAuth.php",
+            dataType: 'json',
+            data: postObj,
+            success: phoneAuthReceived,
+            error: function (response) {
+                console.log("User not authorized for SNOM control.")
+            }
+        });
+    }
+
+    /* Get the phone-status from the Compass REST URL */
+    // TODO; Nested functions in flatter structure.
+    var getPhoneStatus = function() {
+        // After user-status is received, retrieve the phone-info.
+        var statusReceived = function(response) {
+            //console.log(response.phone);
+            var url = response.phone;
+            var phoneUrlReceived = function(response) {
+                //console.log(response);
+                phonePass = response.resourceId;
+                var ip = response.pubIP;
+                if (ip) {
+                    phoneIp = ip.split(":")[0];
+                }
+                //phoneIp = response.pubIP;
+                //console.log(response);
+                console.log("phone user: " + phoneUser + " pass: " + phonePass + " ip: " + phoneIp);
+                if (navigator.userAgent.indexOf("Chrome") != -1) {
+                    chromeLoginPhone();
+                }
+
+                listingViewModel.phoneIp(phoneIp);
+                listingViewModel.connectedPhone(false);
+                checkSnomConnected();
+                setInterval(checkSnomConnected, 300000); // re-check every five minutes.
+
+            }
+            $.ajax
+            ({
+                type: "GET",
+                headers: {
+                    "Authorization": Lisa.Connection.restAuthHeader,
+                    "X-No-Redirect": true
+                },
+                url: url,
+                dataType: 'json',
+                success: phoneUrlReceived
+            });
+        }
+
+        // Retrieve user-status to receive phone url that we can use to read the phone-ip on the LAN.
+        var url = Lisa.Connection.restUserUrl + "/status";
+        $.ajax
+        ({
+            type: "GET",
             headers: {
                 "Authorization": Lisa.Connection.restAuthHeader,
                 "X-No-Redirect": true
             },
             url: url,
             dataType: 'json',
-            data: JSON.stringify(data),
-            success: phoneUrlReceived
+            success: statusReceived
         });
     }
 
-    // Retrieve user-status to receive phone url that we can use to read the phone-ip on the LAN.
-    var url = Lisa.Connection.restUserUrl + "/status";
-    $.ajax
-    ({
-        type: method || "POST",
-        headers: {
-            "Authorization": Lisa.Connection.restAuthHeader,
-            "X-No-Redirect": true
-        },
-        url: url,
-        dataType: 'json',
-        data: JSON.stringify(data),
-        success: statusReceived
-    });
-
+    // Start the sequence
+    getCompany();
+    getPhoneConnectionEnabledForUser(); // Triggers the sequence that eventually retrieves the phone-auth. getCompany() is a prerequisite.
 }
 
 

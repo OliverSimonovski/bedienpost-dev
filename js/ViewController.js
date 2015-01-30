@@ -488,8 +488,8 @@ var ListingsViewModel = function(){
         if (self.callingState() == "ringing") {
             transferToUser(toCall);
         } else {
-            attendedTransferToUserWithAutoFinish(toCall);
-            _.delay(finishAttendedTransfer, 5000);
+            attendedtransferToUser(toCall);
+            _.delay(finishAttendedTransfer, 2000);
         }
         self.dismissTransferModal();
     }

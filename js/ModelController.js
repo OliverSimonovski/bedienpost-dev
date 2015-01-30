@@ -543,9 +543,7 @@ function getCallInfo(call, user) {
      */
     //console.log("actual callInfo.number: " + callInfo.number);
     //console.log("finalize transfer if callInfo.number is: " + pendingAttendedTransfer);
-    //console.log(call);
-
-    if ((callInfo.number == pendingAttendedTransfer) && (call.state == "ANSWERED") && ((call.sourceUser == user))) {
+    if ((callInfo.number == pendingAttendedTransfer)) {
         finishAttendedTransfer();
     }
 

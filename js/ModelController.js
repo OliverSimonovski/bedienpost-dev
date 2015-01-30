@@ -846,9 +846,7 @@ function attendedtransferToUser(number) {
 }
 
 function finishAttendedTransfer() {
-    pendingAttendedTransfer = null;
-    phoneCommand("TRANSFER;CANCEL");
-    listingViewModel.search("");
+    phoneCommand("TRANSFER");
 }
 
 function cancelAttendedTransfer() {

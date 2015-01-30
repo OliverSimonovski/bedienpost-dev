@@ -25,7 +25,7 @@
             ?>
            <form method="post" action="StoreSnomConnection.php">
                Gebruik verbinding met telefoon om doorschakelingen te kunnen doen.<br/>
-               (Werkt vooralsnog alleen op SNOM 320 of SNOM 710)<br/><br/>
+               (Werkt vooralsnog alleen op SNOM 300, 320, 710, 720)<br/><br/>
                Ingeschakeld: <input name="ingeschakeld" type="checkbox" defaultChecked="false"> <br/><br/>
 
                <!--

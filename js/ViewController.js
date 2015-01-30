@@ -519,6 +519,7 @@ var ListingsViewModel = function(){
     {
         self.dismissModal($('#transferModal'));
         self.clickedListItem(null);
+        self.search("");
     }
     
     self.showTransferEndModal = function()

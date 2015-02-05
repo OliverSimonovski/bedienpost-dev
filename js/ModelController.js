@@ -56,7 +56,6 @@ function connectServerFromJidDomain(jidDomain) {
     if (jidDomain.indexOf("uc.") == 0) {
         var boshServer = getEnvWithPrefix("bosh", jidDomain);
         deferred.resolve(boshServer, 443);
-        //deferred.resolve(jidDomain, 7500);
     } else {
         var srvRequestName = "_xmpp-server._tcp." + jidDomain;
         console.log("Resolving: " + srvRequestName);
@@ -119,7 +118,7 @@ function login(login, password, server) {
 function connect(connectServer, connectPort) {
 
     CONNECTSERVER = connectServer;
-    connectPort = connectPort || 7500;
+    connectPort = connectPort || 443;
     listingViewModel.authError(false);
 
     if (USERNAME.indexOf("@") != -1) {

@@ -177,6 +177,7 @@ Lisa.Call = function() {
 	this.destinationUser = null;
 	this.observable = new Lisa.Observable();
     this.queueCallForCall = null;
+    this.userHasChanged = false;
 
 	this.toString = function() {
 		return "(Call:" + this.id + ",f:" + this.source + ",t:"
@@ -1276,6 +1277,7 @@ Lisa.Connection = function() {
 		// After changing the destinationUser, we won't remember the original destinationUser anymore.
 		if (callModel.destinationUser && (callModel.destinationUser != destinationUser)) {
 			callModel.removeUser(callModel.destinationUser);
+            callModel.userHasChanged = true;
 		}
 		callModel.destinationUser = destinationUser;
 		callModel.destination = dst;

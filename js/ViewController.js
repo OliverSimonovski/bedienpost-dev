@@ -179,7 +179,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
         return !visible;
     }, this);
 
-    this.timeConnected = ko.computed(function() 
+    this.timeConnected = ko.computed(function()
     {
         if (this.callStartTime() == 0) {
             return "";
@@ -195,18 +195,33 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 
         var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         return timeString;
-        
+
     }, this);
 
     this.toDisplay = ko.computed(function()
     {
-    if (!this.finished()) {
-        return this.name();
-    } else {
-        return this.name() + " - finished";
-    }
+        var result = this.name();
 
+        var call = this.thisCallOrOriginalCall(this.id());
+        if (call && call.userHasChanged) result = "[terugval] " + result;
+        if (this.finished()) result += " - finished";
+
+        return result;
     }, this);
+}
+
+/*
+ * Returns the queueCallForCall for a call with a certain id, or the call itself if the call has no queueCallForCall.
+ * If no call with this id exists, null is returned.
+ */
+CallListItem.prototype.thisCallOrOriginalCall = function(id) {
+    var theCall = model.calls[this.id()];
+    var originalCall = null;
+    if (theCall) {
+        var qcId = theCall.queueCallForCall;
+        originalCall = model.calls[qcId];
+    }
+    return originalCall || theCall;
 }
 
 CallListItem.prototype.stopCall = function() {

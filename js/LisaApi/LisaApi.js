@@ -30,13 +30,15 @@ Lisa.Observable = function() {
 
 	this.removeObserver = function(callback) {
 		var index = this.observers.indexOf(callback);
-		this.observers.remove(index);
+        this.observers.remove(index);
 	}
 
 	this.notify = function() {
 		var args = arguments;
 		this.observers.forEach(function(f) {
-			f.apply(this, args);
+            if (f != undefined) {
+                f.apply(this, args);
+            }
 		});
 	}
 }
@@ -385,13 +387,6 @@ Lisa.Connection = function() {
 
 	// === Public members
 	
-	/*
-     * Connecting without SSL makes you vulnerable for eavesdropping and connection hijacking. 
-     * Please use a SSL / HTTPS connection.
-     */
-	this.bosh_port = 443;
-	this.use_ssl = true;
-
 	this.retrieve_model = true;
 	this.log_xmpp = false;
 	this.connectionStatusObservable = Lisa.Connection.connectionStatusObservable;
@@ -400,14 +395,13 @@ Lisa.Connection = function() {
 	/**
      * Connect to the XMPP server through BOSH
      * @param server    The hostname of the BOSH server
-     * @param jid       Either the bare jid (username@hostname) or only the username,
+     * @param jid       Either the bare jid (username@hostname),
      *                  in which case username@server is assumed.
      * @param password  Compass password for the account. (used for XMPP and REST)
      * @param resource  (optional) XMPP resource string, automatically generated when left empty.
      */
 	this.connect = function(server, jid, password, resource) {
 
-        jid = fixupJid(jid, server);
         this.setupConnection(server, jid);
         Lisa.Connection.password = password;
 
@@ -425,7 +419,6 @@ Lisa.Connection = function() {
      *  dialNumber, dialUser, queueLogin, and queueLogout */
 	this.attach = function(server, jid, sid, rid) {
 
-		jid = fixupJid(jid, server);
 		this.setupConnection(server, jid);
 
 		// Attach callbacks...
@@ -469,15 +462,21 @@ Lisa.Connection = function() {
 	},
 
 	this.setupConnection = function(server, jid) {
+
+        if (jid.indexOf("@") == -1) {
+            var msg = "JID does not contain an \"@\", please specify the jid, not just the username! - Interrupting connection.";
+            Lisa.Connection.logging.log(msg);
+            console.error(msg);
+            return;
+        }
+
 		// configuration
 		Lisa.Connection.server = server;
 		Lisa.Connection.domain = jid.substring(jid.indexOf('@') + 1);
 		Lisa.Connection.jid = jid;
 
 		// Setup strophe connection
-		var protocol = this.use_ssl ? 'https' : 'http';
-		var bosh_service = protocol + '://' + server + ':' + this.bosh_port
-				+ '/http-bind';
+		var bosh_service = 'https://' + server + '/http-bind';
 		connection = new Strophe.Connection(bosh_service);
 		Lisa.Connection.connection = connection;
 		if (this.log_xmpp) {
@@ -800,17 +799,6 @@ Lisa.Connection = function() {
 
 	}
 
-    function fixupJid(jid, server) {
-        if (jid.indexOf("@") == -1) {
-            // Old-style: jid is username
-            return jid + "@" + server;
-        } else {
-            // New-style: jid is actual jid, server is connect hostname
-            return jid;
-        }
-    }
-
-
     function setupRest() {
         // Setup REST server & often-used urls
         Lisa.Connection.restServer = getEnvWithPrefix("rest");
@@ -1075,9 +1063,7 @@ Lisa.Connection = function() {
 		userModel.loggedIn = (user.find('loggedIn').text() == "true");
 		// assume just 1 extension, for now
 		userModel.extension = user.find('extensions').text();
-        // Backward compatibility with the pre 05/2014 Lisa that would send a username as 'xmppJid' field.
-        var apiJid = user.find('identifiers').find('xmppJid').text();
-		userModel.jid = fixupJid(apiJid, Lisa.Connection.server);
+		userModel.jid = user.find('identifiers').find('xmppJid').text();
 		userModel.username = user.find('identifiers').find('compassId').text();
 		return userModel;
 	}

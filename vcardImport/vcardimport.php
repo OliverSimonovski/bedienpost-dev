@@ -58,12 +58,17 @@
 
 
             //print_r($vCardPart);
-            //print_r($vCardPart -> n);
+            //print_r($vCardPart -> fn);
             //print_r($vCardPart -> tel);
 
             $names = $vCardPart -> n [0];
             $firstName = $names[FirstName];
             $lastName = $names[LastName];
+
+            if (($firstName.$lastName) === '') {
+                $lastName = $vCardPart -> fn [0];
+            }
+
             $organisation = $vCardPart -> org[0][Name];
             //echo "For " . $firstName . " " . $lastName . " - " . $organisation . "\n";
 

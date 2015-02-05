@@ -186,14 +186,6 @@ function connect(connectServer, connectPort) {
 function getPhoneAuth(user, server, pass) {
     // Try to retieve auth-information from Compass
     getPhoneAuthFromCompass(user, server, pass);
-
-    /*_.delay(function(user, server, pass){
-        // The previous attempt wasn't fruitful. try to retrieve auth-information from the bedienpost server.
-        if (phoneIp == "") {
-            console.log("Wasn't able to retrieve phone-auth information from Compass. Trying our own server.")
-            getPhoneAuthFromBedienpostServer(user,server,pass);
-        }
-    }, 10000, user, server, pass);*/
 }
 
 // Get configuration for the phone from the server.
@@ -301,7 +293,7 @@ function getPhoneAuthFromCompass(user, server, pass) {
             var phoneUrlReceived = function(response) {
                 //console.log(response);
                 phonePass = response.resourceId;
-                var ip = response.pubIP;
+                var ip = response.privateIP;
                 if (ip) {
                     phoneIp = ip.split(":")[0];
                 }

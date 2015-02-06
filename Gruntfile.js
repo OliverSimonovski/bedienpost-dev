@@ -19,7 +19,11 @@ module.exports = function(grunt) {
                         {src: 'vcardImport/index.php', dest: 'dist/private_html/vcardImport/index.php'},
                         {src: 'vcardImport/.htaccess', dest: 'dist/private_html/vcardImport/.htaccess'},
                         {src: 'vcardImport/vcardImport.php', dest: 'dist/private_html/vcardImport/vcardImport.php'},
-                        {src: 'vcardImport/lib/vCard.php', dest: 'dist/private_html/vcardImport/lib/vCard.php'}
+                        {src: 'vcardImport/lib/vCard.php', dest: 'dist/private_html/vcardImport/lib/vCard.php'},
+                        {src: 'admin/index.php', dest: 'dist/private_html/admin/index.php'},
+                        {src: 'admin/.htaccess', dest: 'dist/private_html/admin/.htaccess'},
+                        {src: 'admin/StoreSnomConnection.php', dest: 'dist/private_html/admin/StoreSnomConnection.php'},
+                        {src: 'admin/UseSnomConnection.php', dest: 'dist/private_html/admin/UseSnomConnection.php'}
                     ]
             }
         },

@@ -105,6 +105,7 @@
                                             css: { 'queue_2':true }">
                                 <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut()) }">
                                      <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
+                                     <span class="time pull-right" data-bind="text: entry.maxWaitingTime">"></span>
                                      <div class="options todooptions" >
                                             <i data-bind="attr: { class: $root.signInOutCssClass(entry.signInOut()) },
                                                                             click: $root.signInOut"></i>

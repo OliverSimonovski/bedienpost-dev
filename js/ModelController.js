@@ -592,6 +592,7 @@ function queueToClientModel(queue, queueObj) {
     queueObj = queueObj || new QueueListItem(queue.id, queue.name);
     queueObj.signInOut(queue.users[Lisa.Connection.myUserId] != null);
     queueObj.waitingAmount(_.size(queue.calls));
+    queueObj.maxWaitingStartTime(currentTime() - queue.maxWait * 1000);
 
     return queueObj;
 }

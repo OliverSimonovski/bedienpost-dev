@@ -132,9 +132,24 @@ function QueueListItem(id, name) {
 
     this.signInOut = ko.observable(false);
     this.waitingAmount = ko.observable(0);
+    this.maxWaitingStartTime = ko.observable(0);
     this.orderNr = 0;
 
     this.favorite = isFav(id, QueueListItem.storageKey());
+
+    this.maxWaitingTime = ko.computed(function()
+    {
+        var duration = 0;
+        if (this.waitingAmount() != 0) {
+            var waitingStart = moment.utc(this.maxWaitingStartTime());
+            var duration = (currentTime() - waitingStart); // duration in milliseconds
+        }
+
+
+        var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
+        return timeString;
+
+    }, this);
 }
 
 QueueListItem.prototype.queueLogin = function (amLoggingIn) {

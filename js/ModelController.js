@@ -884,3 +884,7 @@ function phoneCommand(cmdString) {
     openUrl(url);    
 }
 
+function dialNumber(numberToCall) {
+    conn.dialNumber(numberToCall);
+    if (listingViewModel.connectedPhone()) _.delay(pickupPhone, 1000);
+}

@@ -485,7 +485,7 @@ var ListingsViewModel = function(){
         dialing = false;
         var numberToCall = self.clickedListItem().ext().split(",")[0];
         if (numberToCall != "") {
-            conn.dialNumber(numberToCall);
+            dialNumber(numberToCall);
         } else {
             console.log("Can't call user without extension.");
             alert("Can't call user without extension.");
@@ -770,7 +770,7 @@ var ListingsViewModel = function(){
     self.call = function()
     {
         var number = self.numericInput().replace(/\D/g,'');
-        conn.dialNumber(number);
+        dialNumber(number);
         self.dismissKeypadModal();
     }
     

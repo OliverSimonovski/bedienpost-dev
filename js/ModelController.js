@@ -594,6 +594,15 @@ function queueToClientModel(queue, queueObj) {
     queueObj.waitingAmount(_.size(queue.calls));
     queueObj.maxWaitingStartTime(currentTime() - queue.maxWait * 1000);
 
+    var membersStr = "";
+    var first = true;
+    for (userId in queue.users) {
+        var user = queue.users[userId];
+        membersStr += ((!first) ? ", " : "") + user.name;
+        first = false;
+    }
+    queueObj.membersStr(membersStr);
+
     return queueObj;
 }
 

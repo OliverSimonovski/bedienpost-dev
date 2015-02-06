@@ -131,6 +131,7 @@ function QueueListItem(id, name) {
     this.name = ko.observable(name                        || "");
 
     this.signInOut = ko.observable(false);
+    this.membersStr = ko.observable("");
     this.waitingAmount = ko.observable(0);
     this.maxWaitingStartTime = ko.observable(0);
     this.orderNr = 0;

@@ -103,7 +103,7 @@
 
                              <ul data-bind="foreach: { data: filterWaitingQueue, as: 'entry' },
                                             css: { 'queue_2':true }">
-                                <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut()) }">
+                                <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut()), title: entry.membersStr() }">
                                      <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
                                      <span class="time pull-right" data-bind="text: entry.maxWaitingTime">"></span>
                                      <div class="options todooptions" >

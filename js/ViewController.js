@@ -50,9 +50,12 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
         var timePart = "[" + timeString + "]";
 
         var numberPart = this.connectedNr();
-        if ((numberPart != "") && this.connectedName() != "") {
-            var npend = numberPart.substr(-5);
-            numberPart = numberPart.replace(npend, ".....");
+
+        if (HIDELASTPARTPHONENUMBER) {
+            if ((numberPart != "") && this.connectedName() != "") {
+                var npend = numberPart.substr(-5);
+                numberPart = numberPart.replace(npend, ".....");
+            }
         }
         numberPart = (numberPart != "") ? numberPart + " " : "";
 

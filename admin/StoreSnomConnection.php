@@ -10,6 +10,12 @@
         echo 'Please authenticate';
         exit;
     }
+    if checkUser($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) == false) {
+        header('WWW-Authenticate: Basic realm="Verbinding met VoIP telefoon."');
+        header('HTTP/1.0 401 Unauthorized');
+        echo 'Please authenticate';
+        exit;
+    }
 
     $enable = ($_POST['ingeschakeld']) ? $_POST['ingeschakeld'] : false;
 

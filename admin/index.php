@@ -25,7 +25,7 @@
                    <p>
                         <h2>Instellingen voor alle gebruikers binnen het bedrijf</h2>
                         <form method="post" action="settings.php">
-                              Verberg laatste 5 cijfers van het telefoonnummer: <input name="obfuscateNumber" type="checkbox" defaultChecked="true"> <br/><br/>
+                              Verberg laatste 5 cijfers van het telefoonnummer: <input name="obfuscateNumber" type="checkbox" checked> <br/><br/>
                               <input type="submit" />
                        </form>
                    </p>

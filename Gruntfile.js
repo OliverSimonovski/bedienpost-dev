@@ -24,7 +24,8 @@ module.exports = function(grunt) {
                         {src: 'admin/.htaccess', dest: 'dist/private_html/admin/.htaccess'},
                         {src: 'admin/StoreSnomConnection.php', dest: 'dist/private_html/admin/StoreSnomConnection.php'},
                         {src: 'admin/lib/vCard.php', dest: 'dist/private_html/admin/lib/vCard.php'},
-                        {src: 'admin/vcardimport.php', dest: 'dist/private_html/admin/vcardimport.php'}
+                        {src: 'admin/vcardimport.php', dest: 'dist/private_html/admin/vcardimport.php'},
+                        {src: 'admin/settings.php', dest: 'dist/private_html/admin/settings.php'}
                     ]
             }
         },

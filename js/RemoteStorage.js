@@ -7,18 +7,21 @@
     var root = this;
     var lib = root.remoteStorage = {};
 
-    function initPostObj() {
+    /* username defaults to global USERNAME, company defaults to empty ("") */
+    function initPostObj(username, company) {
         var postObj = {};
-        postObj.username = USERNAME;
+        postObj.username = (username == "") ? "" : username || USERNAME; // if username is empty, keep it empty.
         postObj.server = DOMAIN;
-        postObj.auth = btoa(USERNAME + ":" + PASS)
+        postObj.company = company || "";
+        postObj.auth = btoa(USERNAME + ":" + PASS);
+        console.log(postObj);
         return postObj;
     }
 
-    lib.setItem = function (key, value) {
+    lib.setItem = function (key, value, username, company) {
         var result = jQuery.Deferred();
 
-        var postObj = initPostObj();
+        var postObj = initPostObj(username, company);
         postObj.method = "setItem";
         postObj.key = key;
         postObj.data = value;
@@ -26,7 +29,7 @@
         $.ajax
         ({
             type: "POST",
-            url: "https://www.bedienpost.nl/remoteStorage.php",
+            url: "https://www.bedienpost.nl/remoteStorage_v2.php",
             dataType: 'json',
             data: postObj,
             success: function (response){
@@ -42,17 +45,17 @@
         return result;
     }
 
-    lib.getItem = function(key) {
+    lib.getItem = function(key, username, company) {
         var result = jQuery.Deferred();
 
-        var postObj = initPostObj();
+        var postObj = initPostObj(username, company);
         postObj.method = "getItem";
         postObj.key = key;
 
         $.ajax
         ({
             type: "POST",   // Actually, refactoring this to use a GET is a bit nicer
-            url: "https://www.bedienpost.nl/remoteStorage.php",
+            url: "https://www.bedienpost.nl/remoteStorage_v2.php",
             dataType: 'json',
             data: postObj,
             success: function (response){

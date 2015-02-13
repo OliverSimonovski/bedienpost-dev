@@ -5,6 +5,7 @@ var DOMAIN = null;
 var CONNECTSERVER = null;
 var PASS = null;
 var COMPANYNAME = null;
+var HIDELASTPARTPHONENUMBER = true;
 
 var conn;
 var model;
@@ -413,8 +414,8 @@ function logout() {
 }
 
 function gotModel(newmodel) {
-
     getPhoneAuth(USERNAME, DOMAIN, PASS);
+    getHideLastPartPhoneNumber();
 
     // Show interface
     loggedIn = true;
@@ -437,6 +438,17 @@ function gotModel(newmodel) {
     model.queueListObservable.addObserver(refreshModel);
 
    closeLoginModal();
+}
+
+function getHideLastPartPhoneNumber() {
+    remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYNAME)
+        .done(function(response) {
+            if (response == "false") {
+                HIDELASTPARTPHONENUMBER = false;
+            } else {
+                HIDELASTPARTPHONENUMBER = true; // Default to hiding.
+            }
+    });
 }
 
 function getContactListData(user, server, pass, companyId) {
@@ -546,7 +558,6 @@ function getCallInfo(call, user) {
 
 function userToClientModel(user, userObj) {
     var numcalls = _.size(user.calls);
-    console.log(numcalls);
     var userObj = userObj || new UserListItem(+user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
     userObj.log(user.loggedIn);
 

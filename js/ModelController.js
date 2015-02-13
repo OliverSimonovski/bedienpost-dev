@@ -546,6 +546,7 @@ function getCallInfo(call, user) {
 
 function userToClientModel(user, userObj) {
     var numcalls = _.size(user.calls);
+    console.log(numcalls);
     var userObj = userObj || new UserListItem(+user.id, user.name, user.extension, user.loggedIn, (numcalls == 0));
     userObj.log(user.loggedIn);
 
@@ -594,14 +595,20 @@ function queueToClientModel(queue, queueObj) {
     queueObj.waitingAmount(_.size(queue.calls));
     queueObj.maxWaitingStartTime(currentTime() - queue.maxWait * 1000);
 
-    var membersStr = "";
-    var first = true;
+    var availableStr = "", unAvailableStr="";
+    var avfirst = true, unavfirst = true;
     for (userId in queue.users) {
         var user = queue.users[userId];
-        membersStr += ((!first) ? ", " : "") + user.name;
-        first = false;
+        if (_.size(user.calls) == 0) {
+            availableStr += ((!avfirst) ? ", " : "") + user.name;
+            avfirst = false;
+        } else {
+            unAvailableStr += ((!unavfirst) ? ", " : "") + user.name;
+            unavfirst = false;
+        }
     }
-    queueObj.membersStr(membersStr);
+    var memberStr = "Beschikbaar: \n " + availableStr + "\n\nNiet Beschikbaar:\n" + unAvailableStr;
+    queueObj.membersStr(memberStr);
 
     return queueObj;
 }
@@ -697,6 +704,12 @@ function updateUser(user) {
             listingViewModel.callingState("onhook");
             listingViewModel.hideButton();
         }
+    }
+
+    // Update the queues that the user is part of
+    for (var queueId in user.queues) {
+        var queue = user.queues[queueId];
+        updateQueue(queue);
     }
 
     return userObj;

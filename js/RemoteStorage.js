@@ -14,7 +14,6 @@
         postObj.server = DOMAIN;
         postObj.company = company || "";
         postObj.auth = btoa(USERNAME + ":" + PASS);
-        console.log(postObj);
         return postObj;
     }
 

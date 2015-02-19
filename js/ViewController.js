@@ -594,6 +594,11 @@ var ListingsViewModel = function(){
         self.dismissModal($('#shortcutModal'));
         self.clickedListItem(null);
     }
+
+    self.dismissSettingsModal = function()
+    {
+        self.dismissModal($('#settingsModal'));
+    }
     
     self.doPickup = function()
     {
@@ -740,6 +745,12 @@ var ListingsViewModel = function(){
     self.showShortcuts = function()
      { 
         $('#shortcutModal').modal({
+            keyboard: false
+        })
+    }
+
+    self.settingsClicked = function() {
+        $('#settingsModal').modal({
             keyboard: false
         })
     }

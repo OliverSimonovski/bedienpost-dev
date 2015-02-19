@@ -89,13 +89,17 @@
                         <div class="header">
                              <div class="options todooptions" >
                                     <div class="logout pull-right" data-bind="click: $root.logOut">
-                                         <i class="fa fa-arrow-circle-right pull-right"></i>
+                                        <i class="fa fa-arrow-circle-right pull-right"></i>
                                         <span class="icon-label">uitloggen</span>
                                     </div>   
-                                     <div class="shortcuts pull-right" data-bind="click: $root.showShortcuts">
-                                          <i class="fa fa-question pull-right"></i>
-                                    <span class="icon-label">h<u>e</u>lp</span>
-                                    </div> 
+                                    <div class="shortcuts pull-right" data-bind="click: $root.showShortcuts">
+                                        <i class="fa fa-question pull-right"></i>
+                                        <span class="icon-label">h<u>e</u>lp</span>
+                                    </div>
+                                    <div class="shortcuts pull-right" data-bind="click: $root.settingsClicked">
+                                         <i class="fa fa-cog pull-right"></i>
+                                         <span class="icon-label">instellingen</span>
+                                    </div>
                              </div>
                             <h4>Wachtrijen</h4>
                         </div>
@@ -429,6 +433,60 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-bg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissSettingsModal">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Instellingenscherm</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="buttoncontainer text-left">
+
+                    <p>
+                        <h4 class="modal-title">Nummerafscherming</h4><br/>
+                        Verberg laatste 5 cijfers van telefoonnummers: <input name="obfuscateNumber" type="checkbox" checked>
+                    </p><hr/>
+
+                    <p>
+                        <h4 class="modal-title">SNOM-koppeling</h4><br/>
+                        <p>Door het activeren van de SNOM-koppeling kan je, als je een SNOM-toestel hebt, gesprekken aannemen, doorschakelen en ophangen via de Bedienpost.</p>
+                        <p>Op dit moment worden de volgende SNOM-toestellen ondersteund: SNOM 300, SNOM 320, SNOM 710, SNOM 720.</p>
+                        <p>Om gebruik te maken van deze functionaliteit is een directe koppeling op netwerkniveau tussen het SNOM-toestel en de PC waar de Bedienpost op draait noodzakelijk.</p>
+                        SNOM-koppeling activeren: <input name="obfuscateNumber" type="checkbox">
+                    </p><hr/>
+
+                    <p>
+                        <h4 class="modal-title">Adresboekimport</h4><br/>
+                        <p>Hiermee is het mogelijk om een bedrijfsadresboek te importeren in het vCard-formaat (.vcf). Dit adresboek wordt gedeeld binnen het gehele bedrijf.</p>
+                        <p>Alle gebruikers zien in hun contactenlijst de nieuwe contacten en kunnen deze direct aankiezen. Een nieuwe import overschrijft het bestaande adresboek.</p>
+                        <input type="file" data-bind="fileInput: fileData">
+                    </p><hr/>
+
+                    <p>
+                        <h4 class="modal-title">CRM-integratie</h4><br/>
+                        <p>HDoor CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem. Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.</p>
+
+                        url: <input name="obfuscateNumber" style="width:300px" placeholder="https://mijn-crm.bedrijf.nl/inkomend-nr/$">
+
+                    </p>
+
+                </div>
+
+
+                <div class="modal-footer">
+                    <div class="text-center">
+                        <div class="btn-group">
+                            <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissSettingsModal">Klaar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     </body>
 
 

@@ -317,6 +317,7 @@ var ListingsViewModel = function(){
     self.phoneIp = ko.observable("");
 
     self.obfuscateNumber = ko.observable(true);
+    self.connectSnom = ko.observable(null);
 
 
     self.phoneAuthAvailable = ko.computed(function(){
@@ -1057,6 +1058,10 @@ var ListingsViewModel = function(){
 
     self.obfuscateNumber.subscribe(function(value) {
         storeSettingObfuscateNumber(value);
+    });
+
+    self.connectSnom.subscribe(function(value) {
+       storeSettingConnectSnom(value);
     });
 
     ko.bindingHandlers.drag.options = { helper: 'clone' };

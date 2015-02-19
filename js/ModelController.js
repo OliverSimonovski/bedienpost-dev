@@ -28,6 +28,7 @@ var userPhoneNumberToUserObservable = [];
 var pendingAttendedTransfer = null;
 
 var currentServerObfuscateNumberSetting = true;
+var currentServerConnectSnomSetting = false;
 
 
 $(document).ready(function () {
@@ -85,8 +86,6 @@ function connectServerFromJidDomain(jidDomain) {
             console.log("Found BOSH server: " + boshServer);
             deferred.resolve(boshServer, 443);
         });
-
-
     }
     return deferred;
 }
@@ -179,9 +178,6 @@ function connect(connectServer, connectPort) {
 
 /*
  * At first, try to get the phone-auth information from Compass.
- *
- * If hasn' worked after 10 seconds, try the 'old' method of retrieving phone-auth information from the
- * DB at the Bedienpost server.
  */
 function getPhoneAuth(user, server, pass) {
     // Try to retieve auth-information from Compass
@@ -225,6 +221,11 @@ function getPhoneAuthFromBedienpostServer(user, server, pass) {
         }, 
         error: function (response) {
             console.log("User not authorized for SNOM control.")
+            phoneIp = "";
+            phoneUser = "";
+            phonePass = "";
+            listingViewModel.phoneIp(phoneIp);
+            listingViewModel.connectedPhone(false);
         }
     });    
 }
@@ -256,12 +257,19 @@ function getPhoneAuthFromCompass(user, server, pass) {
     // Get phone-auth to see whether phone-connection is enabled for this user.
         var phoneAuthReceived = function(response) {
             if (response.phoneIp == "auto") {
+                currentServerConnectSnomSetting = true;
+                listingViewModel.connectSnom(true);
                 // next step
                 getPhoneStatus();
             } else if (response.phoneIp != null) {
                 // phoneIP is filled out and not 'auto'. Use the legacy method of retrieving the phone-auth information from the Bedienpost server.
                 console.log("Using legacy-mechanism to retrieve phone-auth.");
                 getPhoneAuthFromBedienpostServer(USERNAME, DOMAIN, PASS);
+                currentServerConnectSnomSetting = false;
+                listingViewModel.connectSnom(false);
+            } else {
+                currentServerConnectSnomSetting = false;
+                listingViewModel.connectSnom(false);
             }
         }
 
@@ -279,6 +287,11 @@ function getPhoneAuthFromCompass(user, server, pass) {
             success: phoneAuthReceived,
             error: function (response) {
                 console.log("User not authorized for SNOM control.")
+                phoneIp = "";
+                phoneUser = "";
+                phonePass = "";
+                listingViewModel.phoneIp(phoneIp);
+                listingViewModel.connectedPhone(false);
             }
         });
     }
@@ -922,13 +935,14 @@ function bedienpostAdminAjaxPost(url, postObj, success, error) {
         url: url,
         data: postObj,
         headers: {
-            "Authorization": Lisa.Connection.restAuthHeader
+            "Authorization": "Basic " + btoa(JID + ":" + PASS)
         },
         success: success,
         error: error
     });
 }
 
+// TODO; Refactor to use the remote-storage functionality directly instead of using some shady form to set remote-storage for us.
 function storeSettingObfuscateNumber(value) {
     // Suppress call to server if the change came from the server in the first place
     if (value == currentServerObfuscateNumberSetting)
@@ -937,9 +951,32 @@ function storeSettingObfuscateNumber(value) {
     var postObj = {obfuscateNumber: (value) ? 1 : 0};
     var url = "https://bedienpost.nl/admin/settings.php";
 
-    console.log("Storing setting obfustaceNumer to " + value);
+    console.log("Storing setting obfuscateNumer to " + value);
     bedienpostAdminAjaxPost(url, postObj,
         function(){console.log("Successfully stored setting obfuscateNumber to " + value); currentServerObfuscateNumberSetting = value;},
         function(){console.warn("Error storing obfuscateNumber setting.");}
+    );
+}
+
+function storeSettingConnectSnom(value) {
+    // Suppress call to server if the change came from the server in the first place
+    if (value == currentServerConnectSnomSetting)
+        return;
+
+
+
+    var postObj = {ingeschakeld: (value) ? 1 : 0};
+    var url = "https://bedienpost.nl/admin/StoreSnomConnection.php";
+
+    console.log("Storing setting ConnectSnom to " + value);
+    bedienpostAdminAjaxPost(url, postObj,
+        function()
+        {
+            console.log("Successfully stored setting ConnectSnom to " + value);
+            currentServerConnectSnomSetting = value;
+            // Immediately effectuate the new settings.
+            getPhoneAuth(USERNAME, DOMAIN, PASS);
+        },
+        function(){console.warn("Error storing ConnectSnom setting.");}
     );
 }

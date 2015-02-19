@@ -447,7 +447,7 @@
 
                     <p>
                         <h4 class="modal-title">Nummerafscherming</h4><br/>
-                        Verberg laatste 5 cijfers van telefoonnummers: <input name="obfuscateNumber" type="checkbox" checked>
+                        Verberg laatste 5 cijfers van telefoonnummers. Dit geldt voor het gehele bedrijf: <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber">
                     </p><hr/>
 
                     <p>
@@ -467,7 +467,7 @@
 
                     <p>
                         <h4 class="modal-title">CRM-integratie</h4><br/>
-                        <p>HDoor CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem. Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.</p>
+                        <p>Door CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem. Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.</p>
 
                         url: <input name="obfuscateNumber" style="width:300px" placeholder="https://mijn-crm.bedrijf.nl/inkomend-nr/$">
 

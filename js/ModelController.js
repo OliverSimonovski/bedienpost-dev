@@ -5,7 +5,6 @@ var DOMAIN = null;
 var CONNECTSERVER = null;
 var PASS = null;
 var COMPANYNAME = null;
-var HIDELASTPARTPHONENUMBER = true;
 
 var conn;
 var model;
@@ -28,6 +27,7 @@ var callIdToCallObservable = [];
 var userPhoneNumberToUserObservable = [];
 var pendingAttendedTransfer = null;
 
+var currentServerObfuscateNumberSetting = true;
 
 
 $(document).ready(function () {
@@ -444,9 +444,11 @@ function getHideLastPartPhoneNumber() {
     remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYNAME)
         .done(function(response) {
             if (response == "false") {
-                HIDELASTPARTPHONENUMBER = false;
+                currentServerObfuscateNumberSetting = false;
+                listingViewModel.obfuscateNumber(false);
             } else {
-                HIDELASTPARTPHONENUMBER = true; // Default to hiding.
+                currentServerObfuscateNumberSetting = true;
+                listingViewModel.obfuscateNumber(true); // Default to hiding.
             }
     });
 }
@@ -911,4 +913,33 @@ function phoneCommand(cmdString) {
 function dialNumber(numberToCall) {
     conn.dialNumber(numberToCall);
     if (listingViewModel.connectedPhone()) _.delay(pickupPhone, 1000);
+}
+
+function bedienpostAdminAjaxPost(url, postObj, success, error) {
+    $.ajax
+    ({
+        type: "POST",
+        url: url,
+        data: postObj,
+        headers: {
+            "Authorization": Lisa.Connection.restAuthHeader
+        },
+        success: success,
+        error: error
+    });
+}
+
+function storeSettingObfuscateNumber(value) {
+    // Suppress call to server if the change came from the server in the first place
+    if (value == currentServerObfuscateNumberSetting)
+        return;
+
+    var postObj = {obfuscateNumber: (value) ? 1 : 0};
+    var url = "https://bedienpost.nl/admin/settings.php";
+
+    console.log("Storing setting obfustaceNumer to " + value);
+    bedienpostAdminAjaxPost(url, postObj,
+        function(){console.log("Successfully stored setting obfuscateNumber to " + value); currentServerObfuscateNumberSetting = value;},
+        function(){console.warn("Error storing obfuscateNumber setting.");}
+    );
 }

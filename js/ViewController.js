@@ -51,7 +51,7 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
 
         var numberPart = this.connectedNr();
 
-        if (HIDELASTPARTPHONENUMBER) {
+        if (listingViewModel.obfuscateNumber()) {
             if ((numberPart != "") && this.connectedName() != "") {
                 var npend = numberPart.substr(-5);
                 numberPart = numberPart.replace(npend, ".....");
@@ -315,6 +315,8 @@ var ListingsViewModel = function(){
     self.authError = ko.observable(false);
     self.numericInput = ko.observable("");
     self.phoneIp = ko.observable("");
+
+    self.obfuscateNumber = ko.observable(true);
 
 
     self.phoneAuthAvailable = ko.computed(function(){
@@ -1053,9 +1055,13 @@ var ListingsViewModel = function(){
         options: {}    
     };
 
+    self.obfuscateNumber.subscribe(function(value) {
+        storeSettingObfuscateNumber(value);
+    });
+
     ko.bindingHandlers.drag.options = { helper: 'clone' };
     self.showLogin();
-    }
+}
 
 /* Disable shortcuts when search-field gets focus */
 $("#inputField").focus(function() {

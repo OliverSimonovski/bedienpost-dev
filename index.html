@@ -462,7 +462,7 @@
                         <h4 class="modal-title">Adresboekimport</h4><br/>
                         <p>Hiermee is het mogelijk om een bedrijfsadresboek te importeren in het vCard-formaat (.vcf). Dit adresboek wordt gedeeld binnen het gehele bedrijf.</p>
                         <p>Alle gebruikers zien in hun contactenlijst de nieuwe contacten en kunnen deze direct aankiezen. Een nieuwe import overschrijft het bestaande adresboek.</p>
-                        <input type="file" data-bind="fileInput: fileData">
+                        <input type="file" data-bind="fileInput: $root.vcardFileData">
                     </p><hr/>
 
                     <p>
@@ -509,6 +509,7 @@
       <script type='text/javascript' src='js/lib/sha1.js'></script>
       <script type='text/javascript' src='js/lib/core.js'></script>
       <script type='text/javascript' src='js/lib/strophe.pubsub.js'></script>
+      <script type='text/javascript' src='js/lib/knockout-file-bindings.js'></script>
   <!-- endbuild -->
 
   <!-- build:js js/app.js -->

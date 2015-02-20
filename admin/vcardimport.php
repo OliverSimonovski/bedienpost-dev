@@ -4,7 +4,7 @@
 
     // Support OPTIONS request without authentication
     if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
-        header("Access-Control-Allow-Headers: Authorization");
+        header("Access-Control-Allow-Headers: Authorization, Content-Type");
         exit;
     }
 

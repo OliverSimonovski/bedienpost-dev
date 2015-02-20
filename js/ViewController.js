@@ -319,7 +319,6 @@ var ListingsViewModel = function(){
     self.obfuscateNumber = ko.observable(true);
     self.connectSnom = ko.observable(null);
 
-
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
     }, self);
@@ -1062,6 +1061,27 @@ var ListingsViewModel = function(){
 
     self.connectSnom.subscribe(function(value) {
        storeSettingConnectSnom(value);
+    });
+
+    /*
+     * VCard Upload
+     */
+    self.vcardFileData = ko.observable({
+        file: ko.observable(), // will be filled with a File object
+        // Read the files (all are optional, e.g: if you're certain that it is a text file, use only text:
+        binaryString: ko.observable(), // FileReader.readAsBinaryString(Blob|File) - The result property will contain the file/blob's data as a binary string. Every byte is represented by an integer in the range [0..255].
+        text: ko.observable(), // FileReader.readAsText(Blob|File, opt_encoding) - The result property will contain the file/blob's data as a text string. By default the string is decoded as 'UTF-8'. Use the optional encoding parameter can specify a different format.
+        dataURL: ko.observable(), // FileReader.readAsDataURL(Blob|File) - The result property will contain the file/blob's data encoded as a data URL.
+        arrayBuffer: ko.observable(), // FileReader.readAsArrayBuffer(Blob|File) - The result property will contain the file/blob's data as an ArrayBuffer object.
+
+        // a special observable (optional)
+        base64String: ko.observable() // just the base64 string, without mime type or anything else
+    });
+
+    self.vcardFileData().text.subscribe(function(text) {
+        var data = new FormData();
+        data.append("uploadedfile", self.vcardFileData().file());
+        uploadVCard(data);
     });
 
     ko.bindingHandlers.drag.options = { helper: 'clone' };

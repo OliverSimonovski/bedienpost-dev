@@ -963,8 +963,6 @@ function storeSettingConnectSnom(value) {
     if (value == currentServerConnectSnomSetting)
         return;
 
-
-
     var postObj = {ingeschakeld: (value) ? 1 : 0};
     var url = "https://bedienpost.nl/admin/StoreSnomConnection.php";
 
@@ -979,4 +977,30 @@ function storeSettingConnectSnom(value) {
         },
         function(){console.warn("Error storing ConnectSnom setting.");}
     );
+}
+
+function uploadVCard(data) {
+    $.ajax({
+        url: 'https://bedienpost.nl/admin/vcardimport.php',
+        type: 'POST',
+        data: data,
+        headers: {
+            "Authorization": "Basic " + btoa(JID + ":" + PASS)
+        },
+        cache: false,
+        dataType: 'json',
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        success: function(data, textStatus, jqXHR)
+        {
+            console.log("success");
+            console.log(data);
+
+        },
+        error: function(jqXHR, textStatus, errorThrown)
+        {
+            console.log("error");
+            console.log(jqXHR);
+        }
+    });
 }

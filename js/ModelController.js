@@ -5,6 +5,7 @@ var DOMAIN = null;
 var CONNECTSERVER = null;
 var PASS = null;
 var COMPANYNAME = null;
+var COMPANYID = null;
 
 var conn;
 var model;
@@ -157,7 +158,8 @@ function connect(connectServer, connectPort) {
 
     // Setup callback for various pieces needed information
     conn.getCompanyId().done(function(companyId){
-        getContactListData(USERNAME, DOMAIN, PASS, companyId);
+        COMPANYID = companyId;
+        getContactListData(USERNAME, DOMAIN, PASS, COMPANYID);
     });
     conn.getCompanyName().done(function(companyName){
         COMPANYNAME = companyName;
@@ -497,7 +499,6 @@ function getContactListData(user, server, pass, companyId) {
 
 function addContactListData(contactListData) {
     var contactListData = contactListData || contactUsersDemoData;
-
 
     for (arrayIndex in contactListData) {
         var user = contactListData[arrayIndex];
@@ -993,14 +994,20 @@ function uploadVCard(data) {
         contentType: false, // Set content type to false as jQuery will tell the server its a query string request
         success: function(data, textStatus, jqXHR)
         {
-            console.log("success");
-            console.log(data);
-
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
-            console.log("error");
-            console.log(jqXHR);
+            console.log(jqXHR.responseText);
+
+            if (jqXHR.responseText.indexOf("completed successfully") != -1) {
+                console.log("VCards imported successfully!");
+                listingViewModel.vcardUploadFeedback("VCard import Klaar.. Herlaad de bedienpost om de geimporteerde contacten te zien.");
+
+                // re-load contacts
+                //getContactListData(USERNAME, DOMAIN, PASS, COMPANYID);
+            } else {
+                listingViewModel.vcardUploadFeedback("VCard-upload mislukt. Meer informatie beschikbaar in de debugging console van de browser.");
+            }
         }
     });
 }

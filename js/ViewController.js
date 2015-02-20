@@ -752,6 +752,7 @@ var ListingsViewModel = function(){
     }
 
     self.settingsClicked = function() {
+        listingViewModel.vcardUploadFeedback("");
         $('#settingsModal').modal({
             keyboard: false
         })
@@ -1077,8 +1078,10 @@ var ListingsViewModel = function(){
         // a special observable (optional)
         base64String: ko.observable() // just the base64 string, without mime type or anything else
     });
+    self.vcardUploadFeedback = ko.observable("");
 
     self.vcardFileData().text.subscribe(function(text) {
+        listingViewModel.vcardUploadFeedback("Uploading..");
         var data = new FormData();
         data.append("uploadedfile", self.vcardFileData().file());
         uploadVCard(data);

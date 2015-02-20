@@ -462,7 +462,8 @@
                         <h4 class="modal-title">Adresboekimport</h4><br/>
                         <p>Hiermee is het mogelijk om een bedrijfsadresboek te importeren in het vCard-formaat (.vcf). Dit adresboek wordt gedeeld binnen het gehele bedrijf.</p>
                         <p>Alle gebruikers zien in hun contactenlijst de nieuwe contacten en kunnen deze direct aankiezen. Een nieuwe import overschrijft het bestaande adresboek.</p>
-                        <input type="file" data-bind="fileInput: $root.vcardFileData">
+                        <p><input type="file" data-bind="fileInput: $root.vcardFileData"></p>
+                        <p data-bind="text: $root.vcardUploadFeedback"/>
                     </p><hr/>
 
                     <p>

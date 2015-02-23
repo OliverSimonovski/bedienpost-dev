@@ -74,13 +74,15 @@
                                         css: { 'queue_1':true }">
                              <li>
                                 <span class="badge pull-right" data-bind="text: entry.timeConnected"  ></span>
-                                <div class="options todooptions">
-                                    <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
+                                 <div class="options todooptions">
+                                     <i class="fa fa-link" data-bind="click: crmClicked"></i>
+                                 </div>
+                                 <div class="options todooptions">
+                                     <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
                                  </div>
                                 <label>
                                     <h5 class="list-group-item-heading" ><span data-bind="text: entry.toDisplay"></span><span data-bind= "text:  entry.directionIsOut() ? ' [uitgaand]' : ' [inkomend]' "></span>  </h5>
                                 </label>
-
                             </li>
                         </ul>
                     </div>
@@ -455,7 +457,7 @@
                         <p>Door het activeren van de SNOM-koppeling kan je, als je een SNOM-toestel hebt, gesprekken aannemen, doorschakelen en ophangen via de Bedienpost.</p>
                         <p>Op dit moment worden de volgende SNOM-toestellen ondersteund: SNOM 300, SNOM 320, SNOM 710, SNOM 720.</p>
                         <p>Om gebruik te maken van deze functionaliteit is een directe koppeling op netwerkniveau tussen het SNOM-toestel en de PC waar de Bedienpost op draait noodzakelijk.</p>
-                        SNOM-koppeling activeren: <input name="obfuscateNumber" type="checkbox" data-bind="checked: $root.connectSnom">
+                        SNOM-koppeling activeren: <input type="checkbox" data-bind="checked: $root.connectSnom">
                     </p><hr/>
 
                     <p>
@@ -470,7 +472,7 @@
                         <h4 class="modal-title">CRM-integratie</h4><br/>
                         <p>Door CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem. Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.</p>
 
-                        url: <input name="obfuscateNumber" style="width:300px" placeholder="https://mijn-crm.bedrijf.nl/inkomend-nr/$">
+                        url: <input type="text" data-bind="value: crmUrl, valueUpdate: 'afterkeydown'" style="width:300px" placeholder="https://mijn-crm.bedrijf.nl/inkomend-nr/$">
 
                     </p>
 

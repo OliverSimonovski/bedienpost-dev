@@ -430,7 +430,7 @@ function logout() {
 
 function gotModel(newmodel) {
     getPhoneAuth(USERNAME, DOMAIN, PASS);
-    getHideLastPartPhoneNumber();
+    retrieveSettings();
 
     // Show interface
     loggedIn = true;
@@ -455,7 +455,8 @@ function gotModel(newmodel) {
    closeLoginModal();
 }
 
-function getHideLastPartPhoneNumber() {
+function retrieveSettings() {
+
     remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYNAME)
         .done(function(response) {
             if (response == "false") {
@@ -465,7 +466,12 @@ function getHideLastPartPhoneNumber() {
                 currentServerObfuscateNumberSetting = true;
                 listingViewModel.obfuscateNumber(true); // Default to hiding.
             }
-    });
+        });
+
+    remoteStorage.getItem("company_crmUrl", "", COMPANYNAME)
+        .done(function(response) {
+            listingViewModel.crmUrl(response);
+        });
 }
 
 function getContactListData(user, server, pass, companyId) {
@@ -1011,3 +1017,10 @@ function uploadVCard(data) {
         }
     });
 }
+
+function storeSettingCrmUrl(value) {
+    console.log("Setting CRM-url to " + value);
+    remoteStorage.setItem("company_crmUrl", value, "", COMPANYNAME);
+}
+
+var debouncedStoreSettingCrmUrl = _.debounce(storeSettingCrmUrl, 5000);

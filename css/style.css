@@ -379,6 +379,14 @@ body {
     margin-top:0px;
 }
 
+.fa-link
+{
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:0px;
+    margin-left: 6px;
+}
+
 .fa-star
 {
     margin-left: 6px;

@@ -17,6 +17,9 @@
         return postObj;
     }
 
+    /*
+     * For company-global data; username = "", and company = companyName
+     */
     lib.setItem = function (key, value, username, company) {
         var result = jQuery.Deferred();
 

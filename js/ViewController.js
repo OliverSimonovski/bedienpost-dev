@@ -227,6 +227,14 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 
         return result;
     }, this);
+
+    this.crmClicked = function() {
+        var url = listingViewModel.crmUrl();
+        url = url.replace("$", this.descriptionWithNumber());
+
+        console.log(url);
+        window.open(url);
+    }
 }
 
 /*
@@ -318,6 +326,7 @@ var ListingsViewModel = function(){
 
     self.obfuscateNumber = ko.observable(true);
     self.connectSnom = ko.observable(null);
+    self.crmUrl = ko.observable("");
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
@@ -599,6 +608,7 @@ var ListingsViewModel = function(){
 
     self.dismissSettingsModal = function()
     {
+        shortcutsActive = true;
         self.dismissModal($('#settingsModal'));
     }
     
@@ -753,6 +763,7 @@ var ListingsViewModel = function(){
 
     self.settingsClicked = function() {
         listingViewModel.vcardUploadFeedback("");
+        shortcutsActive = false;
         $('#settingsModal').modal({
             keyboard: false
         })
@@ -1062,6 +1073,11 @@ var ListingsViewModel = function(){
 
     self.connectSnom.subscribe(function(value) {
        storeSettingConnectSnom(value);
+    });
+
+    self.crmUrl.subscribe(function(value) {
+        // Don't update on server until we haven't received new input for 5 seconds.
+        debouncedStoreSettingCrmUrl(value);
     });
 
     /*

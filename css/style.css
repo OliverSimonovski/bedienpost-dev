@@ -390,6 +390,19 @@ body {
     margin-top:0px;
 }
 
+li.list-group-item div.pull-right i
+{
+    opacity: 0;
+    -webkit-transition: opacity .1s ease-in-out;
+       -moz-transition: opacity .1s ease-in-out;
+            transition: opacity .1s ease-in-out;
+}
+
+li.list-group-item:hover div.pull-right i
+{
+    opacity: 1;
+}
+
 .fa-envelope-o
 {
     cursor: pointer;

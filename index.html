@@ -3,6 +3,7 @@
   <head>
     <title>PC Bedienpost</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
 
             <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
         <!-- build:css css/style.css -->
@@ -78,7 +79,7 @@
                                      <i class="fa fa-link" data-bind="click: crmClicked"></i>
                                  </div>
                                  <div class="options todooptions">
-                                     <i class="fa fa-pencil-square-o" data-bind="click: $root.mailTo"></i>
+                                     <i class="fa fa-envelope-o" data-bind="click: $root.mailTo"></i>
                                  </div>
                                 <label>
                                     <h5 class="list-group-item-heading" ><span data-bind="text: entry.toDisplay"></span><span data-bind= "text:  entry.directionIsOut() ? ' [uitgaand]' : ' [inkomend]' "></span>  </h5>
@@ -111,7 +112,7 @@
                                             css: { 'queue_2':true }">
                                 <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut()), title: entry.membersStr() }">
                                      <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
-                                     <span class="time pull-right" data-bind="text: entry.maxWaitingTime">"></span>
+                                     <span class="badge time pull-right" data-bind="text: entry.maxWaitingTime">"></span>
                                      <div class="options todooptions" >
                                             <i data-bind="attr: { class: $root.signInOutCssClass(entry.signInOut()) },
                                                                             click: $root.signInOut"></i>
@@ -400,8 +401,7 @@
                 </div>
                
                 <div class="buttoncontainer text-left">
-                    <p>
-                      <i class="fa fa-pencil-square-o legend" ></i>
+                    <p><i class="fa fa-envelope-o legend" ></i>
                       Verzend een notificatie-email naar beller of gebelde</p>
                 </div>
                 <div class="buttoncontainer text-left">
@@ -437,52 +437,54 @@
     </div>
 
     <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-bg">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissSettingsModal">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Instellingenscherm</h4>
+                    <h4 class="modal-title" id="myModalLabel">Instellingen</h4>
                 </div>
                 <div class="modal-body">
 
-                    <div class="buttoncontainer text-left">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#nummerafscherming" aria-controls="nummerafscherming" role="tab" data-toggle="tab">Nummerafscherming</a></li>
+                        <li role="presentation"><a href="#snom" aria-controls="snom" role="tab" data-toggle="tab">SNOM-koppeling</a></li>
+                        <li role="presentation"><a href="#import" aria-controls="import" role="tab" data-toggle="tab">Adresboekimport</a></li>
+                        <li role="presentation"><a href="#crm" aria-controls="crm" role="tab" data-toggle="tab">CRM-integratie</a></li>
+                    </ul>
+                    
+                    <div class="tab-content">
 
-                    <p>
-                        <h4 class="modal-title">Nummerafscherming</h4><br/>
-                        Verberg laatste 5 cijfers van telefoonnummers. Dit geldt voor het gehele bedrijf: <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber">
-                    </p><hr/>
-
-                    <p>
-                        <h4 class="modal-title">SNOM-koppeling</h4><br/>
-                        <p>Door het activeren van de SNOM-koppeling kan je, als je een SNOM-toestel hebt, gesprekken aannemen, doorschakelen en ophangen via de Bedienpost.</p>
-                        <p>Op dit moment worden de volgende SNOM-toestellen ondersteund: SNOM 300, SNOM 320, SNOM 710, SNOM 720.</p>
-                        <p>Om gebruik te maken van deze functionaliteit is een directe koppeling op netwerkniveau tussen het SNOM-toestel en de PC waar de Bedienpost op draait noodzakelijk.</p>
-                        SNOM-koppeling activeren: <input type="checkbox" data-bind="checked: $root.connectSnom">
-                    </p><hr/>
-
-                    <p>
-                        <h4 class="modal-title">Adresboekimport</h4><br/>
-                        <p>Hiermee is het mogelijk om een bedrijfsadresboek te importeren in het vCard-formaat (.vcf). Dit adresboek wordt gedeeld binnen het gehele bedrijf.</p>
-                        <p>Alle gebruikers zien in hun contactenlijst de nieuwe contacten en kunnen deze direct aankiezen. Een nieuwe import overschrijft het bestaande adresboek.</p>
-                        <p><input type="file" data-bind="fileInput: $root.vcardFileData"></p>
-                        <p data-bind="text: $root.vcardUploadFeedback"/>
-                    </p><hr/>
-
-                    <p>
-                        <h4 class="modal-title">CRM-integratie</h4><br/>
-                        <p>Door CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem. Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.</p>
-
-                        url: <input type="text" data-bind="value: crmUrl, valueUpdate: 'afterkeydown'" style="width:300px" placeholder="https://mijn-crm.bedrijf.nl/inkomend-nr/$">
-
-                    </p>
+                        <div role="tabpanel" class="tab-pane active" id="nummerafscherming">
+                            <p>Verberg laatste 5 cijfers van telefoonnummers. Dit geldt voor het gehele bedrijf: <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber"></p>
+                        </div>
+    
+                        <div role="tabpanel" class="tab-pane" id="snom">
+                            <p>Door het activeren van de SNOM-koppeling kan je, als je een SNOM-toestel hebt, gesprekken aannemen, doorschakelen en ophangen via de Bedienpost.</p>
+                            <p>Op dit moment worden de volgende SNOM-toestellen ondersteund: SNOM 300, SNOM 320, SNOM 710, SNOM 720.</p>
+                            <p>Om gebruik te maken van deze functionaliteit is een directe koppeling op netwerkniveau tussen het SNOM-toestel en de PC waar de Bedienpost op draait noodzakelijk.</p>
+                            <p>SNOM-koppeling activeren: <input type="checkbox" data-bind="checked: $root.connectSnom"></p>
+                        </div>
+    
+                        <div role="tabpanel" class="tab-pane" id="import">
+                            <p>Hiermee is het mogelijk om een bedrijfsadresboek te importeren in het vCard-formaat (.vcf). Dit adresboek wordt gedeeld binnen het gehele bedrijf.</p>
+                            <p>Alle gebruikers zien in hun contactenlijst de nieuwe contacten en kunnen deze direct aankiezen. Een nieuwe import overschrijft het bestaande adresboek.</p>
+                            <p><input type="file" data-bind="fileInput: $root.vcardFileData"></p>
+                            <p data-bind="text: $root.vcardUploadFeedback"/>
+                        </div>
+    
+                        <div role="tabpanel" class="tab-pane" id="crm">
+                            <p>Door CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem. Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.</p>
+                            <p>url: <input type="text" data-bind="value: crmUrl, valueUpdate: 'afterkeydown'" style="width:300px" placeholder="https://mijn-crm.bedrijf.nl/inkomend-nr/$"></p>
+                        </div>
+                    
+                    </div>
 
                 </div>
-
 
                 <div class="modal-footer">
                     <div class="text-center">
                         <div class="btn-group">
-                            <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissSettingsModal">Klaar</button>
+                            <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissSettingsModal">Opslaan</button>
                         </div>
                     </div>
                 </div>

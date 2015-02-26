@@ -76,6 +76,9 @@
                              <li>
                                 <span class="badge pull-right" data-bind="text: entry.timeConnected"  ></span>
                                  <div class="options todooptions">
+                                     <i class="fa fa-arrow-circle-left" ></i>
+                                 </div>
+                                 <div class="options todooptions">
                                      <i class="fa fa-link" data-bind="click: crmClicked"></i>
                                  </div>
                                  <div class="options todooptions">
@@ -148,17 +151,17 @@
                         <div class="list-group list">
                              <ul data-bind=" foreach: { data:  favFilteredItems, as: 'entry' },
                                                         css: { 'curl':true }, drop: markUserFavorite">
-                                <li class="list-group-item" data-bind="click: $root.clickItem, drag: {fav: entry}" >
+                                <li class="list-group-item" data-bind="drag: {fav: entry}" >
                                      <div class="options todooptions">
-                                        <span class="badge pull-right" data-bind="text: ($root.search() == '') ? ($root.favFilteredItems().indexOf(entry) < 10 ? $root.favFilteredItems().indexOf(entry) : '' ) : '' "></span>
+                                        <span class="badge pull-right" data-bind="click: $root.clickItem,  text: ($root.search() == '') ? ($root.favFilteredItems().indexOf(entry) < 10 ? $root.favFilteredItems().indexOf(entry) : '' ) : '' "></span>
                                     </div>
                                     <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                         <div class="status">
                                          <i data-bind="attr: { class: $root.userCssClass(entry)  }"></i>
                                         </div>
                                          <div class="fixed-height">
-                                            <div class="first-label" data-bind="text: entry.name"></div>
-                                            <div class="second-label" data-bind="text: entry.ext"></div>
+                                            <div class="first-label" data-bind="click: $root.clickItem, text: entry.name"></div>
+                                            <div class="second-label" data-bind="click: $root.clickedSecondRow, text: entry.secondRow"></div>
                                         </div>
                                     </div>
                                     <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">
@@ -184,17 +187,17 @@
                     <div class="list-group list">
 
                          <ul data-bind="foreach: { data:  filteredItems, as: 'entry' }">
-                             <li class="list-group-item" data-bind="click: $root.clickItem , drag: {user: entry}">
+                             <li class="list-group-item" data-bind="drag: {user: entry}">
                                  <div class="options todooptions">
-                                     <span class="badge pull-right" data-bind="text: ($root.search() != '') ? ($root.filteredItems().indexOf(entry) < 10 ? $root.filteredItems().indexOf(entry) : '' ) : '' "></span>
+                                     <span class="badge pull-right" data-bind="click: $root.clickItem , text: ($root.search() != '') ? ($root.filteredItems().indexOf(entry) < 10 ? $root.filteredItems().indexOf(entry) : '' ) : '' "></span>
                                 </div>
                                  <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                     <div class="status">
                                         <i data-bind=      "attr: { class: $root.userCssClass(entry)}"></i>
                                     </div>
                                     <div class="fixed-height">
-                                         <div class="first-label" data-bind="text: entry.name"></div>
-                                         <div class="second-label" data-bind="text: entry.ext"></div>
+                                         <div class="first-label" data-bind="click: $root.clickItem , text: entry.name"></div>
+                                         <div class="second-label" data-bind="click: $root.clickedSecondRow, text: entry.secondRow"></div>
                                      </div>
                                  </div>
                                  <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">
@@ -485,6 +488,33 @@
                     <div class="text-center">
                         <div class="btn-group">
                             <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissSettingsModal">Opslaan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    <div class="modal fade" id="userNoteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-bg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissUserNoteModal">&times;</button>
+                    <h4 class="modal-title"><span data-bind="text: 'status voor: ' + (($root.clickedListItem()) ? $root.clickedListItem().name() : '')"></span></h4>
+                </div>
+                <div class="modal-body">
+
+                    <p>
+                    <input type="text" data-bind="value: ($root.clickedListItem() ? $root.clickedListItem().note : ''), valueUpdate: 'afterkeydown'" style="width:500px" placeholder="Status voor gebruiker">
+                    </p>
+
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <div class="btn-group">
+                                <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissUserNoteModal">Klaar</button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -26,7 +26,7 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
     this.callStartTime = ko.observable(0);
     this.amImportedContact = ko.observable(false);
     this.numbers = ko.observableArray();
-
+    this.note = ko.observable("Note for user.");
 
 
     var storedAsFav = isFav(id, UserListItem.storageKey());
@@ -62,6 +62,11 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
         return numberPart + timePart;
         
     }, this);
+
+    this.secondRow = ko.computed(function() {
+
+       return this.ext() + (((this.ext() != "") && (this.note() != "")) ? " - " : "") + this.note();
+    }, this);
 }
 
 UserListItem.prototype.startCall = function(number, name, startTime, directionIsOut) {
@@ -87,6 +92,14 @@ UserListItem.storageKey = function() {
 
 UserListItem.saveFavs = function(userList) {
     saveFavs(userList, UserListItem.storageKey());  
+}
+
+UserListItem.prototype.noteChanged = function (val) {
+
+}
+
+UserListItem.prototype.noteClicked = function () {
+
 }
 
 function isFav(id, storageKey) {
@@ -462,8 +475,12 @@ var ListingsViewModel = function(){
                 keyboard: true
             })
         }
+    }
 
-
+    self.clickedSecondRow = function(clickedItem) {
+        console.log("Second row clicked");
+        self.clickedListItem(clickedItem);
+        self.showUserNoteModal();
     }
     
     self.mailTo = function(incomingCall)
@@ -759,6 +776,21 @@ var ListingsViewModel = function(){
         $('#shortcutModal').modal({
             keyboard: false
         })
+    }
+
+    self.showUserNoteModal = function()
+    {
+        shortcutsActive = false;
+        $('#userNoteModal').modal({
+            keyboard: false
+        })
+    }
+
+    self.dismissUserNoteModal = function()
+    {
+        shortcutsActive = true;
+        self.dismissModal($('#userNoteModal'));
+        self.clickedListItem(null);
     }
 
     self.settingsClicked = function() {

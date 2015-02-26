@@ -147,20 +147,20 @@
                         <div class="list-group list">
                              <ul data-bind=" foreach: { data:  favFilteredItems, as: 'entry' },
                                                         css: { 'curl':true }, drop: markUserFavorite">
-                                <li class="list-group-item" data-bind="click: $root.clickItem, drag: {fav: entry}" >
+                                <li class="list-group-item" data-bind="drag: {fav: entry}" >
                                      <div class="options todooptions">
-                                        <span class="badge pull-right" data-bind="text: ($root.search() == '') ? ($root.favFilteredItems().indexOf(entry) < 10 ? $root.favFilteredItems().indexOf(entry) : '' ) : '' "></span>
+                                        <span class="badge pull-right" data-bind="click: $root.clickItem,  text: ($root.search() == '') ? ($root.favFilteredItems().indexOf(entry) < 10 ? $root.favFilteredItems().indexOf(entry) : '' ) : '' "></span>
                                     </div>
                                     <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                         <div class="status">
                                          <i data-bind="attr: { class: $root.userCssClass(entry)  }"></i>
                                         </div>
                                          <div class="fixed-height">
-                                            <div class="first-label" data-bind="text: entry.name"></div>
-                                            <div class="second-label" data-bind="text: entry.ext"></div>
+                                            <div class="first-label" data-bind="click: $root.clickItem, text: entry.name"></div>
+                                            <div class="second-label" data-bind="click: $root.clickedSecondRow, text: entry.secondRow"></div>
                                         </div>
                                     </div>
-                                    <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">
+                                    <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())}">
                                         <div class="connection">
                                             <i data-bind="attr: { class: (entry.directionIsOut() ? 'fa fa-arrow-circle-right' : 'fa fa-arrow-circle-left')  }"></i>
                                         </div>
@@ -183,17 +183,17 @@
                     <div class="list-group list">
 
                          <ul data-bind="foreach: { data:  filteredItems, as: 'entry' }">
-                             <li class="list-group-item" data-bind="click: $root.clickItem , drag: {user: entry}">
+                             <li class="list-group-item" data-bind="drag: {user: entry}">
                                  <div class="options todooptions">
-                                     <span class="badge pull-right" data-bind="text: ($root.search() != '') ? ($root.filteredItems().indexOf(entry) < 10 ? $root.filteredItems().indexOf(entry) : '' ) : '' "></span>
+                                     <span class="badge pull-right" data-bind="click: $root.clickItem , text: ($root.search() != '') ? ($root.filteredItems().indexOf(entry) < 10 ? $root.filteredItems().indexOf(entry) : '' ) : '' "></span>
                                 </div>
                                  <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                     <div class="status">
                                         <i data-bind=      "attr: { class: $root.userCssClass(entry)}"></i>
                                     </div>
                                     <div class="fixed-height">
-                                         <div class="first-label" data-bind="text: entry.name"></div>
-                                         <div class="second-label" data-bind="text: entry.ext"></div>
+                                         <div class="first-label" data-bind="click: $root.clickItem , text: entry.name"></div>
+                                         <div class="second-label" data-bind="click: $root.clickedSecondRow, text: entry.secondRow"></div>
                                      </div>
                                  </div>
                                  <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">
@@ -438,51 +438,78 @@
 
     <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-bg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissSettingsModal">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">Instellingenscherm</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="buttoncontainer text-left">
+
+                        <p>
+                            <h4 class="modal-title">Nummerafscherming</h4><br/>
+                            Verberg laatste 5 cijfers van telefoonnummers. Dit geldt voor het gehele bedrijf: <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber">
+                        </p><hr/>
+
+                        <p>
+                            <h4 class="modal-title">SNOM-koppeling</h4><br/>
+                            <p>Door het activeren van de SNOM-koppeling kan je, als je een SNOM-toestel hebt, gesprekken aannemen, doorschakelen en ophangen via de Bedienpost.</p>
+                            <p>Op dit moment worden de volgende SNOM-toestellen ondersteund: SNOM 300, SNOM 320, SNOM 710, SNOM 720.</p>
+                            <p>Om gebruik te maken van deze functionaliteit is een directe koppeling op netwerkniveau tussen het SNOM-toestel en de PC waar de Bedienpost op draait noodzakelijk.</p>
+                            SNOM-koppeling activeren: <input type="checkbox" data-bind="checked: $root.connectSnom">
+                        </p><hr/>
+
+                        <p>
+                            <h4 class="modal-title">Adresboekimport</h4><br/>
+                            <p>Hiermee is het mogelijk om een bedrijfsadresboek te importeren in het vCard-formaat (.vcf). Dit adresboek wordt gedeeld binnen het gehele bedrijf.</p>
+                            <p>Alle gebruikers zien in hun contactenlijst de nieuwe contacten en kunnen deze direct aankiezen. Een nieuwe import overschrijft het bestaande adresboek.</p>
+                            <p><input type="file" data-bind="fileInput: $root.vcardFileData"></p>
+                            <p data-bind="text: $root.vcardUploadFeedback"/>
+                        </p><hr/>
+
+                        <p>
+                            <h4 class="modal-title">CRM-integratie</h4><br/>
+                            <p>Door CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem. Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.</p>
+
+                            url: <input type="text" data-bind="value: crmUrl, valueUpdate: 'afterkeydown'" style="width:300px" placeholder="https://mijn-crm.bedrijf.nl/inkomend-nr/$">
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <div class="btn-group">
+                                <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissSettingsModal">Klaar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="userNoteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-bg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissSettingsModal">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Instellingenscherm</h4>
+                    <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissUserNoteModal">&times;</button>
+                    <h4 class="modal-title"><span data-bind="text: 'status voor: ' + (($root.clickedListItem()) ? $root.clickedListItem().name() : '')"></span></h4>
                 </div>
                 <div class="modal-body">
 
-                    <div class="buttoncontainer text-left">
-
                     <p>
-                        <h4 class="modal-title">Nummerafscherming</h4><br/>
-                        Verberg laatste 5 cijfers van telefoonnummers. Dit geldt voor het gehele bedrijf: <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber">
-                    </p><hr/>
-
-                    <p>
-                        <h4 class="modal-title">SNOM-koppeling</h4><br/>
-                        <p>Door het activeren van de SNOM-koppeling kan je, als je een SNOM-toestel hebt, gesprekken aannemen, doorschakelen en ophangen via de Bedienpost.</p>
-                        <p>Op dit moment worden de volgende SNOM-toestellen ondersteund: SNOM 300, SNOM 320, SNOM 710, SNOM 720.</p>
-                        <p>Om gebruik te maken van deze functionaliteit is een directe koppeling op netwerkniveau tussen het SNOM-toestel en de PC waar de Bedienpost op draait noodzakelijk.</p>
-                        SNOM-koppeling activeren: <input type="checkbox" data-bind="checked: $root.connectSnom">
-                    </p><hr/>
-
-                    <p>
-                        <h4 class="modal-title">Adresboekimport</h4><br/>
-                        <p>Hiermee is het mogelijk om een bedrijfsadresboek te importeren in het vCard-formaat (.vcf). Dit adresboek wordt gedeeld binnen het gehele bedrijf.</p>
-                        <p>Alle gebruikers zien in hun contactenlijst de nieuwe contacten en kunnen deze direct aankiezen. Een nieuwe import overschrijft het bestaande adresboek.</p>
-                        <p><input type="file" data-bind="fileInput: $root.vcardFileData"></p>
-                        <p data-bind="text: $root.vcardUploadFeedback"/>
-                    </p><hr/>
-
-                    <p>
-                        <h4 class="modal-title">CRM-integratie</h4><br/>
-                        <p>Door CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem. Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.</p>
-
-                        url: <input type="text" data-bind="value: crmUrl, valueUpdate: 'afterkeydown'" style="width:300px" placeholder="https://mijn-crm.bedrijf.nl/inkomend-nr/$">
-
+                    <input type="text" data-bind="value: ($root.clickedListItem() ? $root.clickedListItem().note : ''), valueUpdate: 'afterkeydown'" style="width:500px" placeholder="Status voor gebruiker">
                     </p>
 
-                </div>
-
-
-                <div class="modal-footer">
-                    <div class="text-center">
-                        <div class="btn-group">
-                            <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissSettingsModal">Klaar</button>
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <div class="btn-group">
+                                <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissUserNoteModal">Klaar</button>
+                            </div>
                         </div>
                     </div>
                 </div>

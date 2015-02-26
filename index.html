@@ -74,10 +74,7 @@
                          <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
                                         css: { 'queue_1':true }">
                              <li>
-                                <span class="badge pull-right" data-bind="text: entry.timeConnected"  ></span>
-                                 <div class="options todooptions">
-                                     <i class="fa fa-arrow-circle-left" ></i>
-                                 </div>
+                                <span class="badge pull-right" data-bind="text: entry.timeConnected"></span>
                                  <div class="options todooptions">
                                      <i class="fa fa-link" data-bind="click: crmClicked"></i>
                                  </div>
@@ -85,7 +82,13 @@
                                      <i class="fa fa-envelope-o" data-bind="click: $root.mailTo"></i>
                                  </div>
                                 <label>
-                                    <h5 class="list-group-item-heading" ><span data-bind="text: entry.toDisplay"></span><span data-bind= "text:  entry.directionIsOut() ? ' [uitgaand]' : ' [inkomend]' "></span>  </h5>
+                                    <h5 class="list-group-item-heading">
+                                        <span data-bind="text: entry.toDisplay"></span>
+                                        <span data-bind="text: entry.directionIsOut() ? ' [uitgaand]' : ' [inkomend]' "></span>
+                                        <div class="options terugval">
+                                            <i class="fa fa-arrow-circle-left" ></i>
+                                        </div>
+                                    </h5>
                                 </label>
                             </li>
                         </ul>
@@ -487,7 +490,7 @@
                 <div class="modal-footer">
                     <div class="text-center">
                         <div class="btn-group">
-                            <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissSettingsModal">Opslaan</button>
+                            <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissSettingsModal">Klaar</button>
                         </div>
                     </div>
                 </div>

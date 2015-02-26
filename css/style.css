@@ -439,7 +439,7 @@ body {
     margin-right: 0px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px;
+    margin-top: 0px;
 }
 
 .fa-question
@@ -448,7 +448,7 @@ body {
     margin-right: 0px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:2px;
+    margin-top: 2px;
 }
 
 .fa-arrow-circle-left
@@ -456,7 +456,12 @@ body {
     margin-left: 6px;
     margin-right: 6px;
     font-size: 20px;
-    margin-top:0px;
+    margin-top: 0px;
+}
+
+.options.terugval .fa-arrow-circle-left
+{
+    margin-top: -2px;
 }
 
 .fa-arrow-circle-right
@@ -464,8 +469,9 @@ body {
     margin-left: 6px;
     margin-right: 6px;
     font-size: 20px;
-    margin-top:0px;
+    margin-top: 0px;
 }
+
 .fa.pull-right
 {
     margin-left: .0em;

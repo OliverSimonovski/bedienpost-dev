@@ -167,6 +167,7 @@ function connect(connectServer, connectPort) {
     conn.getCompanyName().done(function(companyName){
         COMPANYNAME = companyName;
         getUserNoteModel();
+        setInterval(getUserNoteModel, 900000); // re-check every fifteen minutes.
     });
 
     // Setup callback when receiving the company model

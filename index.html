@@ -505,7 +505,7 @@
                 <div class="modal-body">
 
                     <p>
-                    <input type="text" data-bind="value: ($root.clickedListItem() ? $root.clickedListItem().note : ''), valueUpdate: 'afterkeydown'" style="width:500px" placeholder="Status voor gebruiker">
+                    <input type="text" data-bind="value: ($root.clickedListItem() ? $root.clickedListItem().note : ''), valueUpdate: 'afterkeydown', event: {blur: noteUpdated}" style="width:500px" placeholder="Status voor gebruiker">
                     </p>
 
                     <div class="modal-footer">

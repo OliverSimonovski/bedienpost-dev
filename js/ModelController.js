@@ -30,6 +30,9 @@ var pendingAttendedTransfer = null;
 
 var currentServerObfuscateNumberSetting = true;
 var currentServerConnectSnomSetting = false;
+var retrievedUserNoteModel = false;
+
+var userNoteModel = []; // userId : note.
 
 
 $(document).ready(function () {
@@ -163,6 +166,7 @@ function connect(connectServer, connectPort) {
     });
     conn.getCompanyName().done(function(companyName){
         COMPANYNAME = companyName;
+        getUserNoteModel();
     });
 
     // Setup callback when receiving the company model
@@ -1021,6 +1025,59 @@ function uploadVCard(data) {
 function storeSettingCrmUrl(value) {
     console.log("Setting CRM-url to " + value);
     remoteStorage.setItem("company_crmUrl", value, "", COMPANYNAME);
+}
+
+function getUserNoteModel() {
+    console.log("Retrieving user-note model from server.")
+    var deferred =  remoteStorage.getItem("company_userNoteModel", "", COMPANYNAME);
+    deferred.done(function (val) {
+        console.log("retrieved: " + val);
+        var parsedObj = JSON.parse(val);
+        if (!_.isObject(parsedObj) ) {
+            console.log("Invalid or empty response from server, defaulting to an empty object.");
+            val = [];
+        }
+        userNoteModel = parsedObj;
+        retrievedUserNoteModel = true;
+        assignAllUserNotes();
+
+    });
+    return deferred;
+}
+
+function assignAllUserNotes() {
+    // Give each user the right notes.
+    for (var userId in userNoteModel) {
+        var userNote = userNoteModel[userId];
+        var userObservable = userIdToUserObservable[userId];
+        userObservable.note(userNote);
+    }
+}
+
+function storeUserNote(userId, note) {
+    // Don't allow to set notes before the notes have been received at startup.
+    if (retrievedUserNoteModel == false) {
+        return;
+    }
+
+    console.log("Going to store note " + note + " for user: " + userId);
+    // First retrieve the current notes from the server, in case there have been updates.
+    var deferred = getUserNoteModel();
+    deferred.done(function(userId, note) {
+        return function(){
+            console.log("Got most recent data from server, attempting update.")
+            if (userNoteModel[userId] != note) {
+                userNoteModel[userId] = note;
+                assignAllUserNotes();
+                if (note == "") {
+                    delete userNoteModel[userId];
+                }
+                console.log("Pushing user-note model to server.")
+                console.log(userNoteModel);
+                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYNAME);
+            }
+        }
+    }(userId, note));
 }
 
 var debouncedStoreSettingCrmUrl = _.debounce(storeSettingCrmUrl, 5000);

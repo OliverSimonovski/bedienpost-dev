@@ -10,6 +10,7 @@ var contactPhoneNumberPriority = ["work", "mobile", "home"];
 
 function UserListItem(id, name, ext, log, avail, ringing, company) {
     _.bindAll(this, 'startCall', 'noCalls', 'setFavorite');
+    var self = this;
 
     this.id = ko.observable(id                            || 0);
     this.name = ko.observable(name                        || "");
@@ -26,8 +27,7 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
     this.callStartTime = ko.observable(0);
     this.amImportedContact = ko.observable(false);
     this.numbers = ko.observableArray();
-    this.note = ko.observable("Note for user.");
-
+    this.note = ko.observable("");
 
     var storedAsFav = isFav(id, UserListItem.storageKey());
     this.favorite = storedAsFav;
@@ -67,6 +67,12 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
 
        return this.ext() + (((this.ext() != "") && (this.note() != "")) ? " - " : "") + this.note();
     }, this);
+
+    this.noteUpdated = function() {
+        console.log("note Updated");
+        storeUserNote(self.id(), self.note());
+    };
+
 }
 
 UserListItem.prototype.startCall = function(number, name, startTime, directionIsOut) {
@@ -478,7 +484,6 @@ var ListingsViewModel = function(){
     }
 
     self.clickedSecondRow = function(clickedItem) {
-        console.log("Second row clicked");
         self.clickedListItem(clickedItem);
         self.showUserNoteModal();
     }
@@ -1111,6 +1116,10 @@ var ListingsViewModel = function(){
         // Don't update on server until we haven't received new input for 5 seconds.
         debouncedStoreSettingCrmUrl(value);
     });
+
+    self.noteUpdated= function() {
+        self.clickedListItem().noteUpdated();
+    }
 
     /*
      * VCard Upload

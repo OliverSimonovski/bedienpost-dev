@@ -39,7 +39,39 @@ $(document).ready(function () {
     tryAutoLogin();
 });
 
+function init() {
+    USERNAME = null;
+    JID = null;
+    DOMAIN = null;
+    CONNECTSERVER = null;
+    PASS = null;
+    COMPANYNAME = null;
+    COMPANYID = null;
+    conn = null;
+    model = null;
+    inAttTransfer = false;
+    me = null;
+    phoneIp = "";
+    phoneUser = "";
+    phonePass = "";
+    loggedIn = false;
+    reconnecting = 0;
+    serverNotExpected = false;
+    restUrl = "";
+    userIdToUserObservable = [];
+    queueIdToQueueObservable = [];
+    callIdToCallObservable = [];
+    userPhoneNumberToUserObservable = [];
+    pendingAttendedTransfer = null;
+    currentServerObfuscateNumberSetting = true;
+    currentServerConnectSnomSetting = false;
+    retrievedUserNoteModel = false;
+    userNoteModel = [];
+}
+
 function tryAutoLogin() {
+    init();
+
     // Auto-login if auto-login information provided.
     var urlvars = getUrlVars();
     if (urlvars["login"])   {
@@ -428,6 +460,9 @@ function logout() {
     userListEntries.removeAll();
     queueListEntries.removeAll();
     incomingCallEntries.removeAll();
+
+    // Empty lots of other data-structures.
+    init();
 
 }
 

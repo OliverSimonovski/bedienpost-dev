@@ -78,6 +78,11 @@ body {
     text-overflow: ellipsis;
 }
 
+.nav-tabs
+{
+    margin-bottom: 15px;
+}
+
 .list ul
 {
     max-height: 460px;
@@ -181,16 +186,17 @@ body {
 
 .icon-label
 {
-    margin-top:0px;
-    padding-right:7px;
-    font-size:13px;
+    margin-top: 0px;
+    padding-right: 3px;
+    font-size: 13px;
     font-weight: 400;
 }
 
-.row{
-
-    margin-top:0px;
+.row
+{
+    margin-top: 0px;
 }
+
 .list-group-item
 {
     margin-bottom: -7px;
@@ -229,14 +235,14 @@ body {
 
 .queue_1 li .options
 {
-    float:right;
+    float: right;
 }
 
 .queue_1 li .badge
 {
-    width:60px;
-    margin-left:7px;
-    margin-right:10px;
+    width: 60px;
+    margin-left: 7px;
+    margin-right: 10px;
 }
 
 .queue_2 li
@@ -247,14 +253,19 @@ body {
 
 .queue_2 li .options
 {
-    float:right;
+    float: right;
 }
 
 .queue_2 li .badge
 {
     width: 30px;
-    margin-left:7px;
-    margin-right:10px;
+    margin-left: 7px;
+    margin-right: 10px;
+}
+
+.badge.time {
+    width: 70px !important;
+    margin-right: 5px !important;
 }
 
 .overlay {
@@ -379,6 +390,13 @@ body {
     margin-top:0px;
 }
 
+.fa-envelope-o
+{
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 0px;
+}
+
 .fa-link
 {
     cursor:pointer;
@@ -421,7 +439,7 @@ body {
     margin-right: 0px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:0px;
+    margin-top: 0px;
 }
 
 .fa-question
@@ -430,7 +448,7 @@ body {
     margin-right: 0px;
     cursor:pointer;
     font-size: 18px;
-    margin-top:2px;
+    margin-top: 2px;
 }
 
 .fa-arrow-circle-left
@@ -438,7 +456,12 @@ body {
     margin-left: 6px;
     margin-right: 6px;
     font-size: 20px;
-    margin-top:0px;
+    margin-top: 0px;
+}
+
+.options.terugval .fa-arrow-circle-left
+{
+    margin-top: -2px;
 }
 
 .fa-arrow-circle-right
@@ -446,8 +469,9 @@ body {
     margin-left: 6px;
     margin-right: 6px;
     font-size: 20px;
-    margin-top:0px;
+    margin-top: 0px;
 }
+
 .fa.pull-right
 {
     margin-left: .0em;
@@ -504,33 +528,33 @@ body {
 
 .header
 {
-    border-bottom:1px solid #999999;
-    padding:0px;
+    border-bottom: 1px solid #999999;
+    padding: 0px;
 }
 
 .header .options
 {
-    float:right;
+    float: right;
 }
 
 .header .options .logout
 {
-     padding-left:20px;
-    display:inline;
-    cursor:pointer;
+    padding-left: 20px;
+    display: inline;
+    cursor: pointer;
 }
 .header .options .shortcuts
 {
-     padding-left: 10px;
-    display:inline;
-    cursor:pointer;
+    padding-left: 20px;
+    display: inline;
+    cursor: pointer;
 }
 
 .header .options .active
 {
-     padding-left: 10px;
-    display:inline;
-    cursor:pointer;
+    padding-left: 20px;
+    display: inline;
+    cursor: pointer;
 }
 
 .header .options .keypad

@@ -160,7 +160,7 @@
                                     </div>
                                     <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                         <div class="status">
-                                         <i data-bind="attr: { class: $root.userCssClass(entry)  }"></i>
+                                         <i data-bind="click: $root.clickItem, attr: { class: $root.userCssClass(entry)  }"></i>
                                         </div>
                                          <div class="fixed-height">
                                             <div class="first-label" data-bind="click: $root.clickItem, text: entry.name"></div>
@@ -199,7 +199,7 @@
                                 </div>
                                  <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
                                     <div class="status">
-                                        <i data-bind=      "attr: { class: $root.userCssClass(entry)}"></i>
+                                        <i data-bind="click: $root.clickItem, attr: { class: $root.userCssClass(entry)}"></i>
                                     </div>
                                     <div class="fixed-height">
                                          <div class="first-label" data-bind="click: $root.clickItem , text: entry.name"></div>
@@ -207,8 +207,8 @@
                                      </div>
                                  </div>
                                  <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">
-                                    <div class="connection">
-                                    <i data-bind="attr: { class: (entry.directionIsOut() ? 'fa fa-arrow-circle-right' : 'fa fa-arrow-circle-left')  }"></i>
+                                 <div class="connection">
+                                    <i data-bind="click: $root.clickItem, attr: { class: (entry.directionIsOut() ? 'fa fa-arrow-circle-right' : 'fa fa-arrow-circle-left')  }"></i>
                                  </div>
                                  <div class="fixed-height" >
                                       <div class="first-label" data-bind="text: entry.connectedName()">  </div>

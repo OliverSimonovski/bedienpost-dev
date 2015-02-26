@@ -32,7 +32,7 @@ var currentServerObfuscateNumberSetting = true;
 var currentServerConnectSnomSetting = false;
 var retrievedUserNoteModel = false;
 
-var userNoteModel = []; // userId : note.
+var userNoteModel = {}; // userId : note.
 
 
 $(document).ready(function () {
@@ -66,7 +66,7 @@ function init() {
     currentServerObfuscateNumberSetting = true;
     currentServerConnectSnomSetting = false;
     retrievedUserNoteModel = false;
-    userNoteModel = [];
+    userNoteModel = {};
 }
 
 function tryAutoLogin() {
@@ -1070,10 +1070,16 @@ function getUserNoteModel() {
     var deferred =  remoteStorage.getItem("company_userNoteModel", "", COMPANYNAME);
     deferred.done(function (val) {
         console.log("retrieved: " + val);
-        var parsedObj = JSON.parse(val);
+
+        var parsedObj = null;
+        try{
+            parsedObj = JSON.parse(val);
+        }catch(e){
+        }
+
         if (!_.isObject(parsedObj) ) {
             console.log("Invalid or empty response from server, defaulting to an empty object.");
-            val = [];
+            parsedObj = {};
         }
         userNoteModel = parsedObj;
         retrievedUserNoteModel = true;

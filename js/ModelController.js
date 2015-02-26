@@ -166,8 +166,6 @@ function connect(connectServer, connectPort) {
     });
     conn.getCompanyName().done(function(companyName){
         COMPANYNAME = companyName;
-        getUserNoteModel();
-        setInterval(getUserNoteModel, 900000); // re-check every fifteen minutes.
     });
 
     // Setup callback when receiving the company model
@@ -534,6 +532,10 @@ function addContactListData(contactListData) {
 
         addUser(user);
     }
+
+    // Retrieved the contact-list, now let's find the associated notes for the users.
+    getUserNoteModel();
+    setInterval(getUserNoteModel, 900000); // re-check every fifteen minutes.
 }
 
 function closeLoginModal() {
@@ -1051,7 +1053,11 @@ function assignAllUserNotes() {
     for (var userId in userNoteModel) {
         var userNote = userNoteModel[userId];
         var userObservable = userIdToUserObservable[userId];
-        userObservable.note(userNote);
+        if (userObservable != null) {
+            userObservable.note(userNote);
+        } else {
+            console.log("Note for unknown user with id " + userId);
+        }
     }
 }
 

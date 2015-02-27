@@ -108,6 +108,7 @@ function connectServerFromJidDomain(jidDomain) {
             if (dnsResponse.responses.length == 0) {
                 var msg = "Could not discover connect-server for domain. Are you using the correct JID?";
                 alert(msg)
+                $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
                 deferred.fail(msg);
                 return;
             }
@@ -179,6 +180,7 @@ function connect(connectServer, connectPort) {
             (msg.indexOf("happened") != -1)) {
             alert("Server not responding as expected. Please check the server and try again. " +
                 "Is your internet connection working?");
+            $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
             serverNotExpected = true;
         }
     });
@@ -433,6 +435,7 @@ function connectionStatusCallback(status) {
         if ((reconnecting == 0) || (reconnecting > 10)) {
             listingViewModel.authError(true);
             alert("Inloggen mislukt. Voer uw login en wachtwoord opnieuw in, en probeer het nog een keer.");
+            $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
         } else {
             reconnecting += 1;
             tryAutoLogin();

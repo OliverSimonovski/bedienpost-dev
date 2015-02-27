@@ -475,23 +475,6 @@ li.list-group-item:hover i.fa-pencil-square-o
     margin-top: 0px;
 }
 
-span.calltype-icon
-{
-    display: none;
-    visibility: hidden;
-}
-
-span.calltype-icon.fallback {
-    display: inline-block;
-    visibility: visible;
-}
-
-span.calltype-icon + span,
-span.calltype-icon + span + span
-{
-    vertical-align: top;
-}
-
 .fa-arrow-circle-right
 {
     margin-left: 6px;

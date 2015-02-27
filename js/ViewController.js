@@ -891,13 +891,17 @@ var ListingsViewModel = function(){
     }
 
     self.markUserFavorite = function(item) {
-        if (item.user) item.user.favorite(true);
-        UserListItem.saveFavs(self.currentList().entries());
+        if (item.user && !item.user.favorite()) {
+            item.user.favorite(true);
+            UserListItem.saveFavs(self.currentList().entries());
+        }
     }
 
     self.unmarkUserFavorite = function(item) {
-        if (item.fav) item.fav.favorite(false);
-        UserListItem.saveFavs(self.currentList().entries());
+        if (item.fav && item.fav.favorite) {
+            item.fav.favorite(false);
+            UserListItem.saveFavs(self.currentList().entries());
+        }
     }
 
     self.favoriteList( self.favFilteredItems()) ;

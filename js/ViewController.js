@@ -241,7 +241,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
         var result = this.name();
 
         var call = this.thisCallOrOriginalCall(this.id());
-        if (call && call.userHasChanged) result = "[terugval] " + result;
+        if (call && call.userHasChanged && call.destinationUser) result = "[terugval] " + result; //FIXME: Icon
         if (this.finished()) result += " - finished";
 
         return result;

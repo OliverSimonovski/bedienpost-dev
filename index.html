@@ -164,8 +164,7 @@
                                         </div>
                                          <div class="fixed-height">
                                             <div class="first-label" data-bind="click: $root.clickItem, text: entry.name"></div>
-                                            <div class="second-label" data-bind="click: $root.clickItem, text: entry.ext"></div>
-                                             <div class="second-label" data-bind="click: $root.clickedSecondRow, text: entry.note"></div>
+                                            <div class="second-label"><span data-bind="click: $root.clickItem, text: entry.ext"></span> <i data-bind="click: $root.clickedSecondRow" class="fa fa-pencil-square-o"></i> <span data-bind="click: $root.clickedSecondRow, text: entry.note"></span></div>
                                         </div>
                                     </div>
                                     <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">
@@ -176,9 +175,6 @@
                                             <div class="first-label" data-bind="text: entry.connectedName()">  </div>
                                             <div class="second-label" data-bind="text: entry.numberAndDuration()">  </div>
                                         </div>
-                                    </div>
-                                    <div class="pull-right" data-bind="click: $root.clickedSecondRow">
-                                        <i class="fa fa-pencil-square-o pull-right"></i>
                                     </div>
                                 </li>
                             </ul>
@@ -203,9 +199,8 @@
                                         <i data-bind="click: $root.clickItem, attr: { class: $root.userCssClass(entry)}"></i>
                                     </div>
                                     <div class="fixed-height">
-                                         <div class="first-label" data-bind="click: $root.clickItem , text: entry.name"></div>
-                                        <div class="second-label" data-bind="click: $root.clickItem, text: entry.ext"></div>
-                                        <div class="second-label" data-bind="click: $root.clickedSecondRow, text: entry.note"></div>
+                                        <div class="first-label" data-bind="click: $root.clickItem , text: entry.name"></div>
+                                        <div class="second-label"><span data-bind="click: $root.clickItem, text: entry.ext"></span> <span data-bind="click: $root.clickedSecondRow"><i class="fa fa-pencil-square-o"></i></span> <span data-bind="click: $root.clickedSecondRow, text: entry.note"></span></div>
                                      </div>
                                  </div>
                                  <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">
@@ -217,9 +212,6 @@
                                       <div class="second-label" data-bind="text: entry.numberAndDuration()">  </div>
                                  </div>
                                 </div>
-                                 <div class="pull-right" data-bind="click: $root.clickedSecondRow">
-                                     <i class="fa fa-pencil-square-o"></i>
-                                 </div>
                             </li>
                         </ul>
                     </div>

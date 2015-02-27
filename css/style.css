@@ -390,15 +390,18 @@ body {
     margin-top:0px;
 }
 
-li.list-group-item div.pull-right i
+li.list-group-item i.fa-pencil-square-o
 {
-    opacity: 0;
+    opacity: 0.2;
     -webkit-transition: opacity .1s ease-in-out;
        -moz-transition: opacity .1s ease-in-out;
             transition: opacity .1s ease-in-out;
+
+    vertical-align: -2px;
+    margin-left: 3px;
 }
 
-li.list-group-item:hover div.pull-right i
+li.list-group-item:hover i.fa-pencil-square-o
 {
     opacity: 1;
 }

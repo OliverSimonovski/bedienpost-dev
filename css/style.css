@@ -392,7 +392,7 @@ body {
 
 li.list-group-item i.fa-pencil-square-o
 {
-    opacity: 0.2;
+    opacity: 0.1;
     -webkit-transition: opacity .1s ease-in-out;
        -moz-transition: opacity .1s ease-in-out;
             transition: opacity .1s ease-in-out;

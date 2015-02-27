@@ -500,6 +500,7 @@ var ListingsViewModel = function(){
         logout();
         shortcutsActive = false;
         $("#nameInputField").focus();
+        $("#loginSubmitBtn").prop("disabled",false);
 
         // Some more data-structures to reset
         self.favoriteList = ko.observable(null);
@@ -655,6 +656,8 @@ var ListingsViewModel = function(){
     {
         console.log("Logging in as: " + self.loginName());
         login(self.loginName(), self.loginPass());
+
+        $("#loginSubmitBtn").prop("disabled",true);
     }
     
     

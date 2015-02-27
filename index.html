@@ -164,7 +164,8 @@
                                         </div>
                                          <div class="fixed-height">
                                             <div class="first-label" data-bind="click: $root.clickItem, text: entry.name"></div>
-                                            <div class="second-label" data-bind="click: $root.clickedSecondRow, text: entry.secondRow"></div>
+                                            <div class="second-label" data-bind="click: $root.clickItem, text: entry.ext"></div>
+                                             <div class="second-label" data-bind="click: $root.clickedSecondRow, text: entry.note"></div>
                                         </div>
                                     </div>
                                     <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">
@@ -203,7 +204,8 @@
                                     </div>
                                     <div class="fixed-height">
                                          <div class="first-label" data-bind="click: $root.clickItem , text: entry.name"></div>
-                                         <div class="second-label" data-bind="click: $root.clickedSecondRow, text: entry.secondRow"></div>
+                                        <div class="second-label" data-bind="click: $root.clickItem, text: entry.ext"></div>
+                                        <div class="second-label" data-bind="click: $root.clickedSecondRow, text: entry.note"></div>
                                      </div>
                                  </div>
                                  <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">

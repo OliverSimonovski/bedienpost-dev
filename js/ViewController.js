@@ -500,6 +500,9 @@ var ListingsViewModel = function(){
         logout();
         shortcutsActive = false;
         $("#nameInputField").focus();
+
+        // Some more data-structures to reset
+        self.favoriteList = ko.observable(null);
     }
 
     // no updating appearing in the UI .. omehow the values do seem to update in the array.. is the accoring value missing bindings?

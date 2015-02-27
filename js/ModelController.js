@@ -672,8 +672,12 @@ function queueToClientModel(queue, queueObj) {
 
     var availableStr = "", unAvailableStr="";
     var avfirst = true, unavfirst = true;
-    for (userId in queue.users) {
-        var user = queue.users[userId];
+    var sortedUsers = _.sortBy(queue.users, function(user){
+        return user.name;
+    });
+
+    for (userId in sortedUsers) {
+        var user = sortedUsers[userId];
         if (_.size(user.calls) == 0) {
             availableStr += ((!avfirst) ? ", " : "") + user.name;
             avfirst = false;

@@ -410,7 +410,7 @@ li.list-group-item:hover i.fa-pencil-square-o
 {
     cursor: pointer;
     font-size: 18px;
-    margin-top: 0px;
+    margin-top: -1px;
 }
 
 .fa-link
@@ -475,9 +475,21 @@ li.list-group-item:hover i.fa-pencil-square-o
     margin-top: 0px;
 }
 
-.options.terugval .fa-arrow-circle-left
+span.calltype-icon
 {
-    margin-top: -2px;
+    display: none;
+    visibility: hidden;
+}
+
+span.calltype-icon.fallback {
+    display: inline-block;
+    visibility: visible;
+}
+
+span.calltype-icon + span,
+span.calltype-icon + span + span
+{
+    vertical-align: top;
 }
 
 .fa-arrow-circle-right
@@ -534,12 +546,6 @@ li.list-group-item:hover i.fa-pencil-square-o
 .logged-out-color
 {
     color:#afafaf;
-}
-
-.list-group-item-heading
-{
-    margin-top: 2px;
-    margin-bottom: 0px;
 }
 
 .header

@@ -346,6 +346,9 @@ function getPhoneAuthFromCompass(user, server, pass) {
                 //console.log(response);
                 phonePass = response.resourceId;
                 var ip = response.privateIP;
+                if (!ip) {
+                    ip = response.publicIP;
+                }
                 if (ip) {
                     phoneIp = ip.split(":")[0];
                 }

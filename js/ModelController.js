@@ -834,7 +834,7 @@ function mergeCallEntriesList(newEntries) {
             console.log ("Call involving " + oldEntry.name() + " with id " + oldEntry.id() + " Doesn't exist anymore. Deleting.");
             //incomingCallEntries.remove(oldEntry);
             oldEntry.stopCall();
-            delete callIdToCallObservable[oldEntry.id];
+            delete callIdToCallObservable[oldEntry.id()];
         }
     }
 
@@ -856,6 +856,10 @@ function mergeCallEntriesList(newEntries) {
             incomingCallEntries.push(newEntry);    
         }
     }
+
+//    console.log("Call list after merging new enties:");
+//    console.log(incomingCallEntries());
+//    console.log(callIdToCallObservable);
 }
 
 function addQueue(queue) {

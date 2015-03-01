@@ -213,6 +213,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
         var longEnough = ((duration > 1500));
         var firstCall = (_.size(model.users[Lisa.Connection.myUserId].calls) == 1);
         var visible = ((firstCall) || (longEnough));
+        if (!visible) console.log("Suppressing view for call " + this.id());
 
         return !visible;
     }, this);
@@ -239,9 +240,9 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
     this.toDisplay = ko.computed(function()
     {
         var result = this.name();
-
         var call = this.thisCallOrOriginalCall(this.id());
-        if (call && call.userHasChanged && call.destinationUser) result = "[terugval] " + result; //FIXME: Icon
+
+        if (call && call.userHasChanged) result = "[terugval] " + result; //FIXME: Icon
         if (this.finished()) result += " - finished";
 
         return result;
@@ -282,8 +283,10 @@ CallListItem.prototype.stopCall = function() {
         _.delay(
             function (self) {
                 return function () {
-                    if (self.finished())
+                    if (self.finished()) {
                         incomingCallEntries.remove(self);
+                    }
+
                 }
             }(this)
             , 10000);

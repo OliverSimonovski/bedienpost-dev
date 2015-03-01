@@ -1245,6 +1245,9 @@ Lisa.Connection = function() {
             	                        " already ended source. Not adding to model.");
             return null;
         }
+
+        var srcDesc = src.find('description').text();
+        //console.log("Source callpoint description: " + srcDesc);
 		
 		var sourceUser = null
 		if (src.attr('type') == 'User') {
@@ -1266,6 +1269,9 @@ Lisa.Connection = function() {
             						    " already ended destination. Not adding to model.");
             return null;
         }
+
+        var dstDesc = dst.find('description').text();
+        //console.log("Destination callpoint description: " + dstDesc);
 		
 		var destinationUser = null;
 		if (dst.attr('type') == 'User') {
@@ -1276,8 +1282,8 @@ Lisa.Connection = function() {
 		// Remove the call from the original destination user; 
 		// After changing the destinationUser, we won't remember the original destinationUser anymore.
 		if (callModel.destinationUser && (callModel.destinationUser != destinationUser)) {
-			callModel.removeUser(callModel.destinationUser);
-            callModel.userHasChanged = true;
+            callModel.removeUser(callModel.destinationUser);
+            if (dstDesc != "dialler") callModel.userHasChanged = true;
 		}
 		callModel.destinationUser = destinationUser;
 		callModel.destination = dst;

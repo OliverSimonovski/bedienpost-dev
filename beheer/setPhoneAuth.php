@@ -1,8 +1,7 @@
 <html>
 <body>
 <?php
-	$SQLUSER = "bedien01_main";
-	$SQLPASS = "S4sHmqxqIU";
+	require_once("../db_auth.php");
 
 	$db = new mysqli("localhost", $SQLUSER, $SQLPASS, "bedien01_main");
 

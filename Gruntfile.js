@@ -13,6 +13,7 @@ module.exports = function(grunt) {
                         {src: 'retrieveContacts.php', dest: 'dist/private_html/retrieveContacts.php'},
                         {src: 'remoteStorage.php', dest: 'dist/private_html/remoteStorage.php'},
                         {src: 'generic.php', dest: 'dist/private_html/generic.php'},
+                        {src: 'db_auth.php', dest: 'dist/private_html/db_auth.php'},
                         {src: 'beheer/index.html', dest: 'dist/private_html/beheer/index.html'},
                         {src: 'beheer/setPhoneAuth.php', dest: 'dist/private_html/beheer/setPhoneAuth.php'},
                         {src: 'beheer/index.html', dest: 'dist/private_html/beheer/index.html'},

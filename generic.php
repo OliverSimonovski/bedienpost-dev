@@ -1,5 +1,7 @@
 <?php
 
+    require_once("./db_auth.php");
+
     function checkRestAuth($username, $server, $auth) {
             $restServer = str_replace("uc.", "rest.", $server);
             $url = "https://".$restServer."/company";
@@ -32,9 +34,6 @@
         $auth = base64_encode($username.":".$pass);
         return checkRestAuth($username, $server, $auth);
     }
-
-    $SQLUSER = "bedien01_main";
-    $SQLPASS = "S4sHmqxqIU";
 
     $db = new mysqli("localhost", $SQLUSER, $SQLPASS, "bedien01_main");
 

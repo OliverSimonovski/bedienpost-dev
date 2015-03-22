@@ -1,6 +1,6 @@
 <?php
 
-    require_once("./db_auth.php");
+    require_once("db_auth.php");
 
     function checkRestAuth($username, $server, $auth) {
             $restServer = str_replace("uc.", "rest.", $server);

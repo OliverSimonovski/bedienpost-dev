@@ -6,7 +6,9 @@
 // by Javascript objects. 
 
 // JS namespace declaration
-var Lisa = {};
+var exports = exports || {};
+Lisa = {};
+exports.Lisa = Lisa;
 
 // XML Namespaces
 Strophe.addNamespace('LISA_REQUESTS', 'http://iperity.com/compass');
@@ -911,7 +913,7 @@ Lisa.Connection = function() {
 					if (item.prop('nodeName') == 'notification') {
 						onReceiveNotification(item);
 					} else {
-						Lisa.Connection.logging('Unknown message: '
+						Lisa.Connection.logging.log('Unknown message: '
 								+ item.prop('nodeName'));
 					}
 				});
@@ -938,18 +940,7 @@ Lisa.Connection = function() {
 		}).c('subscribe', {
 			node : node,
 			jid : connection.jid
-		}).up().c('options')
-		.c('x', {
-			xmlns : 'jabber:x:data',
-			type: 'submit'
-		}).c('field', {
-			var: 'FORM_TYPE',
-			type: 'hidden'
-		}).c('value', {}, 'http://jabber.org/protocol/pubsub#subscribe_options')
-		.up().c('field', {
-			var: 'pubsub#expire',
-			type: 'text-single'
-		}).c('value', {}, 'presence');
+		});
 
 		connection.sendIQ(iq, onSubscribe, callback(function() {
 			initDeferred.reject("Sending Subscription request failed.");
@@ -1335,10 +1326,9 @@ Lisa.Connection.logging = new function() {
 		Lisa.Connection.logging.log("SENT: " + data);
 	}
 
-	Strophe.error = this.log;
-
 }();
 
+Strophe.error = Lisa.Connection.logging.warn;
 
 function getEnvWithPrefix(prefix, env) {
     env = env || Lisa.Connection.server;

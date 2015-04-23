@@ -1033,7 +1033,7 @@ var ListingsViewModel = function(){
         } else if (matchesKey(e.which, "d")) {  // D - dialpad
             self.showKeypad();
             e.preventDefault();
-        } else if (matchesKey(e.which, "p")) {  // P - pickup
+        } else if (matchesKey(e.which, "n")) {  // P - pickup
             self.doPickup();
             e.preventDefault();
         } else if (matchesKey(e.which, "h")) {  // H - hangup

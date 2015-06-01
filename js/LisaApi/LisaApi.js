@@ -90,6 +90,35 @@ Lisa.User = function() {
 	this.observable = new Lisa.Observable();
 }
 
+Lisa.RemovedCalls = function() {
+	this.callIds = {};
+	this.position = {};
+	this.currentPosition = 0;
+	this.maxPosition = 127;
+
+	this.addRemovedCall = function (callId){
+		// Empty the currentPosition.
+		var oldCallId = this.position[this.currentPosition];
+		if (oldCallId) delete this.callIds[oldCallId];
+
+		// Store the new call-id in currentPosition.
+		this.callIds[callId] = callId;
+		this.position[this.currentPosition] = callId;
+		this.currentPosition++;
+
+		// Wrap around if currentPosition > maxPosition
+		if (this.currentPosition > this.maxPosition) {
+			this.currentPosition = 0;
+		}
+
+		Lisa.Connection.logging.log("Currently storing " + _.size(this.callIds) + " removed calls.");
+	}
+
+	this.callIsRemoved = function(callId) {
+		return (this.callIds[callId] != undefined);
+	}
+}
+
 /*
  * Queue object
  */
@@ -213,6 +242,7 @@ Lisa.Model = function() {
 	this.users = {}; // Array of users, keyed by id.
 	this.queues = {}; // Array of queues, keyed by id.
 	this.calls = {}; // Array of calls, keyed by id.
+	this.removedCalls = new Lisa.RemovedCalls();
 	this.userListObservable = new Lisa.Observable();
 	this.queueListObservable = new Lisa.Observable();
 	this.callListObservable = new Lisa.Observable();
@@ -240,6 +270,9 @@ Lisa.Model = function() {
 	}
 
 	this.removeCall = function(theCall) {
+
+		Lisa.Connection.model.removedCalls.addRemovedCall(theCall.id);
+
 		var call = this.calls[theCall.id];
 		if (call == null) {
 			Lisa.Connection.logging
@@ -971,15 +1004,27 @@ Lisa.Connection = function() {
 		if (type.indexOf('notification.call') == 0) {
 			if (type == 'notification.call.end') {
 				var callId = msg.find("callId").text();
+				if (Lisa.Connection.model.removedCalls.callIsRemoved(callId)) {
+					Lisa.Connection.logging.log("WARNING: Call has already been removed, not removing again: " + callId);
+					return;
+				}
 				var call = findOrCreateCall(callId);
 				Lisa.Connection.model.removeCall(call);
 			} else if (type == 'notification.call.start') {
 				var call = msg.find('call');
 				var callModel = xmlToCall(call);
+				if (Lisa.Connection.model.removedCalls.callIsRemoved(callModel.id)) {
+					Lisa.Connection.logging.log("WARNING: Call has already been removed, not adding: " + callModel.id);
+					return;
+				}
 				Lisa.Connection.model.addCall(callModel);
 			} else if (type == 'notification.call.update') {
 				var call = msg.find('call');
 				var callModel = xmlToCall(call);
+				if (Lisa.Connection.model.removedCalls.callIsRemoved(callModel.id)) {
+					Lisa.Connection.logging.log("WARNING: Call has already been removed, not updating: " + callModel.id);
+					return;
+				}
                 Lisa.Connection.model.addCall(callModel);
             }
 		} else if (type.indexOf('notification.queueMember') == 0) {
@@ -1336,3 +1381,4 @@ function getEnvWithPrefix(prefix, env) {
     splitOnDot[0] = prefix;
     return splitOnDot.join(".");
 }
+Lisa.getEnvWithPrefix = getEnvWithPrefix;

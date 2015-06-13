@@ -684,6 +684,7 @@ function queueToClientModel(queue, queueObj) {
 
     for (userId in sortedUsers) {
         var user = sortedUsers[userId];
+        if (user.loggedIn == false) continue;
         if (_.size(user.calls) == 0) {
             availableStr += ((!avfirst) ? ", " : "") + user.name;
             avfirst = false;

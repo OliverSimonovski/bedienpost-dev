@@ -172,6 +172,15 @@ Lisa.Queue = function() {
 		call.observable.notify(call);
 	}
 
+	this.forceRemoveCall = function(callId) {
+		Lisa.Connection.logging.log("Force-removing call-id " + callId + " from queue " + this);
+		if (!this.calls[callId]) {
+			Lisa.Connection.logging.warn("Tried to force-remove call, but call " +
+				callId + " not present in model " + this);
+		}
+		delete this.calls[callId];
+	}
+
 	this.removeCall = function(call) {
 		if (!call) {
 			Lisa.Connection.logging.warn("Tried to remove call, but call is NULL");
@@ -276,8 +285,8 @@ Lisa.Model = function() {
 		var call = this.calls[theCall.id];
 		if (call == null) {
 			Lisa.Connection.logging
-					.log("MODEL: WARNING: Request to remove call, but call not in data model."
-							+ call);
+					.log("MODEL: WARNING: Request to remove call, but call not in data model. "
+							+ theCall.id);
 			return;
 		}
 
@@ -1141,6 +1150,12 @@ Lisa.Connection = function() {
 		var queueCall = notification.find('queueCall');
 		var callId = queueCall.find('callId').text();
 		var call = Lisa.Connection.model.getCall(callId);
+
+		if (Lisa.Connection.model.removedCalls.callIsRemoved(callId)) {
+			Lisa.Connection.logging.log("WARNING: Call has already been removed, not processing " + type + " : " + callId);
+			if (queue) queue.forceRemoveCall(callId);
+			return;
+		}
 
 		if (queue && call) {
 			if (type.indexOf('notification.queue.call.enter') == 0) {

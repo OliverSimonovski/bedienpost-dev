@@ -293,8 +293,6 @@ CallListItem.prototype.stopCall = function() {
     }
 }
 
-
-
 /*
  * ko.observable with the current time that triggers every second. 
  *  All time-dependent function can efficiently track this one observable. 
@@ -494,7 +492,7 @@ var ListingsViewModel = function(){
     self.mailTo = function(incomingCall)
     {
         self.incomingCallMailTo(incomingCall);
-        var mailtoUrl = "mailto:?Subject=Gemiste oproep vanaf " + incomingCall.descriptionWithNumber();
+        var mailtoUrl = "mailto:?Subject=Terugbelverzoek: " + incomingCall.descriptionWithNumber();
         $('<iframe src="'+mailtoUrl+'">').appendTo('body').css("display", "none");
     }
 

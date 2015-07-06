@@ -32,7 +32,7 @@ Lisa.Observable = function() {
 
 	this.removeObserver = function(callback) {
 		var index = this.observers.indexOf(callback);
-        this.observers.remove(index);
+		delete this.observers[index];
 	}
 
 	this.notify = function() {
@@ -64,8 +64,8 @@ Lisa.User = function() {
 			return;	
 		}
 		this.queues[queue.id] = queue;
-		this.observable.notify(this);
-		queue.observable.notify(queue);
+		this.observable.notify(this, Lisa.User.EventTypes.QueueAdded, queue);
+		queue.observable.notify(queue, Lisa.Queue.EventTypes.UserAdded, this);
 	}
 
 	this.removeQueue = function(queue) {
@@ -79,8 +79,8 @@ Lisa.User = function() {
 		}
 
 		delete this.queues[queue.id];
-		this.observable.notify(this);
-		queue.observable.notify(queue);
+		this.observable.notify(this, Lisa.User.QueueRemoved, queue);
+		queue.observable.notify(queue, Lisa.Queue.EventTypes.UserRemoved, this);
 	}
 
 	this.toString = function() {
@@ -89,6 +89,16 @@ Lisa.User = function() {
 	}
 	this.observable = new Lisa.Observable();
 }
+
+Lisa.User.EventTypes = {
+	CallAdded : "CallAdded",
+	CallRemoved : "CallRemoved",
+	QueueAdded : "QueueAdded",
+	QueueRemoved : "QueueRemoved",
+	AmAdded : "AmAdded",
+	AmRemoved : "AmRemoved",
+	PropertyChanged : "PropertyChanged"
+};
 
 Lisa.RemovedCalls = function() {
 	this.callIds = {};
@@ -132,6 +142,7 @@ Lisa.Queue = function() {
 	this.totalWait = 0;
 	this.handledCalls = 0;
 	this.totalCalls = 0;
+	this.paused = false;
 
 	this.addUser = function(user) {
 		if (!user) {
@@ -140,8 +151,8 @@ Lisa.Queue = function() {
 		}
 
 		this.users[user.id] = user;
-		this.observable.notify(this);
-		user.observable.notify(user);
+		this.observable.notify(this, Lisa.Queue.EventTypes.UserAdded, user);
+		user.observable.notify(user, Lisa.User.EventTypes.QueueAdded, this);
 	}
 
 	this.removeUser = function(user) {
@@ -155,8 +166,8 @@ Lisa.Queue = function() {
 		}
 
 		delete this.users[user.id];
-		this.observable.notify(this);
-		user.observable.notify(user);
+		this.observable.notify(this, Lisa.Queue.EventTypes.UserRemoved, user);
+		user.observable.notify(user, Lisa.User.EventTypes.QueueRemoved, this);
 	}
 
 	this.addCall = function(call) {
@@ -168,17 +179,8 @@ Lisa.Queue = function() {
 
 		this.calls[call.id] = call;
 		call.queue = this;
-		this.observable.notify(this);
+		this.observable.notify(this, Lisa.Queue.EventTypes.CallAdded, call);
 		call.observable.notify(call);
-	}
-
-	this.forceRemoveCall = function(callId) {
-		Lisa.Connection.logging.log("Force-removing call-id " + callId + " from queue " + this);
-		if (!this.calls[callId]) {
-			Lisa.Connection.logging.warn("Tried to force-remove call, but call " +
-				callId + " not present in model " + this);
-		}
-		delete this.calls[callId];
 	}
 
 	this.removeCall = function(call) {
@@ -194,7 +196,7 @@ Lisa.Queue = function() {
 		Lisa.Connection.logging.log("Removing call " + call + " from queue " + this);
 		call.queue = null;
 		delete this.calls[call.id];
-		this.observable.notify(this);
+		this.observable.notify(this, Lisa.Queue.EventTypes.CallRemoved, call);
 		call.observable.notify(call);
 	}
 
@@ -204,6 +206,15 @@ Lisa.Queue = function() {
 	this.observable = new Lisa.Observable();
 }
 
+Lisa.Queue.EventTypes = {
+	CallAdded : "CallAdded",
+	CallRemoved : "CallRemoved",
+	UserAdded : "UserAdded",
+	UserRemoved : "UserRemoved",
+	AmAdded : "AmAdded",
+	AmRemoved : "AmRemoved",
+	PropertyChanged : "PropertyChanged"
+};
 
 /*
  * Call object
@@ -236,8 +247,13 @@ Lisa.Call = function() {
 		if (this.destinationUser == user) {
 			delete this.destinationUser.calls[this.id];
 		}
-		user.observable.notify(user);
+		user.observable.notify(user, Lisa.User.EventTypes.CallRemoved, this);
 	}
+}
+
+Lisa.Call.EventTypes = {
+	AmAdded: "AmAdded",
+	AmRemoved: "AmRemoved"
 }
 
 /**
@@ -264,17 +280,17 @@ Lisa.Model = function() {
 		if (newCall) {
 			this.callListObservable.notify(call, 'add');
 		} else {
-			call.observable.notify(call);
+			call.observable.notify(call, Lisa.Call.EventTypes.AmAdded);
 		}
 		
 		// Attach the call to any involved users.
 		if (call.sourceUser) {
 			call.sourceUser.calls[call.id] = call;
-			call.sourceUser.observable.notify(call.sourceUser);
+			call.sourceUser.observable.notify(call.sourceUser, Lisa.User.EventTypes.CallAdded, call);
 		}
 		if (call.destinationUser) {
 			call.destinationUser.calls[call.id] = call;
-			call.destinationUser.observable.notify(call.destinationUser);
+			call.destinationUser.observable.notify(call.destinationUser, Lisa.User.EventTypes.CallAdded, call);
 		}
 	}
 
@@ -285,8 +301,8 @@ Lisa.Model = function() {
 		var call = this.calls[theCall.id];
 		if (call == null) {
 			Lisa.Connection.logging
-					.log("MODEL: WARNING: Request to remove call, but call not in data model. "
-							+ theCall.id);
+					.log("MODEL: WARNING: Request to remove call, but call not in data model."
+							+ call);
 			return;
 		}
 
@@ -296,16 +312,17 @@ Lisa.Model = function() {
 		// Delete the call from all objects that might refer to it.
 		if (call.sourceUser) {
 			delete call.sourceUser.calls[call.id];
-			call.sourceUser.observable.notify(call.sourceUser);
+			call.sourceUser.observable.notify(call.sourceUser, Lisa.User.EventTypes.CallRemoved, call);
 		}
 		if (call.destinationUser) {
 			delete call.destinationUser.calls[call.id];
-			call.destinationUser.observable.notify(call.destinationUser);
+			call.destinationUser.observable.notify(call.destinationUser, Lisa.User.EventTypes.CallRemoved, call);
 		}
 		if (call.queue) {
 			call.queue.removeCall(call);
 		}
 
+		call.observable.notify(call, Lisa.Call.EventTypes.AmRemoved);
 		Lisa.Connection.logging.log("MODEL: Removed call " + call);
 		this.callListObservable.notify(call, 'remove');
 	}
@@ -323,7 +340,7 @@ Lisa.Model = function() {
 			this.addCall(queue.calls[callId]);
 		}
 
-		queue.observable.notify(queue);
+		queue.observable.notify(queue, Lisa.Queue.EventTypes.AmAdded);
 		if (newQueue)
 			this.queueListObservable.notify(this, queue);
 	}
@@ -339,11 +356,12 @@ Lisa.Model = function() {
 
 		// --- Send Notifications ---
 
-		user.observable.notify(user);
+		user.observable.notify(user, Lisa.User.EventTypes.AmAdded);
 
 		for ( var queueId in user.queues) {
 			var queue = this.queues[queueId];
-			queue.observable.notify(queue);
+			queue.observable.notify(queue, Lisa.Queue.EventTypes.UserAdded, user);
+			user.observable.notify(user, Lisa.User.EventTypes.QueueAdded, queue);
 		}
 
 		if (newUser)
@@ -366,7 +384,7 @@ Lisa.Model = function() {
 						+ "from queue" + queue);
 
 				// Notify any queues that the user used to be in
-				queue.observable.notify(queue);
+				queue.observable.notify(queue, Lisa.Queue.EventTypes.UserRemoved, user);
 			}
 		}
 
@@ -429,13 +447,14 @@ Lisa.Connection = function() {
 	var modelCompleteDeferred = $.Deferred();
 	var usersDone = false;
 	var queuesDone = false;
+	var callsDone = false;
 
 	// === Public members
 	
 	this.retrieve_model = true;
 	this.log_xmpp = false;
 	this.connectionStatusObservable = Lisa.Connection.connectionStatusObservable;
-	this.model = Lisa.Connection.Model;
+	this.model = Lisa.Connection.model;
 	
 	/**
      * Connect to the XMPP server through BOSH
@@ -597,11 +616,55 @@ Lisa.Connection = function() {
         );
         return deferred;
     }
+	function getQueueId(queue) {
+		var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
+		return queueId;
+	}
+
+	/** Pause the current user in a queue **/
+	this.queuePause = function(queue) {
+		var deferred = jQuery.Deferred();
+		var queueId = getQueueId(queue);
+
+		Lisa.Connection.logging.log("Pausing queue " + queueId + " for user." );
+
+		restAjaxRequest(
+			Lisa.Connection.restIdentityUrl + "/pauseQueue",
+			{queue:queueId},
+			function (response){
+				Lisa.Connection.logging.log("paused queue " + queue);
+				deferred.resolve();
+			},
+			function (response){
+				Lisa.Connection.logging.log("Failed pausing queue " + queue);
+				deferred.reject();
+			}
+		)
+	}
+
+	/** UnPause the current user in a queue **/
+	this.queueUnpause = function(queue) {
+		var deferred = jQuery.Deferred();
+		var queueId = getQueueId(queue);
+
+		Lisa.Connection.logging.log("Unpausing queue " + queueId + " for user." );
+
+		restAjaxRequest(
+			Lisa.Connection.restIdentityUrl + "/unpauseQueue",
+			{queue:queueId},
+			function (response){
+				Lisa.Connection.logging.log("unpaused queue " + queue);
+				deferred.resolve();
+			},
+			function (response){
+				Lisa.Connection.logging.log("Failed Unpausing queue " + queue);
+				deferred.reject();
+			}
+		)
+	}
 
 	/** Have the current user logon to a queue*/
 	this.queueLogin = function(queue) {
-
-
         // First, see whether we have any previous settings stored for the queue.
         var fromLs = localStorage.getItem(localStorageKeyForQueue(queue));
         var settingsObj = (fromLs) ? JSON.parse(fromLs) : {};
@@ -612,7 +675,7 @@ Lisa.Connection = function() {
     /** Have the current user logon to a queue with known settings*/
     this.queueLoginWithSettings = function(queue, priority, callForward) {
         var deferred = jQuery.Deferred();
-        var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
+		var queueId = getQueueId(queue);
         Lisa.Connection.logging.log("Logging in to queue " + queueId
                                     + " with priority " + priority + " and follow-forwards " + callForward);
         restAjaxRequest(
@@ -642,7 +705,7 @@ Lisa.Connection = function() {
             function(queue) {
                 return function (response){
                     // Store current queue settings
-                    var queueId = "https://" + Lisa.Connection.restServer + "/queue/" + queue.id;
+					var queueId = getQueueId(queue);
                     var currentSettings = _.where(response, {queue: queueId})[0];
                     var settingsObj = {priority: currentSettings.priority, callForward: currentSettings.callForward};
                     Lisa.Connection.logging.log("Storing settings " + JSON.stringify(settingsObj) + " for queue " + queue + " on logout.");
@@ -921,7 +984,7 @@ Lisa.Connection = function() {
     }
 
 	function isModelComplete() {
-		if (usersDone && queuesDone) {
+		if (usersDone && queuesDone && callsDone) {
 			if (Lisa.Connection.myUserId == 0) {
 				Lisa.Connection.logging
 						.log("ERROR: Model complete, but couldn't find own user.");
@@ -1037,8 +1100,7 @@ Lisa.Connection = function() {
                 Lisa.Connection.model.addCall(callModel);
             }
 		} else if (type.indexOf('notification.queueMember') == 0) {
-			var member = msg.find('member');
-			xmlToQueueMember(type, member);
+			xmlToQueueMember(type, msg);
 		} else if (type.indexOf('notification.queue.call') == 0) {
 			xmlToQueueCall(type, msg);
 		} else if (type.indexOf('notification.queue.update') == 0) {
@@ -1123,7 +1185,8 @@ Lisa.Connection = function() {
 		return userModel;
 	}
 
-	function xmlToQueueMember(type, member) {
+	function xmlToQueueMember(type, msg) {
+		var member = msg.find('member');
 		var queueId = member.find('queueId').text();
 		var queue = Lisa.Connection.model.getQueue(queueId);
 		var userId = member.find('userId').text();
@@ -1140,6 +1203,17 @@ Lisa.Connection = function() {
 				user.removeQueue(queue);
 				Lisa.Connection.logging.log("Removed user " + user +
 									 		" from queue " + queue);
+			} else if (type.indexOf('notification.queueMember.update') == 0) {
+				var pausedSinceText = member.find('pausedSince').text();
+				if ((pausedSinceText != undefined) && (pausedSinceText != "")) {
+					if (parseInt(pausedSinceText) > 0) {
+						Lisa.Connection.logging.log("Setting user to paused for queue " + queue);
+						queue.paused = true;
+					}
+				} else {
+					Lisa.Connection.logging.log("Setting user to unpaused for queue " + queue);
+					queue.paused = false;
+				}
 			}
 		}
 	}
@@ -1150,12 +1224,6 @@ Lisa.Connection = function() {
 		var queueCall = notification.find('queueCall');
 		var callId = queueCall.find('callId').text();
 		var call = Lisa.Connection.model.getCall(callId);
-
-		if (Lisa.Connection.model.removedCalls.callIsRemoved(callId)) {
-			Lisa.Connection.logging.log("WARNING: Call has already been removed, not processing " + type + " : " + callId);
-			if (queue) queue.forceRemoveCall(callId);
-			return;
-		}
 
 		if (queue && call) {
 			if (type.indexOf('notification.queue.call.enter') == 0) {
@@ -1188,6 +1256,12 @@ Lisa.Connection = function() {
 							user.addQueue(queueModel);
 							Lisa.Connection.logging.log("Added user " + user
 									+ " to queue " + queueModel);
+						}
+
+						if (user.id == Lisa.Connection.myUserId) {
+							// We are this user.
+							var amPaused = $(child).find('pausedSince').text() != 0;
+							queueModel.paused = amPaused;
 						}
 					}
 				}(queueModel));
@@ -1239,7 +1313,7 @@ Lisa.Connection = function() {
 					var value = $(child).find("newValue").text();
 					if (name == "loggedIn") {
 						user.loggedIn = (value == "true");
-						user.observable.notify(user);
+						user.observable.notify(user, Lisa.User.EventTypes.PropertyChanged, "loggedIn", user.loggedIn);
 					}
 				}
 			}
@@ -1253,7 +1327,7 @@ Lisa.Connection = function() {
 					var statistic = $(child).find("name").text();
 					var statValue = $(child).find("newValue").text();
 					queueModel[statistic] = statValue;
-					queueModel.observable.notify(queueModel);
+					queueModel.observable.notify(queueModel, Lisa.Queue.EventTypes.PropertyChanged, statistic, statValue);
 				}
 			}
 		}(queueModel));		

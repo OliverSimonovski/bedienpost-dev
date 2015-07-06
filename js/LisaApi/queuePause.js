@@ -17,7 +17,7 @@
         this.conn = conn;
         this.pauseTimes = {};                       // {queueId: 10}}
 
-        this.pauseTimes = pauseTimes;
+        this.pauseTimes = pauseTimes || {};
 
         conn.getModel().done(this.modelReady);
 
@@ -65,11 +65,11 @@
             if (lastQueue) {
                 // Determine whether this queue has a pause-time.
                 var pauseTime = this.pauseTimes[lastQueue.id];
-                Lisa.Connection.logging.log("Pausing this user for " + pauseTime + " seconds");
 
                 if (pauseTime && (pauseTime > 0)) {
-                    this.conn.queuePause(conn, lastQueue);
-                    _.delay(function(queue) {
+                    Lisa.Connection.logging.log("Pausing this user for " + pauseTime + " seconds");
+                    this.conn.queuePause(lastQueue);
+                    _.delay(function(conn, queue) {
                         conn.queueUnpause(queue);
                     }, pauseTime * 1000, this.conn, lastQueue);
                 }

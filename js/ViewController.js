@@ -156,9 +156,12 @@ function QueueListItem(id, name) {
     this.membersStr = ko.observable("");
     this.waitingAmount = ko.observable(0);
     this.maxWaitingStartTime = ko.observable(0);
+    this.pauseTime = ko.observable(0);
     this.orderNr = 0;
 
     this.favorite = isFav(id, QueueListItem.storageKey());
+
+    this.pauseTime.subscribe(_.debounce(pauseTimeUpdated, 5000));
 
     this.maxWaitingTime = ko.computed(function()
     {
@@ -192,6 +195,23 @@ QueueListItem.saveFavs = function(queueList) {
 
 QueueListItem.storageKey = function() {
     return USERNAME + "@" + DOMAIN + "_QueueListFavs";
+}
+
+// Set the new pause-times for the queues after one of the values has been changed.
+function pauseTimeUpdated() {
+    var queuePauseSettings = {};
+    for (var queueKey in listingViewModel.filterWaitingQueue()) {
+        var queue = listingViewModel.filterWaitingQueue()[queueKey];
+
+        var pauseTime = parseInt(queue.pauseTime());
+        if (pauseTime < 0 ) {
+            pauseTime = 0;
+        }
+
+        queuePauseSettings[queue.id()] = pauseTime;
+    }
+    console.log(queuePauseSettings);
+    queuePause.changePauseTimes(queuePauseSettings);
 }
 
 function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber) {

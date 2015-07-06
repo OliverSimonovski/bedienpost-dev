@@ -33,6 +33,7 @@ var currentServerConnectSnomSetting = false;
 var retrievedUserNoteModel = false;
 
 var userNoteModel = {}; // userId : note.
+var queuePause = null;
 
 
 $(document).ready(function () {
@@ -475,6 +476,9 @@ function logout() {
 function gotModel(newmodel) {
     getPhoneAuth(USERNAME, DOMAIN, PASS);
     retrieveSettings();
+
+    // initialise the queuePause module.
+    queuePause = new QueuePause(conn);
 
     // Show interface
     loggedIn = true;

@@ -1209,10 +1209,12 @@ Lisa.Connection = function() {
 					if (parseInt(pausedSinceText) > 0) {
 						Lisa.Connection.logging.log("Setting user to paused for queue " + queue);
 						queue.paused = true;
+						queue.observable.notify(queue, Lisa.Queue.EventTypes.PropertyChanged, "paused", queue.paused);
 					}
 				} else {
 					Lisa.Connection.logging.log("Setting user to unpaused for queue " + queue);
 					queue.paused = false;
+					queue.observable.notify(queue, Lisa.Queue.EventTypes.PropertyChanged, "paused", queue.paused);
 				}
 			}
 		}

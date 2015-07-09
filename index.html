@@ -121,6 +121,8 @@
                                                                             click: $root.signInOut"></i>
                                             <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite()) },
                                                                click: $root.markQueueFavorite"></i>
+                                            <i data-bind="attr: { class: (entry.paused() ? 'fa fa-pause logged-in-color' : 'fa fa-pause logged-out-color') },
+                                                               click: entry.togglePause"></i>
                                     </div>
                                     <label>
                                         <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>

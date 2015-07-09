@@ -695,6 +695,7 @@ function queueToClientModel(queue, queueObj) {
     queueObj.signInOut(queue.users[Lisa.Connection.myUserId] != null);
     queueObj.waitingAmount(_.size(queue.calls));
     queueObj.maxWaitingStartTime(currentTime() - queue.maxWait * 1000);
+    queueObj.paused(queue.paused);
 
     var availableStr = "", unAvailableStr="";
     var avfirst = true, unavfirst = true;

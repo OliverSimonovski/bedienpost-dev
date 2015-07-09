@@ -147,7 +147,7 @@ function saveFavs(list, storageKey) {
 
 
 function QueueListItem(id, name) {
-    _.bindAll(this, 'queueLogin');
+    _.bindAll(this, 'queueLogin', 'togglePause');
 
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
@@ -157,6 +157,7 @@ function QueueListItem(id, name) {
     this.waitingAmount = ko.observable(0);
     this.maxWaitingStartTime = ko.observable(0);
     this.pauseTime = ko.observable(0);
+    this.paused = ko.observable(false);
     this.orderNr = 0;
 
     this.favorite = isFav(id, QueueListItem.storageKey());
@@ -186,6 +187,22 @@ QueueListItem.prototype.queueLogin = function (amLoggingIn) {
         conn.queueLogin(queue);
     } else {
         conn.queueLogout(queue);   
+    }
+}
+
+QueueListItem.prototype.togglePause = function () {
+    //this.signInOut(amLoggingIn); // Event should come correctly through api.
+    if (!this.signInOut) {
+        console.log("Can't pause queue, since we're not logged into queue.");
+    }
+
+    var queue = Lisa.Connection.model.queues[this.id()];
+    var curPaused = queue.paused;
+
+    if (curPaused) {
+        conn.queueUnpause(queue);
+    } else {
+        conn.queuePause(queue);
     }
 }
 

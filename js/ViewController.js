@@ -210,8 +210,20 @@ function pauseTimeUpdated() {
 
         queuePauseSettings[queue.id()] = pauseTime;
     }
+    //console.log(queuePauseSettings);
+    setAutoPauseSettingsInBackend(queuePauseSettings);
+}
+
+function setAutoPauseSettingsInGui(queuePauseSettings) {
+    console.log("Retrieved auto-pause settings from server, updating settings gui-model.")
     console.log(queuePauseSettings);
-    queuePause.changePauseTimes(queuePauseSettings);
+    for (var queueKey in listingViewModel.filterWaitingQueue()) {
+        var queueItem = listingViewModel.filterWaitingQueue()[queueKey];
+        var pauseTime = queuePauseSettings[queueItem.id()];
+        if (pauseTime) {
+            queueItem.pauseTime(pauseTime);
+        }
+    }
 }
 
 function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber) {

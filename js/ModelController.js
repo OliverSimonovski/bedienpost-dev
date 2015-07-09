@@ -520,6 +520,22 @@ function retrieveSettings() {
         .done(function(response) {
             listingViewModel.crmUrl(response);
         });
+
+    remoteStorage.getItem("company_autoPauseSettings", "", COMPANYNAME)
+        .done(function(response) {
+            if (response != null) {
+                var queuePauseSettings = JSON.parse(response);
+                queuePause.changePauseTimes(queuePauseSettings);
+                setAutoPauseSettingsInGui(queuePauseSettings);
+            }
+        });
+}
+
+function setAutoPauseSettingsInBackend(queuePauseSettings) {
+    console.log("GUI changed, updating pause-times in back-end, and storing on server.")
+    console.log(queuePauseSettings);
+    queuePause.changePauseTimes(queuePauseSettings);
+    remoteStorage.setItem("company_autoPauseSettings", JSON.stringify(queuePauseSettings), "", COMPANYNAME);
 }
 
 function getContactListData(user, server, pass, companyId) {

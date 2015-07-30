@@ -4,16 +4,18 @@
      * Attach library under 'remoteStorage' global.
      * Can be accessed as 'lib' within the library
      */
+
     var root = this;
     var lib = root.remoteStorage = {};
+    exports.remoteStorage = lib;
 
     /* username defaults to global USERNAME, company defaults to empty ("") */
     function initPostObj(username, company) {
         var postObj = {};
-        postObj.username = (username == "") ? "" : username || USERNAME; // if username is empty, keep it empty.
-        postObj.server = DOMAIN;
+        postObj.username = (username == "") ? "" : username || LOGINDATA.username; // if username is empty, keep it empty.
+        postObj.server = LOGINDATA.rest_server;
         postObj.company = company || "";
-        postObj.auth = btoa(USERNAME + ":" + PASS);
+        postObj.auth = btoa(LOGINDATA.rest_user + ":" + PASS);
         return postObj;
     }
 
@@ -47,6 +49,9 @@
         return result;
     }
 
+    /*
+     * For company-global data; username = "", and company = companyName
+     */
     lib.getItem = function(key, username, company) {
         var result = jQuery.Deferred();
 
@@ -66,6 +71,7 @@
             },
             error: function (response) {
                 console.log("Error remoteStorage getItem for key: " + key + " username: " + USERNAME + " server: " + DOMAIN);
+                result.reject(response);
                 //console.log(JSON.stringify(response));
             }
         });

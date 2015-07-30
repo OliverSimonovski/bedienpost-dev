@@ -1,4 +1,5 @@
 
+var LOGINDATA = {};
 var USERNAME = null;
 var JID = null;
 var DOMAIN = null;
@@ -41,6 +42,7 @@ $(document).ready(function () {
 });
 
 function init() {
+    LOGINDATA = {};
     USERNAME = null;
     JID = null;
     DOMAIN = null;
@@ -90,65 +92,30 @@ function tryAutoLogin() {
     }
 }
 
-function connectServerFromJidDomain(jidDomain) {
-    var deferred = jQuery.Deferred();
-    if (jidDomain.indexOf("uc.") == 0) {
-        var boshServer = getEnvWithPrefix("bosh", jidDomain);
-        deferred.resolve(boshServer, 443);
-    } else {
-        var srvRequestName = "_xmpp-server._tcp." + jidDomain;
-        console.log("Resolving: " + srvRequestName);
-
-        var srvResponse = DnsResolv.resolve(srvRequestName, "SRV");
-
-        srvResponse.done(function(dnsResponse){
-            console.log("Got response:");
-            console.log(dnsResponse);
-
-            // No SRV record found.
-            if (dnsResponse.responses.length == 0) {
-                var msg = "Could not discover connect-server for domain. Are you using the correct JID?";
-                alert(msg)
-                $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
-                deferred.fail(msg);
-                return;
-            }
-
-            // SRV record found. Let's find the server for the environment.
-            var responseString = dnsResponse.responses[0].rdata;
-            var responseServer = responseString.split(" ")[3];
-            console.log("Found XMPP server: " + responseServer);
-
-            // Some string replacement to find the BOSH server
-            var boshServer = getEnvWithPrefix("bosh", responseServer);
-            console.log("Found BOSH server: " + boshServer);
-            deferred.resolve(boshServer, 443);
-        });
-    }
-    return deferred;
-}
-
 function login(login, password, server) {
 
-    var loginSplit = login.split("@");
-    DOMAIN = loginSplit[1];
-    DOMAIN = DOMAIN || server;
-    DOMAIN = DOMAIN || "uc.pbx.speakup-telecom.com";
     PASS = password;
-
-    // For user@domain users, turn the username in a full jid.
-    if (DOMAIN.indexOf("uc.") == 0) {
-        USERNAME = loginSplit[0];
-    } else {
-        USERNAME = login;
-    }
-
-
     listingViewModel.loginName(login);
+    
+    var parseLoginDeferred = ResolveServer.parseLogin(login);
+    parseLoginDeferred.done(function(parsedLogin) {
 
-    var serverDeferred = connectServerFromJidDomain(DOMAIN);
-    serverDeferred.done(function(connectserver, connectPort){
-        connect(connectserver, connectPort);
+        //console.log(parsedLogin);
+        LOGINDATA = parsedLogin;
+        USERNAME = parsedLogin.username;
+        DOMAIN = parsedLogin.domain;
+
+        conn = new Lisa.Connection();
+
+        // Setup logging and status messages.
+        conn.logging.setCallback(function(msg) {
+            console.log(msg);
+        });
+
+        // Setup connection-status callback.
+        conn.connectionStatusObservable.addObserver(connectionStatusCallback);
+        connect(parsedLogin.bosh_server);
+        listingViewModel.numericInput("");
     });
 }
 
@@ -206,11 +173,10 @@ function connect(connectServer, connectPort) {
     // Setup callback when receiving the company model
     conn.getModel().done(gotModel);
 
-    console.log("Connecting to: " + CONNECTSERVER + " " + JID + " " + PASS);
+    console.log("Connecting to: " + LOGINDATA.bosh_server + " " + LOGINDATA.jid);
 
-    conn.connect(CONNECTSERVER, JID, PASS);
-    
-//    getPhoneAuth(USERNAME, DOMAIN, PASS);
+    conn.connect(LOGINDATA.bosh_server, LOGINDATA.jid, PASS);
+
     listingViewModel.numericInput("");
 
 
@@ -486,7 +452,7 @@ function gotModel(newmodel) {
     serverNotExpected = false;
     var loginInfo = {};
     loginInfo.loggedIn = true;
-    loginInfo.username = USERNAME;
+    loginInfo.username = LOGINDATA.given_login;
     loginInfo.password = PASS;
     loginInfo.server = DOMAIN;
     localStorage.setItem("loginInfo", JSON.stringify(loginInfo));

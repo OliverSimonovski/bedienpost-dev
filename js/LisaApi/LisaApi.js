@@ -56,6 +56,7 @@ Lisa.User = function() {
 	this.extension = "";
 	this.calls = {};
 	this.queues = {};
+	this.pausedForQueue = {};
 	this.loggedIn = false;
 
 	this.addQueue = function(queue) {
@@ -1203,18 +1204,25 @@ Lisa.Connection = function() {
 				user.removeQueue(queue);
 				Lisa.Connection.logging.log("Removed user " + user +
 									 		" from queue " + queue);
+
 			} else if (type.indexOf('notification.queueMember.update') == 0) {
 				var pausedSinceText = member.find('pausedSince').text();
 				if ((pausedSinceText != undefined) && (pausedSinceText != "")) {
 					if (parseInt(pausedSinceText) > 0) {
 						Lisa.Connection.logging.log("Setting user to paused for queue " + queue);
-						queue.paused = true;
-						queue.observable.notify(queue, Lisa.Queue.EventTypes.PropertyChanged, "paused", queue.paused);
+						user.pausedForQueue[queue.id] = true;
+						if (user.id == Lisa.Connection.myUserId) {
+							queue.paused = true;
+							queue.observable.notify(queue, Lisa.Queue.EventTypes.PropertyChanged, "paused", queue.paused);
+						}
 					}
 				} else {
 					Lisa.Connection.logging.log("Setting user to unpaused for queue " + queue);
-					queue.paused = false;
-					queue.observable.notify(queue, Lisa.Queue.EventTypes.PropertyChanged, "paused", queue.paused);
+					user.pausedForQueue[queue.id] = false;
+					if (user.id == Lisa.Connection.myUserId) {
+						queue.paused = false;
+						queue.observable.notify(queue, Lisa.Queue.EventTypes.PropertyChanged, "paused", queue.paused);
+					}
 				}
 			}
 		}
@@ -1253,16 +1261,18 @@ Lisa.Connection = function() {
 					return function(idx, child) {
 						var userId = $(child).find('userId').text();
 						var user = Lisa.Connection.model.users[userId];
+						var amPaused = $(child).find('pausedSince').text() != 0;
+
 						if (user) {
 							queueModel.addUser(user);
 							user.addQueue(queueModel);
 							Lisa.Connection.logging.log("Added user " + user
 									+ " to queue " + queueModel);
+							user.pausedForQueue[queueModel.id] = amPaused;
 						}
 
 						if (user.id == Lisa.Connection.myUserId) {
 							// We are this user.
-							var amPaused = $(child).find('pausedSince').text() != 0;
 							queueModel.paused = amPaused;
 						}
 					}

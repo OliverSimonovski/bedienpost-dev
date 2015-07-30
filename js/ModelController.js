@@ -96,7 +96,7 @@ function login(login, password, server) {
 
     PASS = password;
     listingViewModel.loginName(login);
-    
+
     var parseLoginDeferred = ResolveServer.parseLogin(login);
     parseLoginDeferred.done(function(parsedLogin) {
 
@@ -190,52 +190,6 @@ function getPhoneAuth(user, server, pass) {
     getPhoneAuthFromCompass(user, server, pass);
 }
 
-// Get configuration for the phone from the server.
-function getPhoneAuthFromBedienpostServer(user, server, pass) {
-
-    var postObj = {};
-    postObj.username = user;
-    postObj.server = server;
-    postObj.auth = btoa(user + ":" + pass)
-
-    console.log("Retrieving phone auth for: " + user + " " + server);
-
-    $.ajax
-      ({
-        type: "POST",
-        url: "https://www.bedienpost.nl/retrievePhoneAuth.php",
-        dataType: 'json',
-        data: postObj,
-        success: function (response){
-            //console.log(response);
-            var responseObj = response;
-            phoneIp = responseObj.phoneIp;
-            listingViewModel.phoneIp(phoneIp);
-            phoneUser = responseObj.phoneUser;
-            phonePass = responseObj.phonePass;
-            console.log("Configured authentication information for phone on " + phoneIp);
-            console.log(navigator.userAgent);
-            if (navigator.userAgent.indexOf("Chrome") != -1) {
-                chromeLoginPhone();
-            }
-
-            // Check whether the phone is reachable.
-            listingViewModel.phoneIp(phoneIp);
-            listingViewModel.connectedPhone(false);
-            checkSnomConnected();
-            setInterval(checkSnomConnected, 300000); // re-check every five minutes.
-        }, 
-        error: function (response) {
-            console.log("User not authorized for SNOM control.")
-            phoneIp = "";
-            phoneUser = "";
-            phonePass = "";
-            listingViewModel.phoneIp(phoneIp);
-            listingViewModel.connectedPhone(false);
-        }
-    });    
-}
-
 function getPhoneAuthFromCompass(user, server, pass) {
     // Get the company.
     var getCompany = function() {
@@ -268,11 +222,14 @@ function getPhoneAuthFromCompass(user, server, pass) {
                 // next step
                 getPhoneStatus();
             } else if (response.phoneIp != null) {
-                // phoneIP is filled out and not 'auto'. Use the legacy method of retrieving the phone-auth information from the Bedienpost server.
-                console.log("Using legacy-mechanism to retrieve phone-auth.");
-                getPhoneAuthFromBedienpostServer(USERNAME, DOMAIN, PASS);
-                currentServerConnectSnomSetting = false;
-                listingViewModel.connectSnom(false);
+                console.log("Legacy phone-auth data found.");
+                // phoneIP is filled out and not 'auto'.
+                // This originates from when the compass platform wasn't able to give us phone authentication information by itself.
+                // Those deployments don't exist anymore, so let's just retrieve phone-auth from the server anyway.
+                currentServerConnectSnomSetting = true;
+                listingViewModel.connectSnom(true);
+                // next step
+                getPhoneStatus();
             } else {
                 currentServerConnectSnomSetting = false;
                 listingViewModel.connectSnom(false);

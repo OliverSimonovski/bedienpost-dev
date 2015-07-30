@@ -533,7 +533,7 @@ function retrieveSettings() {
 
 function setAutoPauseSettingsInBackend(queuePauseSettings) {
     console.log("GUI changed, updating pause-times in back-end, and storing on server.")
-    console.log(queuePauseSettings);
+    //console.log(queuePauseSettings);
     queuePause.changePauseTimes(queuePauseSettings);
     remoteStorage.setItem("company_autoPauseSettings", JSON.stringify(queuePauseSettings), "", COMPANYNAME);
 }
@@ -691,22 +691,31 @@ function userToClientModel(user, userObj) {
 
 
 function queueToClientModel(queue, queueObj) {
+    console.log("Updating queue representation for queue " + queue.name);
+
     queueObj = queueObj || new QueueListItem(queue.id, queue.name);
     queueObj.signInOut(queue.users[Lisa.Connection.myUserId] != null);
     queueObj.waitingAmount(_.size(queue.calls));
     queueObj.maxWaitingStartTime(currentTime() - queue.maxWait * 1000);
     queueObj.paused(queue.paused);
 
-    var availableStr = "", unAvailableStr="";
-    var avfirst = true, unavfirst = true;
+    var availableStr = "", unAvailableStr="", pausedStr = "";
+    var avfirst = true, unavfirst = true, pausedFirst = true;
     var sortedUsers = _.sortBy(queue.users, function(user){
         return user.name;
     });
 
     for (userId in sortedUsers) {
         var user = sortedUsers[userId];
-        if (user.loggedIn == false) continue;
-        if (_.size(user.calls) == 0) {
+        //console.log(user);
+        //console.log(queueObj.id());
+        //if (user.loggedIn == false) continue;
+        var pausedForQueue = user.pausedForQueue[queueObj.id()];
+
+       if (pausedForQueue) {
+            pausedStr += ((!pausedFirst) ? ", " : "") + user.name;
+            pausedFirst = false;
+        } else if (_.size(user.calls) == 0) {
             availableStr += ((!avfirst) ? ", " : "") + user.name;
             avfirst = false;
         } else {
@@ -714,7 +723,9 @@ function queueToClientModel(queue, queueObj) {
             unavfirst = false;
         }
     }
-    var memberStr = "Beschikbaar: \n " + availableStr + "\n\nNiet Beschikbaar:\n" + unAvailableStr;
+    var memberStr = "Beschikbaar: \n " + availableStr +
+        "\n\nNiet Beschikbaar:\n" + unAvailableStr +
+        "\n\nPaused:\n" + pausedStr;
     queueObj.membersStr(memberStr);
 
     return queueObj;

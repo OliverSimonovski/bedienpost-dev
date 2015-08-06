@@ -69,13 +69,15 @@
                 if (pauseTime && (pauseTime > 0)) {
                     Lisa.Connection.logging.log("Pausing this user for " + pauseTime + " seconds");
                     this.conn.queuePause(lastQueue);
+                    lastQueue.observable.notify(lastQueue, "autoPaused", pauseTime, call);
+
                     _.delay(function(conn, queue) {
                         conn.queueUnpause(queue);
+                        queue.observable.notify(queue, "autoUnpaused");
                     }, pauseTime * 1000, this.conn, lastQueue);
                 }
             }
         }
     }
-
 
 }).call(this);

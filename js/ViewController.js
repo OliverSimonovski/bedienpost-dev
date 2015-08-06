@@ -252,6 +252,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
     this.directionIsOut = ko.observable(directionIsOut    || false);
     this.finished = ko.observable(false);
     this.descriptionWithNumber = ko.observable(descriptionWithNumber || "");
+    this.isAutoPause = ko.observable(false);
 
     /* We use the destroy-property to hide calls that have lasted less than 2 seconds */
     // Hacky solution for hunkemoller
@@ -261,7 +262,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 
         var longEnough = ((duration > 1500));
         var firstCall = (_.size(model.users[Lisa.Connection.myUserId].calls) == 1);
-        var visible = ((firstCall) || (longEnough));
+        var visible = ((firstCall) || (longEnough) || this.isAutoPause());
         if (!visible) console.log("Suppressing view for call " + this.id());
 
         return !visible;
@@ -275,11 +276,16 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart); // duration in milliseconds
-        if (duration < 0) {
-            if (duration < clockCompensation)
-                clockCompensation = duration; // We want the minimum value that we've seen in clockCompensation.
+        if (!this.isAutoPause()) {
+            if (duration < 0) {
+                if (duration < clockCompensation)
+                    clockCompensation = duration; // We want the minimum value that we've seen in clockCompensation.
+            }
+            duration -= clockCompensation;
+        } else if (duration < 0) {
+            console.log(duration);
+            duration = -duration;
         }
-        duration -= clockCompensation;
 
         var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         return timeString;
@@ -342,6 +348,24 @@ CallListItem.prototype.stopCall = function() {
     }
 }
 
+/* This is slightly hacking; Pressing a auto-pause message in the format of a CallListItem.
+ * If we get any more of these, refactor the list to be able to contain multiple types of items. */
+CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
+    this.isAutoPause(true);
+    this.finished(false);
+    this.name("Wrap-up time voor: " + queue.name);
+    console.log(currentTime().valueOf() / 1000);
+    console.log(pauseTime);
+    this.callStartTime(currentTime().valueOf() / 1000 + pauseTime);
+
+    _.delay(
+        function (self) {
+            return function () {
+                incomingCallEntries.remove(self);
+            }
+        }(this), pauseTime * 1000);
+}
+
 /*
  * ko.observable with the current time that triggers every second. 
  *  All time-dependent function can efficiently track this one observable. 
@@ -384,6 +408,7 @@ var ListingsViewModel = function(){
     self.waitingQueueItemToMarkFavorite = ko.observable();
     
     self.loginName = ko.observable();
+    self.loggedInName = ko.observable();
     self.loginPass = ko.observable();
     self.incomingCallMailTo = ko.observable();
     self.search = ko.observable().extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });

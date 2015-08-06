@@ -95,7 +95,6 @@ function tryAutoLogin() {
 function login(login, password, server) {
 
     PASS = password;
-    listingViewModel.loginName(login);
 
     var parseLoginDeferred = ResolveServer.parseLogin(login);
     parseLoginDeferred.done(function(parsedLogin) {
@@ -178,8 +177,6 @@ function connect(connectServer, connectPort) {
     conn.connect(LOGINDATA.bosh_server, LOGINDATA.jid, PASS);
 
     listingViewModel.numericInput("");
-
-
 }
 
 /*
@@ -413,7 +410,7 @@ function gotModel(newmodel) {
     loginInfo.password = PASS;
     loginInfo.server = DOMAIN;
     localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
-
+    listingViewModel.loggedInName(LOGINDATA.given_login);
     
     model = newmodel;
     me = model.users[Lisa.Connection.myUserId];
@@ -831,10 +828,17 @@ function addQueue(queue) {
     queueIdToQueueObservable[queue.id] = queueObj;
 }
 
-function updateQueue(queue) {
+function updateQueue(queue, eventName, pauseTime, number) {
     console.log("Updating queue " + queue);
     var queueObj = queueIdToQueueObservable[queue.id];
     queueObj = queueToClientModel(queue, queueObj);
+
+    // Handle queue auto-pause.
+    if (eventName == "autoPaused") {
+        var callListItem = new CallListItem(null, null, null, null, number);
+        callListItem.makeAutoPause(queue, pauseTime);
+        incomingCallEntries.push(callListItem);
+    }
 
     return queueObj;
 }

@@ -410,7 +410,7 @@ function gotModel(newmodel) {
     loginInfo.password = PASS;
     loginInfo.server = DOMAIN;
     localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
-    listingViewModel.loggedInName(LOGINDATA.given_login);
+    listingViewModel.loggedInName(Lisa.Connection.model.users[Lisa.Connection.myUserId].name);
     
     model = newmodel;
     me = model.users[Lisa.Connection.myUserId];

@@ -106,11 +106,6 @@ function login(login, password, server) {
 
         conn = new Lisa.Connection();
 
-        // Setup logging and status messages.
-        conn.logging.setCallback(function(msg) {
-            console.log(msg);
-        });
-
         // Setup connection-status callback.
         conn.connectionStatusObservable.addObserver(connectionStatusCallback);
         connect(parsedLogin.bosh_server);

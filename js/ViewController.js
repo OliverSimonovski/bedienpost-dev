@@ -283,7 +283,6 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
             }
             duration -= clockCompensation;
         } else if (duration < 0) {
-            console.log(duration);
             duration = -duration;
         }
 
@@ -354,8 +353,6 @@ CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
     this.isAutoPause(true);
     this.finished(false);
     this.name("Wrap-up time voor: " + queue.name);
-    console.log(currentTime().valueOf() / 1000);
-    console.log(pauseTime);
     this.callStartTime(currentTime().valueOf() / 1000 + pauseTime);
 
     _.delay(

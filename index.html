@@ -122,7 +122,7 @@
                                                                             click: $root.signInOut"></i>
                                             <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite()) },
                                                                click: $root.markQueueFavorite"></i>
-                                            <i data-bind="attr: { class: (entry.paused() ? 'fa fa-play' : 'fa fa-pause') },
+                                            <i data-bind="attr: { class: (entry.paused() ? 'fa fa-play' : 'fa fa-pause') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') },
                                                                click: entry.togglePause"></i>
                                     </div>
                                     <label>
@@ -455,6 +455,7 @@
                         <li role="presentation" class="active"><a href="#nummerafscherming" aria-controls="nummerafscherming" role="tab" data-toggle="tab">Nummerafscherming</a></li>
                         <li role="presentation"><a href="#snom" aria-controls="snom" role="tab" data-toggle="tab">SNOM-koppeling</a></li>
                         <li role="presentation"><a href="#import" aria-controls="import" role="tab" data-toggle="tab">Adresboekimport</a></li>
+                        <li role="presentation"><a href="#pauserights" aria-controls="import" role="tab" data-toggle="tab">Pause rechten</a></li>
                         <li role="presentation"><a href="#crm" aria-controls="crm" role="tab" data-toggle="tab">CRM-integratie</a></li>
                     </ul>
                     
@@ -476,6 +477,10 @@
                             <p>Alle gebruikers zien in hun contactenlijst de nieuwe contacten en kunnen deze direct aankiezen. Een nieuwe import overschrijft het bestaande adresboek.</p>
                             <p><input type="file" data-bind="fileInput: $root.vcardFileData"></p>
                             <p data-bind="text: $root.vcardUploadFeedback"/>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="pauserights">
+                            <p>Gebruikers mogen zichzelf pauzeren: <input type="checkbox" data-bind="checked: $root.allowPause"></p>
                         </div>
     
                         <div role="tabpanel" class="tab-pane" id="crm">

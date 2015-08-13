@@ -194,6 +194,7 @@ QueueListItem.prototype.togglePause = function () {
     //this.signInOut(amLoggingIn); // Event should come correctly through api.
     if (!this.signInOut) {
         console.log("Can't pause queue, since we're not logged into queue.");
+        return;
     }
 
     var queue = Lisa.Connection.model.queues[this.id()];
@@ -202,7 +203,11 @@ QueueListItem.prototype.togglePause = function () {
     if (curPaused) {
         conn.queueUnpause(queue);
     } else {
-        conn.queuePause(queue);
+        if (!listingViewModel.allowPause()) {
+            console.log("Users disallowed from pausing in this company. Not pausing.");
+        } else {
+            conn.queuePause(queue);
+        }
     }
 }
 
@@ -418,6 +423,8 @@ var ListingsViewModel = function(){
     self.obfuscateNumber = ko.observable(true);
     self.connectSnom = ko.observable(null);
     self.crmUrl = ko.observable("");
+
+    self.allowPause = ko.observable(true);
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
@@ -1197,6 +1204,10 @@ var ListingsViewModel = function(){
     self.crmUrl.subscribe(function(value) {
         // Don't update on server until we haven't received new input for 5 seconds.
         debouncedStoreSettingCrmUrl(value);
+    });
+
+    self.allowPause.subscribe(function(value) {
+        storeSettingAllowPause(value);
     });
 
     self.noteUpdated= function() {

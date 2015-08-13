@@ -444,6 +444,14 @@ function retrieveSettings() {
                 setAutoPauseSettingsInGui(queuePauseSettings);
             }
         });
+
+    remoteStorage.getItem("company_allowPause", "", COMPANYNAME)
+        .done(function (response) {
+            console.log("Retrieved company allowPaused setting: " + response);
+            if (response !== null) {
+                listingViewModel.allowPause(JSON.parse(response));
+            }
+        });
 }
 
 function setAutoPauseSettingsInBackend(queuePauseSettings) {
@@ -1027,6 +1035,11 @@ function uploadVCard(data) {
             }
         }
     });
+}
+
+function storeSettingAllowPause(value) {
+    console.log("Setting allow-pause to " + value);
+    remoteStorage.setItem("company_allowPause", value, "", COMPANYNAME);
 }
 
 function storeSettingCrmUrl(value) {

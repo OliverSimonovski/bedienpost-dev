@@ -57,26 +57,29 @@
     }
 
     root.QueuePause.prototype.currentUserChanged = function (user, type, item) {
-        if (type == Lisa.User.EventTypes.CallRemoved) {
-            var call = item;
-            var lastQueue = item.lastQueue;
-            //console.log("Last queue that this call went through:" + lastQueue);
+        var call = item;
+        var lastQueue = item ? item.lastQueue : null;
+        var pauseTime = lastQueue ? this.pauseTimes[lastQueue.id] : 0;  // Determine whether this queue has a pause-time.
 
-            if (lastQueue) {
-                // Determine whether this queue has a pause-time.
-                var pauseTime = this.pauseTimes[lastQueue.id];
+        // No pause-time configured for queue. Return.
+        if (!(pauseTime && (pauseTime > 0))) {
+            return;
+        }
 
-                if (pauseTime && (pauseTime > 0)) {
-                    Lisa.Connection.logging.log("Pausing this user for " + pauseTime + " seconds");
-                    this.conn.queuePause(lastQueue);
-                    lastQueue.observable.notify(lastQueue, "autoPaused", pauseTime, call);
+        if (type == Lisa.User.EventTypes.CallAdded) {
+            Lisa.Connection.logging.log("Pausing this user for queue " + lastQueue);
+            this.conn.queuePause(lastQueue);
 
-                    _.delay(function(conn, queue) {
-                        conn.queueUnpause(queue);
-                        queue.observable.notify(queue, "autoUnpaused");
-                    }, pauseTime * 1000, this.conn, lastQueue);
-                }
-            }
+        } else if (type == Lisa.User.EventTypes.CallRemoved) {
+
+                Lisa.Connection.logging.log("Starting wrap-up time for this user for " + pauseTime + " seconds");
+                lastQueue.observable.notify(lastQueue, "autoPaused", pauseTime, call);
+
+                _.delay(function(conn, queue) {
+                    conn.queueUnpause(queue);
+                    queue.observable.notify(queue, "autoUnpaused");
+                }, pauseTime * 1000, this.conn, lastQueue);
+
         }
     }
 

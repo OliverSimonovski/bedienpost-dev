@@ -453,6 +453,7 @@
 
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#nummerafscherming" aria-controls="nummerafscherming" role="tab" data-toggle="tab">Nummerafscherming</a></li>
+                        <li role="presentation"><a href="#autopause" aria-controls="autopause" role="tab" data-toggle="tab">Auto-pauze</a></li>
                         <li role="presentation"><a href="#snom" aria-controls="snom" role="tab" data-toggle="tab">SNOM-koppeling</a></li>
                         <li role="presentation"><a href="#import" aria-controls="import" role="tab" data-toggle="tab">Adresboekimport</a></li>
                         <li role="presentation"><a href="#pauserights" aria-controls="import" role="tab" data-toggle="tab">Pauze rechten</a></li>
@@ -463,6 +464,14 @@
 
                         <div role="tabpanel" class="tab-pane active" id="nummerafscherming">
                             <p>Verberg laatste 5 cijfers van telefoonnummers. Dit geldt voor het gehele bedrijf: <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber"></p>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="autopause">
+                            <table data-bind="foreach: { data: filterWaitingQueue, as: 'entry' }">
+                                <tr>
+                                    <td> <span data-bind="text: entry.name"></span></td><td> pauzeer automatisch voor <input type="number" min="0" max="900" data-bind="value: entry.pauseTime, valueUpdate: 'afterkeydown'"> seconden.</td>
+                                </tr>
+                            </table>
                         </div>
     
                         <div role="tabpanel" class="tab-pane" id="snom">

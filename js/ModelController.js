@@ -634,18 +634,17 @@ function queueToClientModel(queue, queueObj) {
         //console.log(queueObj.id());
 
         if (user.loggedIn == false) continue;
-        if (_.size(user.calls) == 0) {
-            availableStr += ((!avfirst) ? ", " : "") + user.name;
-            avfirst = false;
+        var pausedForQueue = user.pausedForQueue[queueObj.id()];
+        if (_.size(user.calls) > 0) {
+            unAvailableStr += ((!unavfirst) ? ", " : "") + user.name;
+            unavfirst = false;
         } else if (pausedForQueue) {
             pausedStr += ((!pausedFirst) ? ", " : "") + user.name;
             pausedFirst = false;
-        } else {
-            unAvailableStr += ((!unavfirst) ? ", " : "") + user.name;
-            unavfirst = false;
+        } else if (_.size(user.calls) == 0){
+            availableStr += ((!avfirst) ? ", " : "") + user.name;
+            avfirst = false;
         }
-
-        var pausedForQueue = user.pausedForQueue[queueObj.id()];
     }
     var memberStr = "Beschikbaar: \n " + availableStr +
         "\n\nNiet Beschikbaar:\n" + unAvailableStr +

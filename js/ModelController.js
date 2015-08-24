@@ -197,6 +197,7 @@ function getPhoneAuthFromCompass(user, server, pass) {
         ({
             type: "GET",
             headers: {
+                "Accept" : "application/vnd.iperity.compass.v1+json",
                 "Authorization": Lisa.Connection.restAuthHeader,
                 "X-No-Redirect": true
             },
@@ -285,6 +286,7 @@ function getPhoneAuthFromCompass(user, server, pass) {
             ({
                 type: "GET",
                 headers: {
+                    "Accept" : "application/vnd.iperity.compass.v1+json",
                     "Authorization": Lisa.Connection.restAuthHeader,
                     "X-No-Redirect": true
                 },
@@ -300,6 +302,7 @@ function getPhoneAuthFromCompass(user, server, pass) {
         ({
             type: "GET",
             headers: {
+                "Accept" : "application/vnd.iperity.compass.v1+json",
                 "Authorization": Lisa.Connection.restAuthHeader,
                 "X-No-Redirect": true
             },

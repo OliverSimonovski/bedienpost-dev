@@ -370,6 +370,18 @@ body {
     color: white;
 }
 
+.loginname {
+    padding: 4px 10px;
+    margin-right: 5px;
+    float: right;
+    
+    font-size: 13px;
+    text-align: right;
+    
+    border-radius: 4px;
+    background-color: #f0f0f0;
+}
+
 .fa
 {
     font-size: 20px;

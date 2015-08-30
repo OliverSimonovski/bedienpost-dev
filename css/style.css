@@ -411,6 +411,15 @@ body {
     margin-top: 1px;
 }
 
+.table-responsive {
+    max-height: 350px;
+    overflow-y: scroll;
+}
+
+#autopause table td:first-child {
+    vertical-align: middle;
+}
+
 li.list-group-item i.fa-pencil-square-o
 {
     opacity: 0.1;

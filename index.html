@@ -473,11 +473,16 @@
                         </div>
 
                         <div role="tabpanel" class="tab-pane" id="autopause">
-                            <table data-bind="foreach: { data: filterWaitingQueue, as: 'entry' }">
-                                <tr>
-                                    <td> <span data-bind="text: entry.name"></span></td><td> pauzeer automatisch voor <input type="number" min="0" max="900" data-bind="value: entry.pauseTime, valueUpdate: 'afterkeydown'"> seconden.</td>
-                                </tr>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <tbody data-bind="foreach: { data: filterWaitingQueue, as: 'entry' }">
+                                        <tr>
+                                            <td><span data-bind="text: entry.name"></span></td>
+                                            <td><span>pauzeer automatisch voor <input type="number" min="0" max="900" data-bind="value: entry.pauseTime, valueUpdate: 'afterkeydown'"> seconden.</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
     
                         <div role="tabpanel" class="tab-pane" id="snom">

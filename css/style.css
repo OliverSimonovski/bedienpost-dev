@@ -402,6 +402,15 @@ body {
     margin-top:0px;
 }
 
+.fa-pause,
+.fa-play {
+    cursor: pointer;
+    
+    font-size: 15px;
+    vertical-align: top;
+    margin-top: 1px;
+}
+
 li.list-group-item i.fa-pencil-square-o
 {
     opacity: 0.1;

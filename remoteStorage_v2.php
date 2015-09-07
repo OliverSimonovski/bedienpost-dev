@@ -19,6 +19,11 @@
         exit;
     }
 
+    /**
+      * TODO: By the time checkPermission is rolled out, check whether user is allowed to change company-global settings before
+      * allowing to change any company-global settings.
+      */
+
     if ($company != "") {
         $companyObj = json_decode($authRes);
         if ($company != $companyObj->name) {

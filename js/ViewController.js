@@ -357,7 +357,7 @@ CallListItem.prototype.stopCall = function() {
 CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
     this.isAutoPause(true);
     this.finished(false);
-    this.name("Wrap-up time voor: " + queue.name);
+    this.name("afhandeltijd voor: " + queue.name);
     this.callStartTime(currentTime().valueOf() / 1000 + pauseTime);
 
     _.delay(

@@ -202,6 +202,12 @@ QueueListItem.prototype.togglePause = function () {
 
     if (curPaused) {
         conn.queueUnpause(queue);
+
+        // If we were in auto-pause, remove auto-pause indication on unpause.
+        var autoPauseItem = queue.autoPauseItem;
+        queue.autoPauseItem = null;
+        autoPauseItem.autoPauseQueue = null;
+        incomingCallEntries.remove(autoPauseItem);
     } else {
         if (!listingViewModel.allowPause()) {
             console.log("Users disallowed from pausing in this company. Not pausing.");
@@ -258,6 +264,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
     this.finished = ko.observable(false);
     this.descriptionWithNumber = ko.observable(descriptionWithNumber || "");
     this.isAutoPause = ko.observable(false);
+    this.autoPauseQueue = null;
 
     /* We use the destroy-property to hide calls that have lasted less than 2 seconds */
     // Hacky solution for hunkemoller
@@ -357,13 +364,18 @@ CallListItem.prototype.stopCall = function() {
 CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
     this.isAutoPause(true);
     this.finished(false);
-    this.name("afhandeltijd voor: " + queue.name);
+    this.name("Afhandeltijd voor: " + queue.name);
     this.callStartTime(currentTime().valueOf() / 1000 + pauseTime);
+    this.autoPauseQueue = queue;
+    queue.autoPauseItem = this;
 
     _.delay(
         function (self) {
             return function () {
+                self.autoPauseQueue.autoPauseItem = null;
+                self.autoPauseQueue = null;
                 incomingCallEntries.remove(self);
+
             }
         }(this), pauseTime * 1000);
 }

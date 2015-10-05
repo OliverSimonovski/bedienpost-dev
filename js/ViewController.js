@@ -433,6 +433,7 @@ var ListingsViewModel = function(){
     self.phoneIp = ko.observable("");
 
     self.obfuscateNumber = ko.observable(true);
+    self.amAdmin = ko.observable(false);
     self.connectSnom = ko.observable(null);
     self.crmUrl = ko.observable("");
 

@@ -386,6 +386,8 @@ function logout() {
     queueListEntries.removeAll();
     incomingCallEntries.removeAll();
 
+    listingViewModel.amAdmin(false);
+
     // Empty lots of other data-structures.
     init();
 
@@ -455,6 +457,26 @@ function retrieveSettings() {
                 listingViewModel.allowPause(JSON.parse(response));
             }
         });
+
+    var url = Lisa.Connection.restUserUrl + "/permission?targetEntity=company/" + COMPANYID;
+    $.ajax
+    ({
+        type: "GET",
+        headers: {
+            "Accept" : "application/vnd.iperity.compass.v1+json",
+            "Authorization": Lisa.Connection.restAuthHeader,
+            "X-No-Redirect": true
+        },
+        url: url,
+        dataType: 'json',
+        success: function(response) {
+            if (response.value == "permWrite") {
+                listingViewModel.amAdmin(true);
+            } else {
+                listingViewModel.amAdmin(false);
+            }
+        }
+    });
 }
 
 function setAutoPauseSettingsInBackend(queuePauseSettings) {

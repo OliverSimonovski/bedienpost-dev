@@ -311,11 +311,11 @@
           <h4 class="modal-title">Login</h4>
         </div>
         <div class="modal-body">
-           <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
+           <div class="form-group" data-bind="attr: { class: ($root.authError()) ? 'form-group has-error' : 'form-group has-success' }">
               <label class="control-label">Login:</label>
               <input id="nameInputField" type="text" placeholder="User@Domain.com" data-bind="value: loginName, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
-            <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
+            <div class="form-group" data-bind="attr: { class: ($root.authError()) ? 'form-group has-error' : 'form-group has-success' }">
               <label class="control-label">Wachtwoord:</label>
               <input id="passwordInputField" type="password" data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>

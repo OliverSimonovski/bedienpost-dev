@@ -201,13 +201,29 @@ QueueListItem.prototype.togglePause = function () {
     var curPaused = queue.paused;
 
     if (curPaused) {
-        conn.queueUnpause(queue);
+
+        // Determine whether we're paused in all queues.
+        var pausesInAllQueues = true;
+        var myQueues = Lisa.Connection.model.users[Lisa.Connection.myUserId].queues;
+        for (var queueKey in myQueues) {
+            var queueVal = myQueues[queueKey];
+            pausesInAllQueues = pausesInAllQueues && queueVal.paused;
+        }
+
+        if (pausesInAllQueues) {
+            console.log("We're paused in every queue that we're a member of. For unpause, unpause all queues.");
+            conn.unpauseAllQueues();
+        } else {
+            conn.queueUnpause(queue);
+        }
 
         // If we were in auto-pause, remove auto-pause indication on unpause.
-        var autoPauseItem = queue.autoPauseItem;
-        queue.autoPauseItem = null;
-        autoPauseItem.autoPauseQueue = null;
-        incomingCallEntries.remove(autoPauseItem);
+        var autoPauseItem = queue["autoPauseItem"];
+        if (autoPauseItem) {
+            queue.autoPauseItem = null;
+            autoPauseItem.autoPauseQueue = null;
+            incomingCallEntries.remove(autoPauseItem);
+        }
     } else {
         if (!listingViewModel.allowPause()) {
             console.log("Users disallowed from pausing in this company. Not pausing.");

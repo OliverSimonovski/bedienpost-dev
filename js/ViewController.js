@@ -208,17 +208,22 @@ QueueListItem.prototype.togglePause = function () {
         for (var queueKey in myQueues) {
             var queueVal = myQueues[queueKey];
             pausesInAllQueues = pausesInAllQueues && queueVal.paused;
-
-            // When unpausing a queue, remove any associated autopause-messages in the upper-left corner.
-            if (queueVal.paused) {
-                this.removeAutopauseItem(queueVal);
-            }
         }
 
+        // If we're paused in all queues, unpause all queues, regardless of which queue was clicked.
         if (pausesInAllQueues) {
+            for (var queueKey in myQueues) {
+                var queueVal = myQueues[queueKey];
+                // When unpausing a queue, remove any associated autopause-messages in the upper-left corner.
+                if (queueVal.paused) {
+                    this.removeAutopauseItem(queueVal);
+                }
+            }
             console.log("We're paused in every queue that we're a member of. For unpause, unpause all queues.");
             conn.unpauseAllQueues();
         } else {
+            // If we're not paused in all queues, only unpause the queue that was clicked.
+            this.removeAutopauseItem(queue);
             conn.queueUnpause(queue);
         }
 

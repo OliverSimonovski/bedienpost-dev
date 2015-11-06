@@ -147,7 +147,7 @@ function saveFavs(list, storageKey) {
 
 
 function QueueListItem(id, name) {
-    _.bindAll(this, 'queueLogin', 'togglePause');
+    _.bindAll(this, 'queueLogin', 'togglePause', 'removeAutopauseItem');
 
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
@@ -208,6 +208,11 @@ QueueListItem.prototype.togglePause = function () {
         for (var queueKey in myQueues) {
             var queueVal = myQueues[queueKey];
             pausesInAllQueues = pausesInAllQueues && queueVal.paused;
+
+            // When unpausing a queue, remove any associated autopause-messages in the upper-left corner.
+            if (queueVal.paused) {
+                this.removeAutopauseItem(queueVal);
+            }
         }
 
         if (pausesInAllQueues) {
@@ -217,19 +222,22 @@ QueueListItem.prototype.togglePause = function () {
             conn.queueUnpause(queue);
         }
 
-        // If we were in auto-pause, remove auto-pause indication on unpause.
-        var autoPauseItem = queue["autoPauseItem"];
-        if (autoPauseItem) {
-            queue.autoPauseItem = null;
-            autoPauseItem.autoPauseQueue = null;
-            incomingCallEntries.remove(autoPauseItem);
-        }
     } else {
         if (!listingViewModel.allowPause()) {
             console.log("Users disallowed from pausing in this company. Not pausing.");
         } else {
             conn.queuePause(queue);
         }
+    }
+}
+
+QueueListItem.prototype.removeAutopauseItem = function(queue) {
+    // If we were in auto-pause, remove auto-pause indication on unpause.
+    var autoPauseItem = queue["autoPauseItem"];
+    if (autoPauseItem) {
+        queue.autoPauseItem = null;
+        autoPauseItem.autoPauseQueue = null;
+        incomingCallEntries.remove(autoPauseItem);
     }
 }
 
@@ -375,7 +383,7 @@ CallListItem.prototype.stopCall = function() {
     }
 }
 
-/* This is slightly hacking; Pressing a auto-pause message in the format of a CallListItem.
+/* This is slightly hacky; Pressing a auto-pause message in the format of a CallListItem.
  * If we get any more of these, refactor the list to be able to contain multiple types of items. */
 CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
     this.isAutoPause(true);
@@ -388,10 +396,11 @@ CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
     _.delay(
         function (self) {
             return function () {
-                self.autoPauseQueue.autoPauseItem = null;
-                self.autoPauseQueue = null;
-                incomingCallEntries.remove(self);
-
+                if (self.autoPauseQueue) {
+                    self.autoPauseQueue.autoPauseItem = null;
+                    self.autoPauseQueue = null;
+                    incomingCallEntries.remove(self);
+                }
             }
         }(this), pauseTime * 1000);
 }

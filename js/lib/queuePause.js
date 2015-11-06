@@ -68,7 +68,7 @@
 
         if (type == Lisa.User.EventTypes.CallAdded) {
             Lisa.Connection.logging.log("Pausing this user for queue " + lastQueue);
-            this.conn.queuePause(lastQueue);
+            this.conn.pauseAllQueues();
 
         } else if (type == Lisa.User.EventTypes.CallRemoved) {
 
@@ -76,7 +76,7 @@
                 lastQueue.observable.notify(lastQueue, "autoPaused", pauseTime, call);
 
                 _.delay(function(conn, queue) {
-                    conn.queueUnpause(queue);
+                    this.conn.unpauseAllQueues();
                     queue.observable.notify(queue, "autoUnpaused");
                 }, pauseTime * 1000, this.conn, lastQueue);
 

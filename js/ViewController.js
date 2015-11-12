@@ -203,15 +203,15 @@ QueueListItem.prototype.togglePause = function () {
     if (curPaused) {
 
         // Determine whether we're paused in all queues.
-        var pausesInAllQueues = true;
+        var pausedInAllQueues = true;
         var myQueues = Lisa.Connection.model.users[Lisa.Connection.myUserId].queues;
         for (var queueKey in myQueues) {
             var queueVal = myQueues[queueKey];
-            pausesInAllQueues = pausesInAllQueues && queueVal.paused;
+            pausedInAllQueues = pausedInAllQueues && queueVal.paused;
         }
 
         // If we're paused in all queues, unpause all queues, regardless of which queue was clicked.
-        if (pausesInAllQueues) {
+        if (pausedInAllQueues) {
             for (var queueKey in myQueues) {
                 var queueVal = myQueues[queueKey];
                 // When unpausing a queue, remove any associated autopause-messages in the upper-left corner.
@@ -243,6 +243,7 @@ QueueListItem.prototype.removeAutopauseItem = function(queue) {
         queue.autoPauseItem = null;
         autoPauseItem.autoPauseQueue = null;
         incomingCallEntries.remove(autoPauseItem);
+        queuePause.stopUnpauseTimer();
     }
 }
 

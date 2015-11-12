@@ -7,6 +7,12 @@
     var root = this;
 
     /*
+     * Variables
+     */
+
+    var userUnpauseTimer = null;
+
+    /*
      * Constructor
      * @arg conn        - LisaApi Connection.
      * @arg pauseTimes  - object in format {queueId: time-to-pause-in-seconds}.
@@ -56,6 +62,15 @@
            }
     }
 
+    /**
+     * Stop the automatic unpause-timer, for example because the user already unpaused himself manually.
+     */
+    root.QueuePause.prototype.stopUnpauseTimer = function() {
+        Lisa.Connection.logging.log("Manually stopping wrap-up time for this user.");
+        clearTimeout(userUnpauseTimer);
+        userUnpauseTimer = null;
+    }
+
     root.QueuePause.prototype.currentUserChanged = function (user, type, item) {
         var call = item;
         var lastQueue = item ? item.lastQueue : null;
@@ -75,9 +90,16 @@
                 Lisa.Connection.logging.log("Starting wrap-up time for this user for " + pauseTime + " seconds");
                 lastQueue.observable.notify(lastQueue, "autoPaused", pauseTime, call);
 
-                _.delay(function(conn, queue) {
+                if (userUnpauseTimer != null) {
+                    // Kill the previous timer first.
+                    this.stopUnpauseTimer();
+                }
+
+                userUnpauseTimer = _.delay(function(conn, queue) {
+                    Lisa.Connection.logging.log("Wrap-up time expired, unpausing this user.");
                     this.conn.unpauseAllQueues();
                     queue.observable.notify(queue, "autoUnpaused");
+                    userUnpauseTimer = null;
                 }, pauseTime * 1000, this.conn, lastQueue);
 
         }

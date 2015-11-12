@@ -66,7 +66,7 @@
      * Stop the automatic unpause-timer, for example because the user already unpaused himself manually.
      */
     root.QueuePause.prototype.stopUnpauseTimer = function() {
-        Lisa.Connection.logging.log("Manually stopping wrap-up time for this user.");
+        Lisa.Connection.logging.log("AutoPause: Manually stopping wrap-up time for this user.");
         clearTimeout(userUnpauseTimer);
         userUnpauseTimer = null;
     }
@@ -81,13 +81,13 @@
             return;
         }
 
-        if (type == Lisa.User.EventTypes.CallAdded) {
-            Lisa.Connection.logging.log("Pausing this user for queue " + lastQueue);
+        if (type == Lisa.User.EventTypes.CallAdded && !lastQueue.paused) {
+            Lisa.Connection.logging.log("AutoPause: Pausing this user for all queues");
             this.conn.pauseAllQueues();
 
         } else if (type == Lisa.User.EventTypes.CallRemoved) {
 
-                Lisa.Connection.logging.log("Starting wrap-up time for this user for " + pauseTime + " seconds");
+                Lisa.Connection.logging.log("AutoPause: Starting wrap-up time for this user for " + pauseTime + " seconds");
                 lastQueue.observable.notify(lastQueue, "autoPaused", pauseTime, call);
 
                 if (userUnpauseTimer != null) {
@@ -96,7 +96,7 @@
                 }
 
                 userUnpauseTimer = _.delay(function(conn, queue) {
-                    Lisa.Connection.logging.log("Wrap-up time expired, unpausing this user.");
+                    Lisa.Connection.logging.log("AutoPause: Wrap-up time expired, unpausing this user.");
                     this.conn.unpauseAllQueues();
                     queue.observable.notify(queue, "autoUnpaused");
                     userUnpauseTimer = null;

@@ -782,6 +782,10 @@ function mergeCallEntriesList(newEntries) {
     for (key in incomingCallEntries()) {
         var oldEntry = incomingCallEntries()[key];
 
+        if (oldEntry.isAutoPause()) {
+            continue; // Leave the auto-pause entries alone.
+        }
+
         // Determine for each call whether it still exists.
         var stillExists = false;
         for (newEntryKey in newEntries) {

@@ -1139,13 +1139,13 @@ function BedienpostLogging() {
 BedienpostLogging.prototype.myConsoleLog = function(logline) {
 
     var lineWithDate = ++this.logLineNum + " " + Date.now() + " " + logline
-    console.origLog(lineWithDate);
+    console.origLog(logline);
 
     this.loglines[this.next++] = lineWithDate;
     if (this.next > this.LOGLINESTOKEEP - 1) {
         this.next = 0;
     }
-    if (this.next % 100 == 0) console.origLog("Keeping " + _.size(this.loglines) + " log lines");
+    if (this.next % 500 == 0) console.origLog("Keeping " + _.size(this.loglines) + " log lines");
 }
 
 BedienpostLogging.prototype.getLog = function() {

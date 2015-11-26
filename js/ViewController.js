@@ -191,6 +191,8 @@ QueueListItem.prototype.queueLogin = function (amLoggingIn) {
 }
 
 QueueListItem.prototype.togglePause = function () {
+    console.log("togglePause clicked for item: " + this.name())
+
     //this.signInOut(amLoggingIn); // Event should come correctly through api.
     if (!this.signInOut) {
         console.log("Can't pause queue, since we're not logged into queue.");
@@ -240,6 +242,7 @@ QueueListItem.prototype.removeAutopauseItem = function(queue) {
     // If we were in auto-pause, remove auto-pause indication on unpause.
     var autoPauseItem = queue["autoPauseItem"];
     if (autoPauseItem) {
+        console.log("Removing auto-pause item for queue " + queue.name);
         queue.autoPauseItem = null;
         autoPauseItem.autoPauseQueue = null;
         incomingCallEntries.remove(autoPauseItem);
@@ -274,7 +277,7 @@ function pauseTimeUpdated() {
 
 function setAutoPauseSettingsInGui(queuePauseSettings) {
     console.log("Retrieved auto-pause settings from server, updating settings gui-model.")
-    console.log(queuePauseSettings);
+    console.log(JSON.stringify(queuePauseSettings));
     for (var queueKey in listingViewModel.filterWaitingQueue()) {
         var queueItem = listingViewModel.filterWaitingQueue()[queueKey];
         var pauseTime = queuePauseSettings[queueItem.id()];
@@ -575,11 +578,13 @@ var ListingsViewModel = function(){
 
     }, self);
     
-    self.clickItem = function(clickedItem) 
-    {
+    self.clickItem = function(clickedItem) {
+
         self.clickedListItem(clickedItem);
         var name = clickedItem.name();
         self.clickedListItemName(name);
+
+        console.log("Clicked user " + name);
 
         if (self.callingState() == "onhook") {
             dialing = true;
@@ -608,6 +613,7 @@ var ListingsViewModel = function(){
     self.clickedSecondRow = function(clickedItem) {
         self.clickedListItem(clickedItem);
         self.showUserNoteModal();
+        console.log("Clicked note for user " + clickedItem.name());
     }
     
     self.mailTo = function(incomingCall)
@@ -628,15 +634,14 @@ var ListingsViewModel = function(){
         self.favoriteList = ko.observable(null);
     }
 
-    // no updating appearing in the UI .. omehow the values do seem to update in the array.. is the accoring value missing bindings?
-    // another question: should you be able to mark the ones you aren't logged into as favorite?
     self.markQueueFavorite = function(favorite)
     {
+        console.log("Queue " + favorite.name() + " marked as favorite.");
+
         favorite.favorite(!favorite.favorite()); // Toggle
         QueueListItem.saveFavs(self.waitingQueueList().entries());
     }
-    
-    // no updating appearing in the UI.. somehow the values do seem to update in the array.. is the accoring value missing bindings?
+
     self.signInOut = function(queueListItem)
     {
         queueListItem.queueLogin(!queueListItem.signInOut());
@@ -680,6 +685,7 @@ var ListingsViewModel = function(){
         var toCall = self.clickedListItem().ext().split(",")[0];
         transferToUser(toCall);
         self.dismissTransferModal();
+        console.log("Transfering to:" + toCall);
     }
 
     self.actionTransferAttended = function()
@@ -690,6 +696,7 @@ var ListingsViewModel = function(){
         attendedtransferToUser(toCall);
         self.dismissTransferModal();
         self.showTransferEndModal();
+        console.log("Attended transfer to:" + toCall);
     }
     
     self.cancelLogin = function()
@@ -935,6 +942,8 @@ var ListingsViewModel = function(){
     }
 
     self.downloadLogsClicked = function() {
+        console.log("Clicked 'download logs'");
+
         var logs = myLogging.getLog();
         blob = new Blob([logs], {
             type: 'application/octet-stream'
@@ -967,6 +976,8 @@ var ListingsViewModel = function(){
   
     self.attendedTransfer = function()
     {
+        console.log("Attended transfer clicked").
+
         self.callingState("transfer");
         var number = self.numericInput().replace(/\D/g,'');
         attendedtransferToUser(number);
@@ -976,6 +987,8 @@ var ListingsViewModel = function(){
     
     self.unattendedTransfer = function()
     {
+        console.log("Unattended transfer clicked");
+
         var number = self.numericInput().replace(/\D/g,'');
         transferToUser(number);
         self.dismissKeypadModal();
@@ -983,6 +996,8 @@ var ListingsViewModel = function(){
     
     self.call = function()
     {
+        console.log("Call");
+
         var number = self.numericInput().replace(/\D/g,'');
         dialNumber(number);
         self.dismissKeypadModal();
@@ -990,6 +1005,8 @@ var ListingsViewModel = function(){
     
     self.finalizeTransfer = function()
     {
+        console.log("Finalize attended transfer");
+
         if (self.callingState() == "transfer") {
             finishAttendedTransfer();
         }
@@ -998,6 +1015,8 @@ var ListingsViewModel = function(){
 
     self.cancelTransfer = function()
     {
+        console.log("Cancel attended transfer");
+
         if (self.callingState() == "transfer") {
             cancelAttendedTransfer();
             self.callingState("calling");
@@ -1037,6 +1056,8 @@ var ListingsViewModel = function(){
     }
 
     self.markUserFavorite = function(item) {
+        console.log("Marking user favorite");
+
         if (item.user && !item.user.favorite()) {
             item.user.favorite(true);
             UserListItem.saveFavs(self.currentList().entries());
@@ -1044,6 +1065,8 @@ var ListingsViewModel = function(){
     }
 
     self.unmarkUserFavorite = function(item) {
+        console.log("Unmarking user favorite");
+
         if (item.fav && item.fav.favorite) {
             item.fav.favorite(false);
             UserListItem.saveFavs(self.currentList().entries());

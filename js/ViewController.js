@@ -933,6 +933,27 @@ var ListingsViewModel = function(){
             keyboard: false
         })
     }
+
+    self.downloadLogsClicked = function() {
+        var logs = myLogging.getLog();
+        blob = new Blob([logs], {
+            type: 'application/octet-stream'
+        });
+
+        // Create blob
+        var url = URL.createObjectURL(blob);
+        //window.open(url, '_blank', ''); // Open the blob, no filename though.
+
+        // Create link
+        var link = document.createElement("a");
+        link.setAttribute("href",url);
+        link.setAttribute("download", "bedienpost_" + new Date().toISOString() + ".log");
+
+        // Click the link
+        var event = document.createEvent('MouseEvents');
+        event.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+        link.dispatchEvent(event);
+    }
     
     self.enterNumber = function(nr)
     {

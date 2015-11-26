@@ -1118,3 +1118,48 @@ function storeUserNote(userId, note) {
 }
 
 var debouncedStoreSettingCrmUrl = _.debounce(storeSettingCrmUrl, 5000);
+
+
+
+
+
+/* Allow user to 'download' log files */
+function BedienpostLogging() {
+    _.bindAll(this, 'myConsoleLog');
+
+    this.loglines = [];
+    this.LOGLINESTOKEEP = 20000;
+    this.next = 0;
+    this.logLineNum = 0;
+
+    console.origLog = console.log;
+    console.log = this.myConsoleLog;
+}
+
+BedienpostLogging.prototype.myConsoleLog = function(logline) {
+
+    var lineWithDate = ++this.logLineNum + " " + Date.now() + " " + logline
+    console.origLog(lineWithDate);
+
+    this.loglines[this.next++] = lineWithDate;
+    if (this.next > this.LOGLINESTOKEEP - 1) {
+        this.next = 0;
+    }
+    if (this.next % 100 == 0) console.origLog("Keeping " + _.size(this.loglines) + " log lines");
+}
+
+BedienpostLogging.prototype.getLog = function() {
+    var result = "";
+    for (var i=this.next; i< (_.size(this.loglines)); ++i) {
+        result += this.loglines[i] + "\n";
+    }
+    for (var i=0; i<this.next; ++i) {
+        result += this.loglines[i] + "\n";
+    }
+
+    console.origLog("Getting previous loglines with a size of " + _.size(result) + " bytes.")
+
+    return result;
+}
+
+var myLogging = new BedienpostLogging();

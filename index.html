@@ -113,7 +113,7 @@
                                          <i class="fa fa-cog pull-right"></i>
                                          <span class="icon-label">instellingen</span>
                                     </div>
-                                    <div class="shortcuts pull-right" data-bind="click: $root.downloadLogsClicked">
+                                    <div class="shortcuts pull-right" data-bind="click: $root.downloadLogsClicked, visible:$root.logDownloadEnabled">
                                         <i class="fa fa-download pull-right"></i>
                                         <span class="icon-label">Download logs</span>
                                     </div>
@@ -468,6 +468,7 @@
                         <li role="presentation"><a href="#import" aria-controls="import" role="tab" data-toggle="tab">Adresboekimport</a></li>
                         <li role="presentation"><a href="#pauserights" aria-controls="import" role="tab" data-toggle="tab">Pauzerechten</a></li>
                         <li role="presentation"><a href="#crm" aria-controls="crm" role="tab" data-toggle="tab">CRM-integratie</a></li>
+                        <li role="presentation"><a href="#logDownload" aria-controls="crm" role="tab" data-toggle="tab">Logs downloaden</a></li>
                     </ul>
                     
                     <div class="tab-content">
@@ -510,6 +511,10 @@
                         <div role="tabpanel" class="tab-pane" id="crm">
                             <p>Door CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem. Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.</p>
                             <p>url: <input type="text" data-bind="value: crmUrl, valueUpdate: 'afterkeydown'" style="width:300px" placeholder="https://mijn-crm.bedrijf.nl/inkomend-nr/$"></p>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane active" id="logDownload">
+                            <p>Activeer de 'download Logfiles' knop voor het bedrijf. <input name="logDownload" type="checkbox" checked data-bind="checked: $root.logDownloadEnabled"></p>
                         </div>
                     
                     </div>

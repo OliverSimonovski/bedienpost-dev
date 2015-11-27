@@ -455,6 +455,14 @@ function retrieveSettings() {
                 listingViewModel.allowPause(JSON.parse(response));
             }
         });
+
+    remoteStorage.getItem("company_logDownloadEnabled", "", COMPANYNAME)
+        .done(function (response) {
+            console.log("Retrieved company logDownloadEnabled setting: " + response);
+            if (response !== null) {
+                listingViewModel.logDownloadEnabled(JSON.parse(response));
+            }
+        });
 }
 
 function setAutoPauseSettingsInBackend(queuePauseSettings) {
@@ -1045,12 +1053,17 @@ function uploadVCard(data) {
 }
 
 function storeSettingAllowPause(value) {
-    console.log("Setting allow-pause to " + value);
+    console.log("Setting allow-pause to " + value + " and storing on server.");
     remoteStorage.setItem("company_allowPause", value, "", COMPANYNAME);
 }
 
+function storeSettingLogDownloadEnabled(value) {
+    console.log("Setting log-download enabled to " + value + " and storing on server.");
+    remoteStorage.setItem("company_logDownloadEnabled", value, "", COMPANYNAME);
+}
+
 function storeSettingCrmUrl(value) {
-    console.log("Setting CRM-url to " + value);
+    console.log("Setting CRM-url to " + value + " and storing on server.");
     remoteStorage.setItem("company_crmUrl", value, "", COMPANYNAME);
 }
 

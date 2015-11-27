@@ -471,6 +471,7 @@ var ListingsViewModel = function(){
     self.crmUrl = ko.observable("");
 
     self.allowPause = ko.observable(true);
+    self.logDownloadEnabled = ko.observable(false);
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
@@ -1295,6 +1296,10 @@ var ListingsViewModel = function(){
 
     self.allowPause.subscribe(function(value) {
         storeSettingAllowPause(value);
+    });
+
+    self.logDownloadEnabled.subscribe(function(value) {
+       storeSettingLogDownloadEnabled(value);
     });
 
     self.noteUpdated= function() {

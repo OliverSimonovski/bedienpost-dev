@@ -423,7 +423,7 @@ function gotModel(newmodel) {
 
 function retrieveSettings() {
 
-    remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYNAME)
+    remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYID)
         .done(function(response) {
             if (response == "false") {
                 currentServerObfuscateNumberSetting = false;
@@ -434,12 +434,12 @@ function retrieveSettings() {
             }
         });
 
-    remoteStorage.getItem("company_crmUrl", "", COMPANYNAME)
+    remoteStorage.getItem("company_crmUrl", "", COMPANYID)
         .done(function(response) {
             listingViewModel.crmUrl(response);
         });
 
-    remoteStorage.getItem("company_autoPauseSettings", "", COMPANYNAME)
+    remoteStorage.getItem("company_autoPauseSettings", "", COMPANYID)
         .done(function(response) {
             if (response != null) {
                 var queuePauseSettings = JSON.parse(response);
@@ -448,7 +448,7 @@ function retrieveSettings() {
             }
         });
 
-    remoteStorage.getItem("company_allowPause", "", COMPANYNAME)
+    remoteStorage.getItem("company_allowPause", "", COMPANYID)
         .done(function (response) {
             console.log("Retrieved company allowPaused setting: " + response);
             if (response !== null) {
@@ -456,7 +456,7 @@ function retrieveSettings() {
             }
         });
 
-    remoteStorage.getItem("company_logDownloadEnabled", "", COMPANYNAME)
+    remoteStorage.getItem("company_logDownloadEnabled", "", COMPANYID)
         .done(function (response) {
             console.log("Retrieved company logDownloadEnabled setting: " + response);
             if (response !== null) {
@@ -469,7 +469,7 @@ function setAutoPauseSettingsInBackend(queuePauseSettings) {
     console.log("GUI changed, updating pause-times in back-end, and storing on server.")
     //console.log(queuePauseSettings);
     queuePause.changePauseTimes(queuePauseSettings);
-    remoteStorage.setItem("company_autoPauseSettings", JSON.stringify(queuePauseSettings), "", COMPANYNAME);
+    remoteStorage.setItem("company_autoPauseSettings", JSON.stringify(queuePauseSettings), "", COMPANYID);
 }
 
 function getContactListData(user, server, pass, companyId) {
@@ -1054,22 +1054,22 @@ function uploadVCard(data) {
 
 function storeSettingAllowPause(value) {
     console.log("Setting allow-pause to " + value + " and storing on server.");
-    remoteStorage.setItem("company_allowPause", value, "", COMPANYNAME);
+    remoteStorage.setItem("company_allowPause", value, "", COMPANYID);
 }
 
 function storeSettingLogDownloadEnabled(value) {
     console.log("Setting log-download enabled to " + value + " and storing on server.");
-    remoteStorage.setItem("company_logDownloadEnabled", value, "", COMPANYNAME);
+    remoteStorage.setItem("company_logDownloadEnabled", value, "", COMPANYID);
 }
 
 function storeSettingCrmUrl(value) {
     console.log("Setting CRM-url to " + value + " and storing on server.");
-    remoteStorage.setItem("company_crmUrl", value, "", COMPANYNAME);
+    remoteStorage.setItem("company_crmUrl", value, "", COMPANYID);
 }
 
 function getUserNoteModel() {
     console.log("Retrieving user-note model from server.")
-    var deferred =  remoteStorage.getItem("company_userNoteModel", "", COMPANYNAME);
+    var deferred =  remoteStorage.getItem("company_userNoteModel", "", COMPANYID);
     deferred.done(function (val) {
         console.log("retrieved: " + val);
 
@@ -1124,7 +1124,7 @@ function storeUserNote(userId, note) {
                 }
                 console.log("Pushing user-note model to server.")
                 console.log(userNoteModel);
-                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYNAME);
+                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYID);
             }
         }
     }(userId, note));

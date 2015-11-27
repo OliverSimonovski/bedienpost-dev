@@ -7,6 +7,7 @@
 
     var root = this;
     var lib = root.remoteStorage = {};
+    var URL = "https://www.bedienpost.nl/remoteStorage_v3.php";
     exports.remoteStorage = lib;
 
     /* username defaults to global USERNAME, company defaults to empty ("") */
@@ -33,7 +34,7 @@
         $.ajax
         ({
             type: "POST",
-            url: "https://www.bedienpost.nl/remoteStorage_v2.php",
+            url: URL,
             dataType: 'json',
             data: postObj,
             success: function (response){
@@ -62,7 +63,7 @@
         $.ajax
         ({
             type: "POST",   // Actually, refactoring this to use a GET is a bit nicer
-            url: "https://www.bedienpost.nl/remoteStorage_v2.php",
+            url: URL,
             dataType: 'json',
             data: postObj,
             success: function (response){

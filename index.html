@@ -68,10 +68,14 @@
                         </div>
                         <div class="header">
                         <div class="options" >
+                                <div class="shortcuts pull-right">
+                                    <i data-bind="attr: { class: ($root.pausedGlobally() ? 'fa fa-play' : 'fa fa-pause') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') },
+                                                               click: $root.togglePauseGlobally"></i>
+                                </div>
                                 <div class=" pull-right" data-bind="attr: { class: ($root.phoneAuthAvailable() ? 'pull-right active' : 'pull-right inactive')  }">
                                      <i class="fa fa-phone-square pull-right"></i>
                                     <span class="icon-label"><span data-bind= "text:  connectedPhone() ? ' SNOM-telefoon verbonden' : ' SNOM-telefoon niet verbonden' "></span></span>
-                                </div>    
+                                </div>
                              </div>
                         
                         <h4>Actieve gesprekken</h4>

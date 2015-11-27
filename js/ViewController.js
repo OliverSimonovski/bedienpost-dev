@@ -177,6 +177,10 @@ function QueueListItem(id, name) {
         return timeString;
 
     }, this);
+
+    this.paused.subscribe(function(value) {
+        listingViewModel.updateGloballypausedState();
+    })
 }
 
 QueueListItem.prototype.queueLogin = function (amLoggingIn) {
@@ -203,32 +207,9 @@ QueueListItem.prototype.togglePause = function () {
     var curPaused = queue.paused;
 
     if (curPaused) {
-
-        // Determine whether we're paused in all queues.
-        var pausedInAllQueues = true;
-        var myQueues = Lisa.Connection.model.users[Lisa.Connection.myUserId].queues;
-        for (var queueKey in myQueues) {
-            var queueVal = myQueues[queueKey];
-            pausedInAllQueues = pausedInAllQueues && queueVal.paused;
-        }
-
-        // If we're paused in all queues, unpause all queues, regardless of which queue was clicked.
-        if (pausedInAllQueues) {
-            for (var queueKey in myQueues) {
-                var queueVal = myQueues[queueKey];
-                // When unpausing a queue, remove any associated autopause-messages in the upper-left corner.
-                if (queueVal.paused) {
-                    this.removeAutopauseItem(queueVal);
-                }
-            }
-            console.log("We're paused in every queue that we're a member of. For unpause, unpause all queues.");
-            conn.unpauseAllQueues();
-        } else {
-            // If we're not paused in all queues, only unpause the queue that was clicked.
+            // unpause the queue that was clicked.
             this.removeAutopauseItem(queue);
             conn.queueUnpause(queue);
-        }
-
     } else {
         if (!listingViewModel.allowPause()) {
             console.log("Users disallowed from pausing in this company. Not pausing.");
@@ -473,6 +454,8 @@ var ListingsViewModel = function(){
     self.allowPause = ko.observable(true);
     self.logDownloadEnabled = ko.observable(false);
 
+    self.pausedGlobally = ko.observable(false);
+
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
     }, self);
@@ -678,6 +661,46 @@ var ListingsViewModel = function(){
             self.dismissSelectNumberModal();
 
         }
+    }
+
+    self.togglePauseGlobally = function() {
+        console.log("Global pause clicked. Setting global pause to: " + !self.pausedGlobally());
+        self.setGloballyPaused(!self.pausedGlobally());
+    }
+
+    self.setGloballyPaused = function(value) {
+        if (value && !self.allowPause()) {
+            console.log("Users disallowed from pausing in this company. Not pausing.");
+            return;
+        }
+
+        if (value) {
+            conn.pauseAllQueues();
+        } else {
+            conn.unpauseAllQueues();
+        }
+        self.pausedGlobally(value);
+    }
+
+    /*
+     * If all paused, set globally paused.
+     * If all unpaused, set globally unpaused.
+     * If some paused, some unpaused, don't change the global state.
+     */
+    self.updateGloballypausedState = function() {
+        var pausedInAllQueues = true;
+        var unpausedInAllQueues = true;
+
+        var myQueues = Lisa.Connection.model.users[Lisa.Connection.myUserId].queues;
+        for (var queueKey in myQueues) {
+            var queueVal = myQueues[queueKey];
+            pausedInAllQueues = pausedInAllQueues && queueVal.paused;
+            unpausedInAllQueues = unpausedInAllQueues && !queueVal.paused;
+        }
+
+        //self.pausedGlobally((self.pausedGlobally() || pausedInAllQueues) && !unpausedInAllQueues);
+        if (pausedInAllQueues) self.pausedGlobally(true);
+        else if (unpausedInAllQueues) self.pausedGlobally(false);
     }
     
     self.actionTransfer = function()

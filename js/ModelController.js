@@ -635,6 +635,7 @@ function queueToClientModel(queue, queueObj) {
 
     var availableStr = "", unAvailableStr="", pausedStr = "";
     var avfirst = true, unavfirst = true, pausedFirst = true;
+    var callsStr = "";
     var sortedUsers = _.sortBy(queue.users, function(user){
         return user.name;
     });
@@ -657,9 +658,20 @@ function queueToClientModel(queue, queueObj) {
             avfirst = false;
         }
     }
+
+    // Calls
+    var callCount = 1;
+    for (var callKey in queue.calls) {
+        var call = queue.calls[callKey];
+        var callInfo = getCallInfo(call, null);
+        var curCallStr = callCount++ + ". " + callInfo.description + "\n";
+        callsStr += curCallStr;
+    }
+
     var memberStr = "Beschikbaar: \n " + availableStr +
         "\n\nNiet Beschikbaar:\n" + unAvailableStr +
-        "\n\nGepauzeerd:\n" + pausedStr;
+        "\n\nGepauzeerd:\n" + pausedStr +
+        "\n\nWachtende gesprekken: \n" + callsStr;
     queueObj.membersStr(memberStr);
 
     return queueObj;

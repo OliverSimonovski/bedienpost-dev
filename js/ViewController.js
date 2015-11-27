@@ -678,6 +678,16 @@ var ListingsViewModel = function(){
             conn.pauseAllQueues();
         } else {
             conn.unpauseAllQueues();
+
+            // When unpausing, Remove any 'nawerktijd' entries that might be there.
+            var myQueues = Lisa.Connection.model.users[Lisa.Connection.myUserId].queues;
+            for (var queueKey in myQueues) {
+                var queueVal = myQueues[queueKey];
+                // When unpausing a queue, remove any associated autopause-messages in the upper-left corner.
+                if (queueVal.paused) {
+                    QueueListItem.prototype.removeAutopauseItem(queueVal);
+                }
+            }
         }
         self.pausedGlobally(value);
     }

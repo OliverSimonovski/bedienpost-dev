@@ -1248,6 +1248,9 @@ var ListingsViewModel = function(){
         } else if (matchesKey(e.which, "s")) { // S - Focus zoekveld
             $("#inputField").focus();
             e.preventDefault();
+        } else if (matchesKey(e.which, "p")) { // P - Pauze
+            listingViewModel.togglePauseGlobally();
+            e.preventDefault();
         }
     });
 

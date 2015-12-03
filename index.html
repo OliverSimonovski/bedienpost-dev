@@ -68,10 +68,6 @@
                         </div>
                         <div class="header">
                         <div class="options" >
-                                <div class="shortcuts pull-right">
-                                    <i data-bind="attr: { class: ($root.pausedGlobally() ? 'fa fa-play' : 'fa fa-pause') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') },
-                                                               click: $root.togglePauseGlobally"></i>
-                                </div>
                                 <div class=" pull-right" data-bind="attr: { class: ($root.phoneAuthAvailable() ? 'pull-right active' : 'pull-right inactive')  }">
                                      <i class="fa fa-phone-square pull-right"></i>
                                     <span class="icon-label"><span data-bind= "text:  connectedPhone() ? ' SNOM-telefoon verbonden' : ' SNOM-telefoon niet verbonden' "></span></span>
@@ -119,8 +115,13 @@
                                     </div>
                                     <div class="shortcuts pull-right" data-bind="click: $root.downloadLogsClicked, visible:$root.logDownloadEnabled">
                                         <i class="fa fa-download pull-right"></i>
-                                        <span class="icon-label">Download logs</span>
+                                        <span class="icon-label">logs</span>
                                     </div>
+                                     <div class="shortcuts pull-right">
+                                         <i data-bind="attr: { class: ($root.pausedGlobally() ? 'fa fa-play pull-right' : 'fa fa-pause pull-right') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') },
+                                                                   click: $root.togglePauseGlobally"></i>
+                                         <span class="icon-label">pauze</span>
+                                     </div>
                              </div>
                             <h4>Wachtrijen</h4>
                         </div>

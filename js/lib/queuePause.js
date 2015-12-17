@@ -59,6 +59,7 @@
            if (type == Lisa.Queue.EventTypes.CallAdded) {
                var call = item;
                call.lastQueue = queue;
+               Lisa.Connection.logging.log("AutoPause: Call " + call.id + " added to queue " + queue.name + ". Setting lastQueue var for call");
            }
     }
 
@@ -76,8 +77,14 @@
         var lastQueue = item ? item.lastQueue : null;
         var pauseTime = lastQueue ? this.pauseTimes[lastQueue.id] : 0;  // Determine whether this queue has a pause-time.
 
+        if ((type == Lisa.User.EventTypes.CallAdded)) {
+            console.log("AutoPause: User " + user + " Received call " + call + " from queue " + lastQueue + ".");
+            if (lastQueue) console.log("" + _.size(lastQueue.calls) + " calls left in queue " + lastQueue);
+        }
+
         // No pause-time configured for queue. Return.
         if (!(pauseTime && (pauseTime > 0))) {
+            console.log("AutoPause: No pauseTime configured or pauseTime is 0 for queue " + lastQueue + "... not pausing.");
             return;
         }
 

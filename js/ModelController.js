@@ -331,14 +331,19 @@ function chromeLoginPhone() {
     }, 5000);
 }
 
+/*
+ *
+ */
+
 function checkSnomConnected() {
-    var url = "http://"+phoneUser+":"+phonePass+"@" + phoneIp + "/img/snom_logo.png?noCaching=" + Math.random();
+    var url = "http://"+phoneUser+":"+phonePass+"@" + phoneIp + "/img/snom_logo.png";
+
     var logoImage = new Image();
 
     logoImage.onload = function() {
         listingViewModel.connectedPhone((this.width > 0) && (this.height > 0));
     };
-    logoImage.onerror = function() {
+    logoImage.onerror = function(arg1, arg2) {
         listingViewModel.connectedPhone(false);
     };
     logoImage.src = url;

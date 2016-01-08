@@ -44,28 +44,9 @@
             
             <div class='row nopadding'>
                 
-                <div class='col-md-12' id="controls">
-                    <div class="shortcuts pull-right" data-bind="click: $root.logOut">
-                        <i class="fa fa-arrow-circle-right pull-right"></i>
-                        <span class="icon-label">log uit</span>
-                    </div>
-                    
+                <div class='col-md-12' id="userinfo">
                     <span class="loginname" data-bind="text: loggedInName"><i></i></span>
-                    
-                    <div class="shortcuts pull-right" data-bind="click: $root.showShortcuts">
-                        <i class="fa fa-question pull-right"></i>
-                        <span class="icon-label">h<u>e</u>lp</span>
-                    </div>
-                    <div class="shortcuts pull-right" data-bind="click: $root.settingsClicked">
-                        <i class="fa fa-cog pull-right"></i>
-                        <span class="icon-label">instellingen</span>
-                    </div>
-                    <div class="shortcuts pull-right" data-bind="click: $root.downloadLogsClicked, visible:$root.logDownloadEnabled">
-                        <i class="fa fa-download pull-right"></i>
-                        <span class="icon-label">logs</span>
-                    </div>
                 </div>
-                
             
             </div>
 
@@ -119,10 +100,28 @@
                 </div>
                 <div class='col-md-6'>
                         <div class="header">
-                            <div class="options">
-                                <div class="globalpause pull-right" data-bind="click: $root.togglePauseGlobally">
-                                    <i data-bind="attr: { class: ($root.pausedGlobally() ? 'fa fa-play' : 'fa fa-pause') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') }"></i>
-                                </div>
+                             <div class="options" >
+                                    <div class="logout pull-right" data-bind="click: $root.logOut">
+                                        <i class="fa fa-arrow-circle-right pull-right"></i>
+                                        <span class="icon-label">uitloggen</span>
+                                    </div>
+                                    <div class="shortcuts pull-right" data-bind="click: $root.showShortcuts">
+                                        <i class="fa fa-question pull-right"></i>
+                                        <span class="icon-label">h<u>e</u>lp</span>
+                                    </div>
+                                    <div class="shortcuts pull-right" data-bind="click: $root.settingsClicked">
+                                         <i class="fa fa-cog pull-right"></i>
+                                         <span class="icon-label">instellingen</span>
+                                    </div>
+                                    <div class="shortcuts pull-right" data-bind="click: $root.downloadLogsClicked, visible:$root.logDownloadEnabled">
+                                        <i class="fa fa-download pull-right"></i>
+                                        <span class="icon-label">logs</span>
+                                    </div>
+                                     <div class="shortcuts pull-right">
+                                         <i data-bind="attr: { class: ($root.pausedGlobally() ? 'fa fa-play pull-right' : 'fa fa-pause pull-right') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') },
+                                                                   click: $root.togglePauseGlobally"></i>
+                                         <span class="icon-label">pauze</span>
+                                     </div>
                              </div>
                             <h4>Wachtrijen</h4>
                         </div>

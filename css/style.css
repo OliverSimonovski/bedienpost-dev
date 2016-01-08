@@ -579,42 +579,32 @@ li.list-group-item:hover i.fa-pencil-square-o
     float: right;
 }
 
-#controls .shortcuts,
-.header .options .globalpause,
-.header .options .keypad {
+.header .options .logout
+{
+    padding-left: 20px;
+    display: inline;
+    cursor: pointer;
+}
+.header .options .shortcuts
+{
+    padding-left: 20px;
+    display: inline;
     cursor: pointer;
 }
 
-#controls .shortcuts
+.header .options .active
 {
-    margin-top: 2px;
-    padding-right: 20px;
+    padding-left: 20px;
     display: inline;
-}
-
-#controls .shortcuts:first-child {
-    padding-right: 0;
-    margin-right: -3px;
-    padding-left: 10px;
-}
-
-.header .options .globalpause .fa {
-    margin-top: 3px;
-    
-    padding-right: 149px;
-}
-
-.queuelist .fa-play,
-.queuelist .fa-pause {
-    padding-right: 4px;
+    cursor: pointer;
 }
 
 .header .options .keypad
 {
-    padding-left: 10px;
+     padding-left: 10px;
     display:inline;
+    cursor:pointer;
 }
-
 .connect
 {
     width:49%;

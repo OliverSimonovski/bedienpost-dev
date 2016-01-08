@@ -580,12 +580,6 @@ function getCallInfo(call, user) {
     // Set description.
     callInfo.description = (callInfo.name != "...") ? callInfo.name  : callInfo.number;
     callInfo.descriptionWithNumber = (callInfo.name != "...") ? callInfo.name + " (" + callInfo.number + ")" : callInfo.number;
-
-    if (call.queueCallForCall) {
-        var origCall = model.calls[call.queueCallForCall];
-        if (origCall.destinationObj && origCall.destinationObj.name) callInfo.description += " -> " + origCall.destinationObj.name; // If queue-call, add queue-name.
-    }
-
     callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
 
     return callInfo;

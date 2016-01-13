@@ -35,6 +35,7 @@ var retrievedUserNoteModel = false;
 
 var userNoteModel = {}; // userId : note.
 var queuePause = null;
+var companySettings = {};
 
 
 $(document).ready(function () {
@@ -70,6 +71,7 @@ function init() {
     currentServerConnectSnomSetting = false;
     retrievedUserNoteModel = false;
     userNoteModel = {};
+    companySettings = {};
 }
 
 function tryAutoLogin() {
@@ -428,46 +430,66 @@ function gotModel(newmodel) {
 
 function retrieveSettings() {
 
-    remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYID)
-        .done(function(response) {
-            if (response == "false") {
-                currentServerObfuscateNumberSetting = false;
-                listingViewModel.obfuscateNumber(false);
-            } else {
-                currentServerObfuscateNumberSetting = true;
-                listingViewModel.obfuscateNumber(true); // Default to hiding.
-            }
-        });
-
-    remoteStorage.getItem("company_crmUrl", "", COMPANYID)
-        .done(function(response) {
-            listingViewModel.crmUrl(response);
-        });
-
-    remoteStorage.getItem("company_autoPauseSettings", "", COMPANYID)
+    // This is set to be the new way to store all company settings. For now, the settings from the old settings are authorative,
+    // So do this one first, and allow all the other settings to overwrite the object.
+    remoteStorage.getItem("company_settings", "", COMPANYID)
         .done(function(response) {
             if (response != null) {
-                var queuePauseSettings = JSON.parse(response);
-                queuePause.changePauseTimes(queuePauseSettings);
-                setAutoPauseSettingsInGui(queuePauseSettings);
+                console.log("Retrieved company settings: " + response);
+                var parsedSettings = JSON.parse(response);
+                companySettings = parsedSettings;
             }
         });
 
-    remoteStorage.getItem("company_allowPause", "", COMPANYID)
-        .done(function (response) {
-            console.log("Retrieved company allowPaused setting: " + response);
-            if (response !== null) {
-                listingViewModel.allowPause(JSON.parse(response));
-            }
-        });
+    _.delay(function() {
+        remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYID)
+            .done(function(response) {
+                if (response == "false") {
+                    currentServerObfuscateNumberSetting = false;
+                    listingViewModel.obfuscateNumber(false);
+                } else {
+                    currentServerObfuscateNumberSetting = true;
+                    listingViewModel.obfuscateNumber(true); // Default to hiding.
+                }
+                companySettings.obfuscateNumber = currentServerObfuscateNumberSetting;
+            });
 
-    remoteStorage.getItem("company_logDownloadEnabled", "", COMPANYID)
-        .done(function (response) {
-            console.log("Retrieved company logDownloadEnabled setting: " + response);
-            if (response !== null) {
-                listingViewModel.logDownloadEnabled(JSON.parse(response));
-            }
-        });
+        remoteStorage.getItem("company_crmUrl", "", COMPANYID)
+            .done(function(response) {
+                listingViewModel.crmUrl(response);
+                companySettings.crmUrl = response;
+            });
+
+        remoteStorage.getItem("company_autoPauseSettings", "", COMPANYID)
+            .done(function(response) {
+                if (response != null) {
+                    var queuePauseSettings = JSON.parse(response);
+                    queuePause.changePauseTimes(queuePauseSettings);
+                    setAutoPauseSettingsInGui(queuePauseSettings);
+                    companySettings.queuePauseSettings = queuePauseSettings;
+                }
+            });
+
+        remoteStorage.getItem("company_allowPause", "", COMPANYID)
+            .done(function (response) {
+                console.log("Retrieved company allowPaused setting: " + response);
+                if (response !== null) {
+                    var parsedResponse = JSON.parse(response);
+                    listingViewModel.allowPause(parsedResponse);
+                    companySettings.allowPause = parsedResponse;
+                }
+            });
+
+        remoteStorage.getItem("company_logDownloadEnabled", "", COMPANYID)
+            .done(function (response) {
+                console.log("Retrieved company logDownloadEnabled setting: " + response);
+                if (response !== null) {
+                    var parsedResponse = JSON.parse(response);
+                    listingViewModel.logDownloadEnabled(parsedResponse);
+                    companySettings.logDownloadEnabled = parsedResponse;
+                }
+            });
+    }, 1000);
 }
 
 function setAutoPauseSettingsInBackend(queuePauseSettings) {
@@ -475,6 +497,7 @@ function setAutoPauseSettingsInBackend(queuePauseSettings) {
     //console.log(queuePauseSettings);
     queuePause.changePauseTimes(queuePauseSettings);
     remoteStorage.setItem("company_autoPauseSettings", JSON.stringify(queuePauseSettings), "", COMPANYID);
+    companySettings.queuePauseSettings = queuePauseSettings;
 }
 
 function getContactListData(user, server, pass, companyId) {
@@ -1000,20 +1023,14 @@ function bedienpostAdminAjaxPost(url, postObj, success, error) {
     });
 }
 
-// TODO; Refactor to use the remote-storage functionality directly instead of using some shady form to set remote-storage for us.
 function storeSettingObfuscateNumber(value) {
     // Suppress call to server if the change came from the server in the first place
     if (value == currentServerObfuscateNumberSetting)
         return;
 
-    var postObj = {obfuscateNumber: (value) ? 1 : 0};
-    var url = "https://bedienpost.nl/admin/settings.php";
-
-    console.log("Storing setting obfuscateNumer to " + value);
-    bedienpostAdminAjaxPost(url, postObj,
-        function(){console.log("Successfully stored setting obfuscateNumber to " + value); currentServerObfuscateNumberSetting = value;},
-        function(){console.warn("Error storing obfuscateNumber setting.");}
-    );
+    console.log("Setting hideLastPartPhoneNumber to " + value + " and storing on server.");
+    remoteStorage.setItem("company_hideLastPartPhoneNumber", value, "", COMPANYID);
+    debouncedStoreCompanySettings();
 }
 
 function storeSettingConnectSnom(value) {
@@ -1030,6 +1047,7 @@ function storeSettingConnectSnom(value) {
         {
             console.log("Successfully stored setting ConnectSnom to " + value);
             currentServerConnectSnomSetting = value;
+            companySettings.connectSnomSetting = value;
             // Immediately effectuate the new settings.
             getPhoneAuth(USERNAME, DOMAIN, PASS);
         },
@@ -1069,19 +1087,28 @@ function uploadVCard(data) {
     });
 }
 
+function storeCompanySettings() {
+    var settingsStr = JSON.stringify(companySettings);
+    console.log("Storing company-settings: " + settingsStr);
+    remoteStorage.setItem("company_settings", settingsStr, "", COMPANYID);
+}
+
 function storeSettingAllowPause(value) {
     console.log("Setting allow-pause to " + value + " and storing on server.");
     remoteStorage.setItem("company_allowPause", value, "", COMPANYID);
+    debouncedStoreCompanySettings();
 }
 
 function storeSettingLogDownloadEnabled(value) {
     console.log("Setting log-download enabled to " + value + " and storing on server.");
     remoteStorage.setItem("company_logDownloadEnabled", value, "", COMPANYID);
+    debouncedStoreCompanySettings();
 }
 
 function storeSettingCrmUrl(value) {
     console.log("Setting CRM-url to " + value + " and storing on server.");
     remoteStorage.setItem("company_crmUrl", value, "", COMPANYID);
+    debouncedStoreCompanySettings();
 }
 
 function getUserNoteModel() {
@@ -1101,6 +1128,7 @@ function getUserNoteModel() {
             parsedObj = {};
         }
         userNoteModel = parsedObj;
+        companySettings.userNoteModel = parsedObj;
         retrievedUserNoteModel = true;
         assignAllUserNotes();
 
@@ -1141,13 +1169,16 @@ function storeUserNote(userId, note) {
                 }
                 console.log("Pushing user-note model to server.")
                 console.log(userNoteModel);
+                companySettings.userNoteModel = userNoteModel;
                 remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYID);
+                debouncedStoreCompanySettings();
             }
         }
     }(userId, note));
 }
 
 var debouncedStoreSettingCrmUrl = _.debounce(storeSettingCrmUrl, 5000);
+var debouncedStoreCompanySettings = _.debounce(storeCompanySettings, 5000);
 
 
 

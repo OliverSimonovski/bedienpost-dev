@@ -1318,6 +1318,7 @@ var ListingsViewModel = function(){
     };
 
     self.obfuscateNumber.subscribe(function(value) {
+        companySettings.obfuscateNumber = value;
         storeSettingObfuscateNumber(value);
     });
 
@@ -1327,15 +1328,18 @@ var ListingsViewModel = function(){
 
     self.crmUrl.subscribe(function(value) {
         // Don't update on server until we haven't received new input for 5 seconds.
+        companySettings.crmUrl = value;
         debouncedStoreSettingCrmUrl(value);
     });
 
     self.allowPause.subscribe(function(value) {
+        companySettings.allowPause = value;
         storeSettingAllowPause(value);
     });
 
     self.logDownloadEnabled.subscribe(function(value) {
-       storeSettingLogDownloadEnabled(value);
+        companySettings.logDownloadEnabled = value;
+        storeSettingLogDownloadEnabled(value);
     });
 
     self.noteUpdated= function() {

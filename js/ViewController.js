@@ -169,7 +169,7 @@ function QueueListItem(id, name) {
         var duration = 0;
         if (this.waitingAmount() != 0) {
             var waitingStart = moment.utc(this.maxWaitingStartTime());
-            var duration = (currentTime() - waitingStart); // duration in milliseconds
+            duration = (currentTime() - waitingStart); // duration in milliseconds
         }
 
 

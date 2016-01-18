@@ -36,6 +36,7 @@ var retrievedUserNoteModel = false;
 var userNoteModel = {}; // userId : note.
 var queuePause = null;
 var companySettings = {};
+var externalNumbers = [];
 
 
 $(document).ready(function () {
@@ -72,6 +73,7 @@ function init() {
     retrievedUserNoteModel = false;
     userNoteModel = {};
     companySettings = {};
+    externalNumbers = [];
 }
 
 function tryAutoLogin() {
@@ -490,6 +492,34 @@ function retrieveSettings() {
                 }
             });
     }, 1000);
+
+    getExternalNumbersFromCompass();
+}
+
+
+function getExternalNumbersFromCompass() {
+    var restCompanyUrl = "https://" + Lisa.Connection.restServer + "/company";
+    var externalNumbersUrl = restCompanyUrl + "/" + COMPANYID + "/fullExternalNumbers";
+    $.ajax
+    ({
+        type: "GET",
+        headers: {
+            "Accept" : "application/vnd.iperity.compass.v1+json",
+            "Authorization": Lisa.Connection.restAuthHeader,
+            "X-No-Redirect": true
+        },
+        url: externalNumbersUrl,
+        success: function(result) {
+            externalNumbers = [];
+            for (var itemKey in result) {
+                var item = result[itemKey];
+                externalNumbers[item.number] = item.name;
+            }
+        },
+        error: function(error) {
+
+        }
+    });
 }
 
 function setAutoPauseSettingsInBackend(queuePauseSettings) {
@@ -595,7 +625,7 @@ function getCallInfo(call, user) {
 
     // Try to find a user with this phone-number in the list, and display its name if found.
     var lastSevenNumbers = callInfo.number.substr(-7);
-    var userObj = userPhoneNumberToUserObservable[lastSevenNumbers];
+    var userObj = userPhoneNumberToUserObservable[lastSevenNumbers]; // TODO: Unified module om telefoonnummers naar namen te converteren? (Samen met externalNumbers)
     if (userObj) {
         callInfo.name = userObj.name();
     }
@@ -607,14 +637,16 @@ function getCallInfo(call, user) {
 
     // Arrow to other number
     if (callInfo.directionIsOut) {      // The agent is calling out.
-        callInfo.description += " < " + user.name; // TODO: Iets meer ruimte.
+        callInfo.description += " < " + user.name; // TODO: Grafisch aanpakken.
     } else {                            // The agent is receiving a call.
-        callInfo.description += " > "; // TODO: Iets meer ruimte.
+        callInfo.description += " > "; // TODO: Grafisch aanpakken.
+        var destNumber = "";
         if (call.queueCallForCall) {    //
-            callInfo.description += model.calls[call.queueCallForCall].firstDestinationObj;
+            destNumber = model.calls[call.queueCallForCall].firstDestinationObj;
         } else {
-            callInfo.description += call.firstDestinationObj;
+            destNumber = call.firstDestinationObj;
         }
+        callInfo.description += externalNumbers[destNumber] ? externalNumbers[destNumber] : destNumber;
     }
 
     return callInfo;

@@ -605,6 +605,18 @@ function getCallInfo(call, user) {
     callInfo.descriptionWithNumber = (callInfo.name != "...") ? callInfo.name + " (" + callInfo.number + ")" : callInfo.number;
     callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
 
+    // Arrow to other number
+    if (callInfo.directionIsOut) {      // The agent is calling out.
+        callInfo.description += " < " + user.name; // TODO: Iets meer ruimte.
+    } else {                            // The agent is receiving a call.
+        callInfo.description += " > "; // TODO: Iets meer ruimte.
+        if (call.queueCallForCall) {    //
+            callInfo.description += model.calls[call.queueCallForCall].firstDestinationObj;
+        } else {
+            callInfo.description += call.firstDestinationObj;
+        }
+    }
+
     return callInfo;
 }
 

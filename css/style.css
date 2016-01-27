@@ -415,6 +415,19 @@ body {
     margin-top: 1px;
 }
 
+.fa-clock-o {
+    cursor: pointer;
+}
+
+.options .fa-clock-o {
+    font-size: 17px;
+    margin-top: 0px;    
+}
+
+.fa-clock-o.pause-active {
+    color: red;
+}
+
 .fa-phone-square {
     font-size: 18px;
 }

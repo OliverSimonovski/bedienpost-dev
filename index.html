@@ -91,7 +91,7 @@
            <div class='row nopadding'>
 
             <div class='col-md-6 offset-6'  id="activecalls">
-                   <div class="overlay col-md" >
+                   <!-- <div class="overlay col-md" >
                             <div class="btn-group btn-group-justified">
                                 <div class="btn-group">
                                     <button class="btn btn-hangup"  type="button" data-bind="click: $root.doPickup,
@@ -103,12 +103,21 @@
                                 </div>
 
                             </div>
-                        </div>
+                        </div> -->
                         <div class="header">
-                        
-                        
-                        <h4>Actieve gesprekken</h4>
-                    </div>
+                            <div class="options">
+                                <div class="shortcuts pull-right">
+                                    <i class="fa fa-share"></i>
+                                </div>
+                                <div class="shortcuts pull-right">
+                                    <i class="fa fa-times-circle-o"></i>
+                                </div>
+                                <div class="shortcuts pull-right">
+                                    <i class="fa fa-check-circle-o"></i>
+                                </div>
+                            </div>
+                            <h4>Actieve gesprekken</h4>
+                        </div>
 
                     <div class="list-group queuelist" >
                          <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },

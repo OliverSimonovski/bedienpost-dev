@@ -576,13 +576,13 @@ li.list-group-item:hover i.fa-pencil-square-o
 }
 
 
-.logged-in-color
-{
+.logged-in-color,
+.enabled-color {
     color:#2d2f31;
 }
 
-.logged-out-color
-{
+.logged-out-color,
+.disabled-color {
     color:#afafaf;
 }
 
@@ -620,6 +620,22 @@ li.list-group-item:hover i.fa-pencil-square-o
     margin-top: 3px;
     
     padding-right: 149px;
+}
+
+.header .options .fa {
+    padding-left: 10px;
+    
+    cursor: pointer;
+    
+    font-size: 22px;
+}
+
+.header .options div:first-child > .fa {
+    padding-right: 10px;
+}
+
+.header .options .fa-share {
+    font-size: 18px;
 }
 
 .queuelist .fa-play,

@@ -373,7 +373,8 @@ body {
     color: white;
 }
 
-.loginname {
+.loginname,
+.phonelinkstatus {
     padding: 4px 10px;
     margin-right: 5px;
     float: right;
@@ -412,6 +413,10 @@ body {
     font-size: 15px;
     vertical-align: top;
     margin-top: 1px;
+}
+
+.fa-phone-square {
+    font-size: 18px;
 }
 
 .table-responsive {

@@ -803,6 +803,7 @@ var ListingsViewModel = function(){
     
     self.doPickup = function()
     {
+        console.log("Pickup clicked");
         if (self.callingState() == "ringing") {
             pickupPhone();
         }
@@ -810,6 +811,7 @@ var ListingsViewModel = function(){
     
     self.doHangup = function()
     {
+        console.log("Hangup clicked");
         if ((self.callingState() == "ringing") || (self.callingState() == "calling")) {
             hangupPhone();
         }

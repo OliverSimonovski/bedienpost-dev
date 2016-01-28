@@ -87,31 +87,18 @@
            <div class='row nopadding'>
 
             <div class='col-md-6 offset-6'  id="activecalls">
-                   <!-- <div class="overlay col-md" >
-                            <div class="btn-group btn-group-justified">
-                                <div class="btn-group">
-                                    <button class="btn btn-hangup"  type="button" data-bind="click: $root.doPickup,
-                                                                                        attr: { class: $root.actionStateCssClass('pick') }">Bea<u>n</u>twoorden</button>
-                                </div>
-                                <div class="btn-group">
-                                    <button class="btn btn-hangup"  type="button" data-bind="click: $root.doHangup,
-                                                                                         attr: { class: $root.actionStateCssClass('hang') }">Op<u>h</u>angen</button>
-                                </div>
-
-                            </div>
-                        </div> -->
                         <div class="header">
                             <div class="options">
                                 <div class="shortcuts pull-right" data-bind="click: $root.togglePauseGlobally">
                                     <i data-bind="attr: { class: ($root.pausedGlobally() ? 'fa fa-clock-o pause-active' : 'fa fa-clock-o') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') }"></i>
                                 </div>
-                                <div class="shortcuts pull-right">
+                               <!-- <div data-bind="attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
                                     <i class="fa fa-share"></i>
-                                </div>
-                                <div class="shortcuts pull-right">
+                                </div> -->
+                                <div data-bind="click: $root.doHangup, attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
                                     <i class="fa fa-times-circle-o"></i>
                                 </div>
-                                <div class="shortcuts pull-right">
+                                <div data-bind="click: $root.doPickup, attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
                                     <i class="fa fa-check-circle-o"></i>
                                 </div>
                             </div>

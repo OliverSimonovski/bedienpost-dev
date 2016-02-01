@@ -637,9 +637,9 @@ function getCallInfo(call, user) {
 
     // Arrow to other number
     if (callInfo.directionIsOut) {      // The agent is calling out.
-        callInfo.description += " < " + user.name; // TODO: Grafisch aanpakken.
+        callInfo.description += " vanaf " + user.name; // TODO: Grafisch aanpakken.
     } else {                            // The agent is receiving a call.
-        callInfo.description += " > "; // TODO: Grafisch aanpakken.
+        callInfo.description += " naar "; // TODO: Grafisch aanpakken.
         var destNumber = "";
         if (call.queueCallForCall) {    //
             destNumber = model.calls[call.queueCallForCall].firstDestinationObj;

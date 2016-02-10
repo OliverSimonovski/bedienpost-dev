@@ -440,6 +440,7 @@ function retrieveSettings() {
                 console.log("Retrieved company settings: " + response);
                 var parsedSettings = JSON.parse(response);
                 companySettings = parsedSettings;
+                processRetrievedCompanySettings();
             }
         });
 
@@ -454,12 +455,14 @@ function retrieveSettings() {
                     listingViewModel.obfuscateNumber(true); // Default to hiding.
                 }
                 companySettings.obfuscateNumber = currentServerObfuscateNumberSetting;
+                processRetrievedCompanySettings();
             });
 
         remoteStorage.getItem("company_crmUrl", "", COMPANYID)
             .done(function(response) {
                 listingViewModel.crmUrl(response);
                 companySettings.crmUrl = response;
+                processRetrievedCompanySettings();
             });
 
         remoteStorage.getItem("company_autoPauseSettings", "", COMPANYID)
@@ -469,6 +472,7 @@ function retrieveSettings() {
                     queuePause.changePauseTimes(queuePauseSettings);
                     setAutoPauseSettingsInGui(queuePauseSettings);
                     companySettings.queuePauseSettings = queuePauseSettings;
+                    processRetrievedCompanySettings();
                 }
             });
 
@@ -479,6 +483,7 @@ function retrieveSettings() {
                     var parsedResponse = JSON.parse(response);
                     listingViewModel.allowPause(parsedResponse);
                     companySettings.allowPause = parsedResponse;
+                    processRetrievedCompanySettings();
                 }
             });
 
@@ -489,6 +494,7 @@ function retrieveSettings() {
                     var parsedResponse = JSON.parse(response);
                     listingViewModel.logDownloadEnabled(parsedResponse);
                     companySettings.logDownloadEnabled = parsedResponse;
+                    processRetrievedCompanySettings();
                 }
             });
     }, 1000);
@@ -496,6 +502,53 @@ function retrieveSettings() {
     getExternalNumbersFromCompass();
 }
 
+function processRetrievedCompanySettings() {
+    // ObfuscateNumber
+    if (companySettings.obfuscateNumber === undefined) {companySettings.obfuscateNumber = true;}
+    if (companySettings.obfuscateWholeNumber === undefined) {companySettings.obfuscateWholeNumber = false;}
+    selectedProtectNumberOptionFromObfuscateNumber();
+}
+
+function selectedProtectNumberOptionFromObfuscateNumber() {
+
+    listingViewModel.obfuscateNumber(companySettings.obfuscateNumber);
+    listingViewModel.obfuscateWholeNumber(companySettings.obfuscateWholeNumber);
+
+    //console.log(companySettings.obfuscateNumber);
+    //console.log(companySettings.obfuscateWholeNumber)
+
+    if (companySettings.obfuscateNumber === false) {
+        listingViewModel.selectedProtectNumberOption("Niet verbergen");
+    } else if (companySettings.obfuscateWholeNumber === false) {
+        listingViewModel.selectedProtectNumberOption("Verberg laatste 5 nummers");
+    } else {
+        listingViewModel.selectedProtectNumberOption("Volledig verbergen");
+    }
+}
+
+function obfuscateNumberFromSelectedProtectNumberOption() {
+    // Bit cumbersome for backward-compatibility with older settings.
+    switch(listingViewModel.selectedProtectNumberOption()) {
+        case "Niet verbergen":
+            listingViewModel.obfuscateNumber(false);
+            listingViewModel.obfuscateWholeNumber(false);
+            console.log("Niet Verberden selected");
+            break;
+        case "Verberg laatste 5 nummers":
+            listingViewModel.obfuscateNumber(true);
+            listingViewModel.obfuscateWholeNumber(false);
+            console.log("Verberg laatste 5 nummers selected");
+            break;
+        case "Volledig verbergen":
+            listingViewModel.obfuscateNumber(true);
+            listingViewModel.obfuscateWholeNumber(true);
+            console.log("Volledig verbergen selected");
+            break;
+    }
+
+    companySettings.obfuscateNumber = listingViewModel.obfuscateNumber();
+    companySettings.obfuscateWholeNumber = listingViewModel.obfuscateWholeNumber();
+}
 
 function getExternalNumbersFromCompass() {
     var restCompanyUrl = "https://" + Lisa.Connection.restServer + "/company";

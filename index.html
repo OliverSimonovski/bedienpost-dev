@@ -487,7 +487,8 @@
                     <div class="tab-content">
 
                         <div role="tabpanel" class="tab-pane active" id="nummerafscherming">
-                            <p>Verberg laatste 5 cijfers van telefoonnummers. Dit geldt voor het gehele bedrijf: <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber"></p>
+                            <!-- <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber"> -->
+                            <p>Verberg telefoonnummers. Dit geldt voor het gehele bedrijf: <select data-bind="options: $root.protectNumberOptions, value: selectedProtectNumberOption"></select></p>
                         </div>
 
                         <div role="tabpanel" class="tab-pane" id="autopause">

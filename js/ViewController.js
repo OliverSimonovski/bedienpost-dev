@@ -51,7 +51,9 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
 
         var numberPart = this.connectedNr();
 
-        if (listingViewModel.obfuscateNumber()) {
+        if (listingViewModel.obfuscateWholeNumber()) {
+            numberPart = "..........";
+        } else if (listingViewModel.obfuscateNumber()) {
             if ((numberPart != "") && this.connectedName() != "") {
                 var npend = numberPart.substr(-5);
                 numberPart = numberPart.replace(npend, ".....");
@@ -448,6 +450,7 @@ var ListingsViewModel = function(){
     self.phoneIp = ko.observable("");
 
     self.obfuscateNumber = ko.observable(true);
+    self.obfuscateWholeNumber = ko.observable(false);
     self.connectSnom = ko.observable(null);
     self.crmUrl = ko.observable("");
 
@@ -455,6 +458,9 @@ var ListingsViewModel = function(){
     self.logDownloadEnabled = ko.observable(false);
 
     self.pausedGlobally = ko.observable(false);
+
+    self.protectNumberOptions = ["Niet verbergen", "Verberg laatste 5 nummers", "Volledig verbergen"];
+    self.selectedProtectNumberOption = ko.observable("Verberg laatste 5 nummers");
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
@@ -465,9 +471,13 @@ var ListingsViewModel = function(){
         self.search(""); 
     });
 
-     function addShortCuts() {
- 
-     }
+    self.selectedProtectNumberOption.subscribe(function()
+    {
+        obfuscateNumberFromSelectedProtectNumberOption();
+        storeSettingObfuscateNumber(companySettings.obfuscateNumber);
+        debouncedStoreCompanySettings();
+    });
+
  
      function filterListByName(list, searchParam) {
        if (!list) {
@@ -1318,11 +1328,6 @@ var ListingsViewModel = function(){
         },
         options: {}    
     };
-
-    self.obfuscateNumber.subscribe(function(value) {
-        companySettings.obfuscateNumber = value;
-        storeSettingObfuscateNumber(value);
-    });
 
     self.connectSnom.subscribe(function(value) {
        storeSettingConnectSnom(value);

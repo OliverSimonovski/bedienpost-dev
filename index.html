@@ -90,7 +90,7 @@
                         <div class="header">
                             <div class="options">
                                 <div class="shortcuts pull-right" data-bind="click: $root.togglePauseGlobally">
-                                    <i data-bind="attr: { class: ($root.pausedGlobally() ? 'fa fa-clock-o pause-active' : 'fa fa-clock-o') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') , title: $root.pausedGlobally() ? 'Ga van pauze af' : 'Ga op Pauze'}"></i>
+                                    <i data-bind="attr: { class: ($root.pausedGlobally() ? 'fa fa-clock-o pause-active' : 'fa fa-clock-o') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') , title: $root.allowPause() ? ($root.pausedGlobally() ? 'Ga van pauze af' : 'Ga op Pauze') : ''}"></i>
                                 </div>
                                <!-- <div data-bind="attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
                                     <i class="fa fa-share"></i>

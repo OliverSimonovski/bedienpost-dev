@@ -43,7 +43,7 @@
             timeout: 10000,
             dataType: 'json',
             headers: {
-                "X-Mashape-Key":  "eoOrekWSsCmshZ62AQe5jp8B41Xjp12GBZ8jsnSz9fBOdPKWhT"
+                "X-Mashape-Key":  module.APIKEY
             },
             success: function(respObj) {
                 if (DnsResolv.debug) {

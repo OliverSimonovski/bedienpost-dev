@@ -794,7 +794,7 @@ function queueToClientModel(queue, queueObj) {
     }
 
     var memberStr = "Beschikbaar: \n " + availableStr +
-        "\n\nNiet Beschikbaar:\n" + unAvailableStr +
+        "\n\nIn Gesprek:\n" + unAvailableStr +
         "\n\nGepauzeerd:\n" + pausedStr +
         "\n\nWachtende gesprekken: \n" + callsStr;
     queueObj.membersStr(memberStr);

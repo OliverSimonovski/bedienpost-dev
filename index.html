@@ -95,10 +95,10 @@
                                <!-- <div data-bind="attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
                                     <i class="fa fa-share"></i>
                                 </div> -->
-                                <div title="Gesprek beantwoorden" data-bind="click: $root.doHangup, attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
+                                <div title="Gesprek be&euml;indigen" data-bind="click: $root.doHangup, attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
                                     <i class="fa fa-times-circle-o"></i>
                                 </div>
-                                <div title="Gesprek beëindigen" data-bind="click: $root.doPickup, attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
+                                <div title="Gesprek beantwoorden" data-bind="click: $root.doPickup, attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
                                     <i class="fa fa-check-circle-o"></i>
                                 </div>
                             </div>
@@ -118,8 +118,7 @@
                                  </div>
                                 <label>
                                     <h5 class="list-group-item-heading">
-                                        <span data-bind="text: entry.toDisplay"></span>
-                                        <!-- <span data-bind="text: entry.isAutoPause() ? '' :  entry.directionIsOut() ? ' [uitgaand]' : ' [inkomend]' "></span> -->
+                                        <span data-bind="text: 'extern nummer' "></span><span><i style="vertical-align: middle;" data-bind="attr: { class: (entry.isAutoPause() ? '' :  entry.directionIsOut() ? 'fa fa-arrow-circle-left' : 'fa fa-arrow-circle-right') } "></i></span><span data-bind="text: 'naam van gebruiker' "></span>
                                     </h5>
                                 </label>
                             </li>

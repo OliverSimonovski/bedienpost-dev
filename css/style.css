@@ -640,6 +640,20 @@ li.list-group-item:hover i.fa-pencil-square-o
     display:inline;
 }
 
+#activecalls .queuelist label {
+    width: 70%;
+}
+
+#activecalls span.external-number,
+#activecalls span.internal-number {
+    display: inline-block;
+    width: 45%;
+    
+    overflow: hidden;
+    text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .connect
 {
     width:49%;

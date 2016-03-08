@@ -981,6 +981,8 @@ var ListingsViewModel = function(){
     }
 
     self.settingsClicked = function() {
+        if(!self.amAdmin()) return;
+
         listingViewModel.vcardUploadFeedback("");
         shortcutsActive = false;
         $('#settingsModal').modal({

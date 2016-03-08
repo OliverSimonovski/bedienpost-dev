@@ -103,7 +103,7 @@
             res.bosh_server = Lisa.getEnvWithPrefix("bosh", res.xmpp_server);
             res.rest_server = Lisa.getEnvWithPrefix("rest", res.xmpp_server);
             console.log("Login parsed:");
-            console.log(res);
+            console.log(JSON.stringify(res));
             res.resultDeferred.resolve(res);
         });
 

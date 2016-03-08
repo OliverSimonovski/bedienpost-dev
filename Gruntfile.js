@@ -3,6 +3,8 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
+        auto_install: { local: {}},
+
         copy: {
             dist: {
                     files: [
@@ -49,9 +51,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-usemin');
+    grunt.loadNpmTasks('grunt-auto-install');
 
 
-    grunt.registerTask('default', ['useminPrepare', 'copy', 'concat', 'uglify', 'cssmin', 'usemin']);
+    grunt.registerTask('default', ['auto_install','useminPrepare', 'copy', 'concat', 'uglify', 'cssmin', 'usemin']);
 
 
 }

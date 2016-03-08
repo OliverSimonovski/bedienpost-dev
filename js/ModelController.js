@@ -35,6 +35,8 @@ var retrievedUserNoteModel = false;
 
 var userNoteModel = {}; // userId : note.
 var queuePause = null;
+var companySettings = {};
+var externalNumbers = [];
 
 
 $(document).ready(function () {
@@ -70,6 +72,8 @@ function init() {
     currentServerConnectSnomSetting = false;
     retrievedUserNoteModel = false;
     userNoteModel = {};
+    companySettings = {};
+    externalNumbers = [];
 }
 
 function tryAutoLogin() {
@@ -331,14 +335,19 @@ function chromeLoginPhone() {
     }, 5000);
 }
 
+/*
+ *
+ */
+
 function checkSnomConnected() {
-    var url = "http://"+phoneUser+":"+phonePass+"@" + phoneIp + "/img/snom_logo.png?noCaching=" + Math.random();
+    var url = "http://"+phoneUser+":"+phonePass+"@" + phoneIp + "/img/snom_logo.png";
+
     var logoImage = new Image();
 
     logoImage.onload = function() {
         listingViewModel.connectedPhone((this.width > 0) && (this.height > 0));
     };
-    logoImage.onerror = function() {
+    logoImage.onerror = function(arg1, arg2) {
         listingViewModel.connectedPhone(false);
     };
     logoImage.src = url;
@@ -425,38 +434,144 @@ function gotModel(newmodel) {
 
 function retrieveSettings() {
 
-    remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYNAME)
-        .done(function(response) {
-            if (response == "false") {
-                currentServerObfuscateNumberSetting = false;
-                listingViewModel.obfuscateNumber(false);
-            } else {
-                currentServerObfuscateNumberSetting = true;
-                listingViewModel.obfuscateNumber(true); // Default to hiding.
-            }
-        });
-
-    remoteStorage.getItem("company_crmUrl", "", COMPANYNAME)
-        .done(function(response) {
-            listingViewModel.crmUrl(response);
-        });
-
-    remoteStorage.getItem("company_autoPauseSettings", "", COMPANYNAME)
+    // This is set to be the new way to store all company settings. For now, the settings from the old settings are authorative,
+    // So do this one first, and allow all the other settings to overwrite the object.
+    remoteStorage.getItem("company_settings", "", COMPANYID)
         .done(function(response) {
             if (response != null) {
-                var queuePauseSettings = JSON.parse(response);
-                queuePause.changePauseTimes(queuePauseSettings);
-                setAutoPauseSettingsInGui(queuePauseSettings);
+                console.log("Retrieved company settings: " + response);
+                var parsedSettings = JSON.parse(response);
+                companySettings = parsedSettings;
+                processRetrievedCompanySettings();
             }
         });
 
-    remoteStorage.getItem("company_allowPause", "", COMPANYNAME)
-        .done(function (response) {
-            console.log("Retrieved company allowPaused setting: " + response);
-            if (response !== null) {
-                listingViewModel.allowPause(JSON.parse(response));
+    _.delay(function() {
+        remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYID)
+            .done(function(response) {
+                if (response == "false") {
+                    currentServerObfuscateNumberSetting = false;
+                    listingViewModel.obfuscateNumber(false);
+                } else {
+                    currentServerObfuscateNumberSetting = true;
+                    listingViewModel.obfuscateNumber(true); // Default to hiding.
+                }
+                companySettings.obfuscateNumber = currentServerObfuscateNumberSetting;
+                processRetrievedCompanySettings();
+            });
+
+        remoteStorage.getItem("company_crmUrl", "", COMPANYID)
+            .done(function(response) {
+                listingViewModel.crmUrl(response);
+                companySettings.crmUrl = response;
+                processRetrievedCompanySettings();
+            });
+
+        remoteStorage.getItem("company_autoPauseSettings", "", COMPANYID)
+            .done(function(response) {
+                if (response != null) {
+                    var queuePauseSettings = JSON.parse(response);
+                    queuePause.changePauseTimes(queuePauseSettings);
+                    setAutoPauseSettingsInGui(queuePauseSettings);
+                    companySettings.queuePauseSettings = queuePauseSettings;
+                    processRetrievedCompanySettings();
+                }
+            });
+
+        remoteStorage.getItem("company_allowPause", "", COMPANYID)
+            .done(function (response) {
+                console.log("Retrieved company allowPaused setting: " + response);
+                if (response !== null) {
+                    var parsedResponse = JSON.parse(response);
+                    listingViewModel.allowPause(parsedResponse);
+                    companySettings.allowPause = parsedResponse;
+                    processRetrievedCompanySettings();
+                }
+            });
+
+        remoteStorage.getItem("company_logDownloadEnabled", "", COMPANYID)
+            .done(function (response) {
+                console.log("Retrieved company logDownloadEnabled setting: " + response);
+                if (response !== null) {
+                    var parsedResponse = JSON.parse(response);
+                    listingViewModel.logDownloadEnabled(parsedResponse);
+                    companySettings.logDownloadEnabled = parsedResponse;
+                    processRetrievedCompanySettings();
+                }
+            });
+    }, 1000);
+
+    getExternalNumbersFromCompass();
+}
+
+function processRetrievedCompanySettings() {
+    // ObfuscateNumber
+    if (companySettings.obfuscateNumber === undefined) {companySettings.obfuscateNumber = true;}
+    if (companySettings.obfuscateWholeNumber === undefined) {companySettings.obfuscateWholeNumber = false;}
+    selectedProtectNumberOptionFromObfuscateNumber();
+}
+
+function selectedProtectNumberOptionFromObfuscateNumber() {
+
+    listingViewModel.obfuscateNumber(companySettings.obfuscateNumber);
+    listingViewModel.obfuscateWholeNumber(companySettings.obfuscateWholeNumber);
+
+    //console.log(companySettings.obfuscateNumber);
+    //console.log(companySettings.obfuscateWholeNumber)
+
+    if (companySettings.obfuscateNumber === false) {
+        listingViewModel.selectedProtectNumberOption("Niet verbergen");
+    } else if (companySettings.obfuscateWholeNumber === false) {
+        listingViewModel.selectedProtectNumberOption("Verberg laatste 5 nummers");
+    } else {
+        listingViewModel.selectedProtectNumberOption("Volledig verbergen");
+    }
+}
+
+function obfuscateNumberFromSelectedProtectNumberOption() {
+    // Bit cumbersome for backward-compatibility with older settings.
+    switch(listingViewModel.selectedProtectNumberOption()) {
+        case "Niet verbergen":
+            listingViewModel.obfuscateNumber(false);
+            listingViewModel.obfuscateWholeNumber(false);
+            console.log("Niet Verberden selected");
+            break;
+        case "Verberg laatste 5 nummers":
+            listingViewModel.obfuscateNumber(true);
+            listingViewModel.obfuscateWholeNumber(false);
+            console.log("Verberg laatste 5 nummers selected");
+            break;
+        case "Volledig verbergen":
+            listingViewModel.obfuscateNumber(true);
+            listingViewModel.obfuscateWholeNumber(true);
+            console.log("Volledig verbergen selected");
+            break;
+    }
+
+    companySettings.obfuscateNumber = listingViewModel.obfuscateNumber();
+    companySettings.obfuscateWholeNumber = listingViewModel.obfuscateWholeNumber();
+}
+
+function getExternalNumbersFromCompass() {
+    var restCompanyUrl = "https://" + Lisa.Connection.restServer + "/company";
+    var externalNumbersUrl = restCompanyUrl + "/" + COMPANYID + "/fullExternalNumbers";
+    $.ajax
+    ({
+        type: "GET",
+        headers: {
+            "Accept": "application/vnd.iperity.compass.v1+json",
+            "Authorization": Lisa.Connection.restAuthHeader,
+            "X-No-Redirect": true
+        },
+        url: externalNumbersUrl,
+        success: function (result) {
+            externalNumbers = [];
+            for (var itemKey in result) {
+                var item = result[itemKey];
+                externalNumbers[item.number] = item.name;
             }
-        });
+        }
+    });
 
     var url = Lisa.Connection.restUserUrl + "/permission?targetEntity=company/" + COMPANYID;
     $.ajax
@@ -483,7 +598,8 @@ function setAutoPauseSettingsInBackend(queuePauseSettings) {
     console.log("GUI changed, updating pause-times in back-end, and storing on server.")
     //console.log(queuePauseSettings);
     queuePause.changePauseTimes(queuePauseSettings);
-    remoteStorage.setItem("company_autoPauseSettings", JSON.stringify(queuePauseSettings), "", COMPANYNAME);
+    remoteStorage.setItem("company_autoPauseSettings", JSON.stringify(queuePauseSettings), "", COMPANYID);
+    companySettings.queuePauseSettings = queuePauseSettings;
 }
 
 function getContactListData(user, server, pass, companyId) {
@@ -581,7 +697,7 @@ function getCallInfo(call, user) {
 
     // Try to find a user with this phone-number in the list, and display its name if found.
     var lastSevenNumbers = callInfo.number.substr(-7);
-    var userObj = userPhoneNumberToUserObservable[lastSevenNumbers];
+    var userObj = userPhoneNumberToUserObservable[lastSevenNumbers]; // TODO: Unified module om telefoonnummers naar namen te converteren? (Samen met externalNumbers)
     if (userObj) {
         callInfo.name = userObj.name();
     }
@@ -590,6 +706,20 @@ function getCallInfo(call, user) {
     callInfo.description = (callInfo.name != "...") ? callInfo.name  : callInfo.number;
     callInfo.descriptionWithNumber = (callInfo.name != "...") ? callInfo.name + " (" + callInfo.number + ")" : callInfo.number;
     callInfo.startTime = call.destination.find('timeCreated').text(); // seconds since epoch
+
+    // Arrow to other number
+    if (callInfo.directionIsOut) {      // The agent is calling out.
+        callInfo.description += " vanaf " + user.name; // TODO: Grafisch aanpakken.
+    } else {                            // The agent is receiving a call.
+        callInfo.description += " naar "; // TODO: Grafisch aanpakken.
+        var destNumber = "";
+        if (call.queueCallForCall) {    //
+            destNumber = model.calls[call.queueCallForCall].firstDestinationObj;
+        } else {
+            destNumber = call.firstDestinationObj;
+        }
+        callInfo.description += externalNumbers[destNumber] ? externalNumbers[destNumber] : destNumber;
+    }
 
     return callInfo;
 }
@@ -649,6 +779,7 @@ function queueToClientModel(queue, queueObj) {
 
     var availableStr = "", unAvailableStr="", pausedStr = "";
     var avfirst = true, unavfirst = true, pausedFirst = true;
+    var callsStr = "";
     var sortedUsers = _.sortBy(queue.users, function(user){
         return user.name;
     });
@@ -671,9 +802,20 @@ function queueToClientModel(queue, queueObj) {
             avfirst = false;
         }
     }
+
+    // Calls
+    var callCount = 1;
+    for (var callKey in queue.calls) {
+        var call = queue.calls[callKey];
+        var callInfo = getCallInfo(call, null);
+        var curCallStr = callCount++ + ". " + callInfo.description + "\n";
+        callsStr += curCallStr;
+    }
+
     var memberStr = "Beschikbaar: \n " + availableStr +
-        "\n\nNiet Beschikbaar:\n" + unAvailableStr +
-        "\n\nGepauzeerd:\n" + pausedStr;
+        "\n\nIn Gesprek:\n" + unAvailableStr +
+        "\n\nGepauzeerd:\n" + pausedStr +
+        "\n\nWachtende gesprekken: \n" + callsStr;
     queueObj.membersStr(memberStr);
 
     return queueObj;
@@ -803,6 +945,10 @@ function mergeCallEntriesList(newEntries) {
     // Handle deletion of calls that aren't running anymore.
     for (key in incomingCallEntries()) {
         var oldEntry = incomingCallEntries()[key];
+
+        if (oldEntry.isAutoPause()) {
+            continue; // Leave the auto-pause entries alone.
+        }
 
         // Determine for each call whether it still exists.
         var stillExists = false;
@@ -993,20 +1139,14 @@ function bedienpostAdminAjaxPost(url, postObj, success, error) {
     });
 }
 
-// TODO; Refactor to use the remote-storage functionality directly instead of using some shady form to set remote-storage for us.
 function storeSettingObfuscateNumber(value) {
     // Suppress call to server if the change came from the server in the first place
     if (value == currentServerObfuscateNumberSetting)
         return;
 
-    var postObj = {obfuscateNumber: (value) ? 1 : 0};
-    var url = "https://bedienpost.nl/admin/settings.php";
-
-    console.log("Storing setting obfuscateNumer to " + value);
-    bedienpostAdminAjaxPost(url, postObj,
-        function(){console.log("Successfully stored setting obfuscateNumber to " + value); currentServerObfuscateNumberSetting = value;},
-        function(){console.warn("Error storing obfuscateNumber setting.");}
-    );
+    console.log("Setting hideLastPartPhoneNumber to " + value + " and storing on server.");
+    remoteStorage.setItem("company_hideLastPartPhoneNumber", value, "", COMPANYID);
+    debouncedStoreCompanySettings();
 }
 
 function storeSettingConnectSnom(value) {
@@ -1023,6 +1163,7 @@ function storeSettingConnectSnom(value) {
         {
             console.log("Successfully stored setting ConnectSnom to " + value);
             currentServerConnectSnomSetting = value;
+            companySettings.connectSnomSetting = value;
             // Immediately effectuate the new settings.
             getPhoneAuth(USERNAME, DOMAIN, PASS);
         },
@@ -1062,19 +1203,33 @@ function uploadVCard(data) {
     });
 }
 
+function storeCompanySettings() {
+    var settingsStr = JSON.stringify(companySettings);
+    console.log("Storing company-settings: " + settingsStr);
+    remoteStorage.setItem("company_settings", settingsStr, "", COMPANYID);
+}
+
 function storeSettingAllowPause(value) {
-    console.log("Setting allow-pause to " + value);
-    remoteStorage.setItem("company_allowPause", value, "", COMPANYNAME);
+    console.log("Setting allow-pause to " + value + " and storing on server.");
+    remoteStorage.setItem("company_allowPause", value, "", COMPANYID);
+    debouncedStoreCompanySettings();
+}
+
+function storeSettingLogDownloadEnabled(value) {
+    console.log("Setting log-download enabled to " + value + " and storing on server.");
+    remoteStorage.setItem("company_logDownloadEnabled", value, "", COMPANYID);
+    debouncedStoreCompanySettings();
 }
 
 function storeSettingCrmUrl(value) {
-    console.log("Setting CRM-url to " + value);
-    remoteStorage.setItem("company_crmUrl", value, "", COMPANYNAME);
+    console.log("Setting CRM-url to " + value + " and storing on server.");
+    remoteStorage.setItem("company_crmUrl", value, "", COMPANYID);
+    debouncedStoreCompanySettings();
 }
 
 function getUserNoteModel() {
     console.log("Retrieving user-note model from server.")
-    var deferred =  remoteStorage.getItem("company_userNoteModel", "", COMPANYNAME);
+    var deferred =  remoteStorage.getItem("company_userNoteModel", "", COMPANYID);
     deferred.done(function (val) {
         console.log("retrieved: " + val);
 
@@ -1089,6 +1244,7 @@ function getUserNoteModel() {
             parsedObj = {};
         }
         userNoteModel = parsedObj;
+        companySettings.userNoteModel = parsedObj;
         retrievedUserNoteModel = true;
         assignAllUserNotes();
 
@@ -1129,10 +1285,58 @@ function storeUserNote(userId, note) {
                 }
                 console.log("Pushing user-note model to server.")
                 console.log(userNoteModel);
-                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYNAME);
+                companySettings.userNoteModel = userNoteModel;
+                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYID);
+                debouncedStoreCompanySettings();
             }
         }
     }(userId, note));
 }
 
 var debouncedStoreSettingCrmUrl = _.debounce(storeSettingCrmUrl, 5000);
+var debouncedStoreCompanySettings = _.debounce(storeCompanySettings, 5000);
+
+
+
+
+
+/* Allow user to 'download' log files */
+function BedienpostLogging() {
+    _.bindAll(this, 'myConsoleLog');
+
+    this.loglines = [];
+    this.LOGLINESTOKEEP = 20000;
+    this.next = 0;
+    this.logLineNum = 0;
+
+    console.origLog = console.log;
+    console.log = this.myConsoleLog;
+}
+
+BedienpostLogging.prototype.myConsoleLog = function(logline) {
+
+    var lineWithDate = ++this.logLineNum + " " + Date.now() + " " + logline
+    console.origLog(logline);
+
+    this.loglines[this.next++] = lineWithDate;
+    if (this.next > this.LOGLINESTOKEEP - 1) {
+        this.next = 0;
+    }
+    if (this.next % 500 == 0) console.origLog("Keeping " + _.size(this.loglines) + " log lines");
+}
+
+BedienpostLogging.prototype.getLog = function() {
+    var result = "";
+    for (var i=this.next; i< (_.size(this.loglines)); ++i) {
+        result += this.loglines[i] + "\n";
+    }
+    for (var i=0; i<this.next; ++i) {
+        result += this.loglines[i] + "\n";
+    }
+
+    console.origLog("Getting previous loglines with a size of " + _.size(result) + " bytes.")
+
+    return result;
+}
+
+var myLogging = new BedienpostLogging();

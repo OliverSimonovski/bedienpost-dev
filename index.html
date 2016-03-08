@@ -36,46 +36,74 @@
                     <div class='col-md-6' id="logo">
                         <img class='logo' src="./img/logo.png" alt="">
                     </div>
-               </div>
+                </div>
+                
+                <div class='row nopadding'>
+                    <div class='col-md-12' id="controls">
+                        <div class="shortcuts pull-right" data-bind="click: $root.logOut" title="log uit">
+                            <i class="fa fa-arrow-circle-right pull-right"></i>
+                        </div>
+
+                        <span class="loginname" data-bind="text: loggedInName"><i></i></span>
+                        
+                        <span class="phonelinkstatus pull-right" data-bind="attr: { class: ($root.phoneAuthAvailable() ? 'phonelinkstatus pull-right active' : 'hidden') }"> 
+                                <i class="fa fa-phone-square pull-right"></i>
+                                <span class="icon-label" data-bind= "text:  connectedPhone() ? 'gekoppeld' : 'niet gekoppeld' "></span>
+                        </span>
+
+                        <div class="shortcuts pull-right" data-bind="click: $root.showShortcuts">
+                            <i class="fa fa-question pull-right"></i>
+                            <span class="icon-label">h<u>e</u>lp</span>
+                        </div>
+                        <div class="shortcuts pull-right" data-bind="click: $root.settingsClicked">
+                            <i class="fa fa-cog pull-right"></i>
+                            <span class="icon-label">instellingen</span>
+                        </div>
+                        <div class="shortcuts pull-right" data-bind="click: $root.downloadLogsClicked, visible:$root.logDownloadEnabled">
+                            <i class="fa fa-download pull-right"></i>
+                            <span class="icon-label">logs</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="container" data-bind="drop: markUserFavorite">
             
             <div class='row nopadding'>
-                
-                <div class='col-md-12' id="userinfo">
-                    <span class="loginname" data-bind="text: loggedInName"><i></i></span>
+                <div class='col-md-12' id="alerts">
+                    <div class="alert alert-warning alert-dismissable collapse" role="alert" id="queue-lowwatermark-alert-1">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <!-- <div class="pull-right">
+                            <button class="btn btn-warning" type="button">Log in op deze wachtrij</button>
+                            <button class="btn btn-default" type="button" data-dismiss="alert">Melding sluiten</button>
+                        </div> -->
+                        <h4>Minimum aantal agents voor wachtrij bereikt</h4>
+                        <p>De wachtrij <!-- <span data-bind="text: lowWatermarkQueueName"></span> --> heeft het ingestelde minimaal aantal agents bereikt.</p>
+                    </div>
                 </div>
-            
             </div>
 
            <div class='row nopadding'>
 
             <div class='col-md-6 offset-6'  id="activecalls">
-                   <div class="overlay col-md" >
-                            <div class="btn-group btn-group-justified">
-                                <div class="btn-group">
-                                    <button class="btn btn-hangup"  type="button" data-bind="click: $root.doPickup,
-                                                                                        attr: { class: $root.actionStateCssClass('pick') }">Bea<u>n</u>twoorden</button>
-                                </div>
-                                <div class="btn-group">
-                                    <button class="btn btn-hangup"  type="button" data-bind="click: $root.doHangup,
-                                                                                         attr: { class: $root.actionStateCssClass('hang') }">Op<u>h</u>angen</button>
-                                </div>
-
-                            </div>
-                        </div>
                         <div class="header">
-                        <div class="options" >
-                                <div class=" pull-right" data-bind="attr: { class: ($root.phoneAuthAvailable() ? 'pull-right active' : 'pull-right inactive')  }">
-                                     <i class="fa fa-phone-square pull-right"></i>
-                                    <span class="icon-label"><span data-bind= "text:  connectedPhone() ? ' SNOM-telefoon verbonden' : ' SNOM-telefoon niet verbonden' "></span></span>
-                                </div>    
-                             </div>
-                        
-                        <h4>Actieve gesprekken</h4>
-                    </div>
+                            <div class="options">
+                                <div class="shortcuts pull-right" data-bind="click: $root.togglePauseGlobally">
+                                    <i data-bind="attr: { class: ($root.pausedGlobally() ? 'fa fa-clock-o pause-active' : 'fa fa-clock-o') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') , title: $root.allowPause() ? 'Pauze' : ''}"></i>
+                                </div>
+                               <!-- <div data-bind="attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
+                                    <i class="fa fa-share"></i>
+                                </div> -->
+                                <div title="Gesprek be&euml;indigen" data-bind="click: $root.doHangup, attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
+                                    <i class="fa fa-times-circle-o"></i>
+                                </div>
+                                <div title="Gesprek beantwoorden" data-bind="click: $root.doPickup, attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
+                                    <i class="fa fa-check-circle-o"></i>
+                                </div>
+                            </div>
+                            <h4>Actieve gesprekken</h4>
+                        </div>
 
                     <div class="list-group queuelist" >
                          <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
@@ -91,7 +119,7 @@
                                 <label>
                                     <h5 class="list-group-item-heading">
                                         <span data-bind="text: entry.toDisplay"></span>
-                                        <span data-bind="text: entry.isAutoPause() ? '' :  entry.directionIsOut() ? ' [uitgaand]' : ' [inkomend]' "></span>
+                                        <!-- <span data-bind="text: entry.isAutoPause() ? '' :  entry.directionIsOut() ? ' [uitgaand]' : ' [inkomend]' "></span> -->
                                     </h5>
                                 </label>
                             </li>
@@ -100,20 +128,6 @@
                 </div>
                 <div class='col-md-6'>
                         <div class="header">
-                             <div class="options" >
-                                    <div class="logout pull-right" data-bind="click: $root.logOut">
-                                        <i class="fa fa-arrow-circle-right pull-right"></i>
-                                        <span class="icon-label">uitloggen</span>
-                                    </div>
-                                    <div class="shortcuts pull-right" data-bind="click: $root.showShortcuts">
-                                        <i class="fa fa-question pull-right"></i>
-                                        <span class="icon-label">h<u>e</u>lp</span>
-                                    </div>
-                                    <div class="shortcuts pull-right" data-bind="click: $root.settingsClicked, visible:$root.amAdmin">
-                                         <i class="fa fa-cog pull-right"></i>
-                                         <span class="icon-label">instellingen</span>
-                                    </div>
-                             </div>
                             <h4>Wachtrijen</h4>
                         </div>
                         <div class="list-group queuelist">
@@ -128,7 +142,7 @@
                                                                             click: $root.signInOut"></i>
                                             <i data-bind="attr: { class: $root.favoriteCssClass(entry.favorite()) },
                                                                click: $root.markQueueFavorite"></i>
-                                            <i data-bind="attr: { class: (entry.paused() ? 'fa fa-play' : 'fa fa-pause') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') },
+                                            <i data-bind="attr: { class: (entry.paused() ? 'fa fa-clock-o pause-active' : 'fa fa-clock-o') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') },
                                                                click: entry.togglePause"></i>
                                     </div>
                                     <label>
@@ -311,11 +325,11 @@
           <h4 class="modal-title">Login</h4>
         </div>
         <div class="modal-body">
-           <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
+           <div class="form-group" data-bind="attr: { class: ($root.authError()) ? 'form-group has-error' : 'form-group has-success' }">
               <label class="control-label">Login:</label>
               <input id="nameInputField" type="text" placeholder="User@Domain.com" data-bind="value: loginName, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
-            <div class="form-group has-feedback" data-bind="attr: { class: ($root.authError()) ? 'form-group has-feedback has-error' : 'form-group has-feedback has-success' }">
+            <div class="form-group" data-bind="attr: { class: ($root.authError()) ? 'form-group has-error' : 'form-group has-success' }">
               <label class="control-label">Wachtwoord:</label>
               <input id="passwordInputField" type="password" data-bind="value: loginPass, valueUpdate: 'afterkeydown'"  class="form-control">
             </div>
@@ -403,6 +417,9 @@
                        <p>H : Ophangen</p>
                 </div>
                <div class="buttoncontainer text-left">
+                   <p>P : Globaal op pauze, of van pauze af</p>
+               </div>
+               <div class="buttoncontainer text-left">
                        <p>B : Bellen (Na het selecteren van een persoon)</p>
                 </div>
                <div class="buttoncontainer text-left">
@@ -411,7 +428,7 @@
                <div class="buttoncontainer text-left">
                        <p>T : Doorschakeling zonder ruggespraak (Na het selecteren van een persoon)</p>
                 </div>
-               
+
                 <div class="buttoncontainer text-left">
                     <p><i class="fa fa-envelope-o legend" ></i>
                       Verzend een notificatie-email naar beller of gebelde</p>
@@ -464,12 +481,14 @@
                         <li role="presentation"><a href="#import" aria-controls="import" role="tab" data-toggle="tab">Adresboekimport</a></li>
                         <li role="presentation"><a href="#pauserights" aria-controls="import" role="tab" data-toggle="tab">Pauzerechten</a></li>
                         <li role="presentation"><a href="#crm" aria-controls="crm" role="tab" data-toggle="tab">CRM-integratie</a></li>
+                        <li role="presentation"><a href="#logDownload" aria-controls="crm" role="tab" data-toggle="tab">Logs downloaden</a></li>
                     </ul>
                     
                     <div class="tab-content">
 
                         <div role="tabpanel" class="tab-pane active" id="nummerafscherming">
-                            <p>Verberg laatste 5 cijfers van telefoonnummers. Dit geldt voor het gehele bedrijf: <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber"></p>
+                            <!-- <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber"> -->
+                            <p>Verberg telefoonnummers. Dit geldt voor het gehele bedrijf: <select data-bind="options: $root.protectNumberOptions, value: selectedProtectNumberOption"></select></p>
                         </div>
 
                         <div role="tabpanel" class="tab-pane" id="autopause">
@@ -506,6 +525,10 @@
                         <div role="tabpanel" class="tab-pane" id="crm">
                             <p>Door CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem. Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.</p>
                             <p>url: <input type="text" data-bind="value: crmUrl, valueUpdate: 'afterkeydown'" style="width:300px" placeholder="https://mijn-crm.bedrijf.nl/inkomend-nr/$"></p>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="logDownload">
+                            <p>Activeer de 'download Logfiles' knop voor het bedrijf. <input name="logDownload" type="checkbox" checked data-bind="checked: $root.logDownloadEnabled"></p>
                         </div>
                     
                     </div>
@@ -571,7 +594,7 @@
 
   <!-- build:js js/app.js -->
       <script type='text/javascript' src="node_modules/lisa-api/LisaApi.js"></script>
-      <script type='text/javascript' src="node_modules/lisa-api/contrib/queuePause/queuePause.js"></script>
+      <script type='text/javascript' src="js/lib/queuePause.js"></script>
 
       <script type='text/javascript' src='js/exampleData.js'></script>
       <script type='text/javascript' src='js/ViewController.js'></script>

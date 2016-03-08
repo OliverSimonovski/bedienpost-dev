@@ -51,7 +51,9 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
 
         var numberPart = this.connectedNr();
 
-        if (listingViewModel.obfuscateNumber()) {
+        if (listingViewModel.obfuscateWholeNumber()) {
+            numberPart = "..........";
+        } else if (listingViewModel.obfuscateNumber()) {
             if ((numberPart != "") && this.connectedName() != "") {
                 var npend = numberPart.substr(-5);
                 numberPart = numberPart.replace(npend, ".....");
@@ -147,7 +149,7 @@ function saveFavs(list, storageKey) {
 
 
 function QueueListItem(id, name) {
-    _.bindAll(this, 'queueLogin', 'togglePause');
+    _.bindAll(this, 'queueLogin', 'togglePause', 'removeAutopauseItem');
 
     this.id = ko.observable(id                            || "");
     this.name = ko.observable(name                        || "");
@@ -169,7 +171,7 @@ function QueueListItem(id, name) {
         var duration = 0;
         if (this.waitingAmount() != 0) {
             var waitingStart = moment.utc(this.maxWaitingStartTime());
-            var duration = (currentTime() - waitingStart); // duration in milliseconds
+            duration = (currentTime() - waitingStart); // duration in milliseconds
         }
 
 
@@ -177,6 +179,10 @@ function QueueListItem(id, name) {
         return timeString;
 
     }, this);
+
+    this.paused.subscribe(function(value) {
+        listingViewModel.updateGloballypausedState();
+    })
 }
 
 QueueListItem.prototype.queueLogin = function (amLoggingIn) {
@@ -191,6 +197,8 @@ QueueListItem.prototype.queueLogin = function (amLoggingIn) {
 }
 
 QueueListItem.prototype.togglePause = function () {
+    console.log("togglePause clicked for item: " + this.name())
+
     //this.signInOut(amLoggingIn); // Event should come correctly through api.
     if (!this.signInOut) {
         console.log("Can't pause queue, since we're not logged into queue.");
@@ -201,19 +209,27 @@ QueueListItem.prototype.togglePause = function () {
     var curPaused = queue.paused;
 
     if (curPaused) {
-        conn.queueUnpause(queue);
-
-        // If we were in auto-pause, remove auto-pause indication on unpause.
-        var autoPauseItem = queue.autoPauseItem;
-        queue.autoPauseItem = null;
-        autoPauseItem.autoPauseQueue = null;
-        incomingCallEntries.remove(autoPauseItem);
+            // unpause the queue that was clicked.
+            this.removeAutopauseItem(queue);
+            conn.queueUnpause(queue);
     } else {
         if (!listingViewModel.allowPause()) {
             console.log("Users disallowed from pausing in this company. Not pausing.");
         } else {
             conn.queuePause(queue);
         }
+    }
+}
+
+QueueListItem.prototype.removeAutopauseItem = function(queue) {
+    // If we were in auto-pause, remove auto-pause indication on unpause.
+    var autoPauseItem = queue["autoPauseItem"];
+    if (autoPauseItem) {
+        console.log("Removing auto-pause item for queue " + queue.name);
+        queue.autoPauseItem = null;
+        autoPauseItem.autoPauseQueue = null;
+        incomingCallEntries.remove(autoPauseItem);
+        queuePause.stopUnpauseTimer();
     }
 }
 
@@ -244,7 +260,7 @@ function pauseTimeUpdated() {
 
 function setAutoPauseSettingsInGui(queuePauseSettings) {
     console.log("Retrieved auto-pause settings from server, updating settings gui-model.")
-    console.log(queuePauseSettings);
+    console.log(JSON.stringify(queuePauseSettings));
     for (var queueKey in listingViewModel.filterWaitingQueue()) {
         var queueItem = listingViewModel.filterWaitingQueue()[queueKey];
         var pauseTime = queuePauseSettings[queueItem.id()];
@@ -359,7 +375,7 @@ CallListItem.prototype.stopCall = function() {
     }
 }
 
-/* This is slightly hacking; Pressing a auto-pause message in the format of a CallListItem.
+/* This is slightly hacky; Pressing a auto-pause message in the format of a CallListItem.
  * If we get any more of these, refactor the list to be able to contain multiple types of items. */
 CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
     this.isAutoPause(true);
@@ -372,10 +388,11 @@ CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
     _.delay(
         function (self) {
             return function () {
-                self.autoPauseQueue.autoPauseItem = null;
-                self.autoPauseQueue = null;
-                incomingCallEntries.remove(self);
-
+                if (self.autoPauseQueue) {
+                    self.autoPauseQueue.autoPauseItem = null;
+                    self.autoPauseQueue = null;
+                    incomingCallEntries.remove(self);
+                }
             }
         }(this), pauseTime * 1000);
 }
@@ -434,10 +451,17 @@ var ListingsViewModel = function(){
 
     self.obfuscateNumber = ko.observable(true);
     self.amAdmin = ko.observable(false);
+    self.obfuscateWholeNumber = ko.observable(false);
     self.connectSnom = ko.observable(null);
     self.crmUrl = ko.observable("");
 
     self.allowPause = ko.observable(true);
+    self.logDownloadEnabled = ko.observable(false);
+
+    self.pausedGlobally = ko.observable(false);
+
+    self.protectNumberOptions = ["Niet verbergen", "Verberg laatste 5 nummers", "Volledig verbergen"];
+    self.selectedProtectNumberOption = ko.observable("Verberg laatste 5 nummers");
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
@@ -448,9 +472,13 @@ var ListingsViewModel = function(){
         self.search(""); 
     });
 
-     function addShortCuts() {
- 
-     }
+    self.selectedProtectNumberOption.subscribe(function()
+    {
+        obfuscateNumberFromSelectedProtectNumberOption();
+        storeSettingObfuscateNumber(companySettings.obfuscateNumber);
+        debouncedStoreCompanySettings();
+    });
+
  
      function filterListByName(list, searchParam) {
        if (!list) {
@@ -545,11 +573,13 @@ var ListingsViewModel = function(){
 
     }, self);
     
-    self.clickItem = function(clickedItem) 
-    {
+    self.clickItem = function(clickedItem) {
+
         self.clickedListItem(clickedItem);
         var name = clickedItem.name();
         self.clickedListItemName(name);
+
+        console.log("Clicked user " + name);
 
         if (self.callingState() == "onhook") {
             dialing = true;
@@ -578,6 +608,7 @@ var ListingsViewModel = function(){
     self.clickedSecondRow = function(clickedItem) {
         self.clickedListItem(clickedItem);
         self.showUserNoteModal();
+        console.log("Clicked note for user " + clickedItem.name());
     }
     
     self.mailTo = function(incomingCall)
@@ -598,15 +629,14 @@ var ListingsViewModel = function(){
         self.favoriteList = ko.observable(null);
     }
 
-    // no updating appearing in the UI .. omehow the values do seem to update in the array.. is the accoring value missing bindings?
-    // another question: should you be able to mark the ones you aren't logged into as favorite?
     self.markQueueFavorite = function(favorite)
     {
+        console.log("Queue " + favorite.name() + " marked as favorite.");
+
         favorite.favorite(!favorite.favorite()); // Toggle
         QueueListItem.saveFavs(self.waitingQueueList().entries());
     }
-    
-    // no updating appearing in the UI.. somehow the values do seem to update in the array.. is the accoring value missing bindings?
+
     self.signInOut = function(queueListItem)
     {
         queueListItem.queueLogin(!queueListItem.signInOut());
@@ -643,6 +673,56 @@ var ListingsViewModel = function(){
 
         }
     }
+
+    self.togglePauseGlobally = function() {
+        console.log("Global pause clicked. Setting global pause to: " + !self.pausedGlobally());
+        self.setGloballyPaused(!self.pausedGlobally());
+    }
+
+    self.setGloballyPaused = function(value) {
+        if (value && !self.allowPause()) {
+            console.log("Users disallowed from pausing in this company. Not pausing.");
+            return;
+        }
+
+        if (value) {
+            conn.pauseAllQueues();
+        } else {
+            conn.unpauseAllQueues();
+
+            // When unpausing, Remove any 'nawerktijd' entries that might be there.
+            var myQueues = Lisa.Connection.model.users[Lisa.Connection.myUserId].queues;
+            for (var queueKey in myQueues) {
+                var queueVal = myQueues[queueKey];
+                // When unpausing a queue, remove any associated autopause-messages in the upper-left corner.
+                if (queueVal.paused) {
+                    QueueListItem.prototype.removeAutopauseItem(queueVal);
+                }
+            }
+        }
+        self.pausedGlobally(value);
+    }
+
+    /*
+     * If all paused, set globally paused.
+     * If all unpaused, set globally unpaused.
+     * If some paused, some unpaused, don't change the global state.
+     */
+    self.updateGloballypausedState = function() {
+        var pausedInAllQueues = true;
+        var unpausedInAllQueues = true;
+
+        var myQueues = Lisa.Connection.model.users[Lisa.Connection.myUserId].queues;
+        for (var queueKey in myQueues) {
+            var queueVal = myQueues[queueKey];
+            pausedInAllQueues = pausedInAllQueues && queueVal.paused;
+            unpausedInAllQueues = unpausedInAllQueues && !queueVal.paused;
+        }
+
+        //self.pausedGlobally((self.pausedGlobally() || pausedInAllQueues) && !unpausedInAllQueues);
+        if (pausedInAllQueues) self.pausedGlobally(true);
+        else if (unpausedInAllQueues) self.pausedGlobally(false);
+    }
     
     self.actionTransfer = function()
     {
@@ -650,6 +730,7 @@ var ListingsViewModel = function(){
         var toCall = self.clickedListItem().ext().split(",")[0];
         transferToUser(toCall);
         self.dismissTransferModal();
+        console.log("Transfering to:" + toCall);
     }
 
     self.actionTransferAttended = function()
@@ -660,6 +741,7 @@ var ListingsViewModel = function(){
         attendedtransferToUser(toCall);
         self.dismissTransferModal();
         self.showTransferEndModal();
+        console.log("Attended transfer to:" + toCall);
     }
     
     self.cancelLogin = function()
@@ -732,6 +814,7 @@ var ListingsViewModel = function(){
     
     self.doPickup = function()
     {
+        console.log("Pickup clicked");
         if (self.callingState() == "ringing") {
             pickupPhone();
         }
@@ -739,6 +822,7 @@ var ListingsViewModel = function(){
     
     self.doHangup = function()
     {
+        console.log("Hangup clicked");
         if ((self.callingState() == "ringing") || (self.callingState() == "calling")) {
             hangupPhone();
         }
@@ -903,6 +987,29 @@ var ListingsViewModel = function(){
             keyboard: false
         })
     }
+
+    self.downloadLogsClicked = function() {
+        console.log("Clicked 'download logs'");
+
+        var logs = myLogging.getLog();
+        blob = new Blob([logs], {
+            type: 'application/octet-stream'
+        });
+
+        // Create blob
+        var url = URL.createObjectURL(blob);
+        //window.open(url, '_blank', ''); // Open the blob, no filename though.
+
+        // Create link
+        var link = document.createElement("a");
+        link.setAttribute("href",url);
+        link.setAttribute("download", "bedienpost_" + new Date().toISOString() + ".log");
+
+        // Click the link
+        var event = document.createEvent('MouseEvents');
+        event.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+        link.dispatchEvent(event);
+    }
     
     self.enterNumber = function(nr)
     {
@@ -916,6 +1023,8 @@ var ListingsViewModel = function(){
   
     self.attendedTransfer = function()
     {
+        console.log("Attended transfer clicked").
+
         self.callingState("transfer");
         var number = self.numericInput().replace(/\D/g,'');
         attendedtransferToUser(number);
@@ -925,6 +1034,8 @@ var ListingsViewModel = function(){
     
     self.unattendedTransfer = function()
     {
+        console.log("Unattended transfer clicked");
+
         var number = self.numericInput().replace(/\D/g,'');
         transferToUser(number);
         self.dismissKeypadModal();
@@ -932,6 +1043,8 @@ var ListingsViewModel = function(){
     
     self.call = function()
     {
+        console.log("Call");
+
         var number = self.numericInput().replace(/\D/g,'');
         dialNumber(number);
         self.dismissKeypadModal();
@@ -939,6 +1052,8 @@ var ListingsViewModel = function(){
     
     self.finalizeTransfer = function()
     {
+        console.log("Finalize attended transfer");
+
         if (self.callingState() == "transfer") {
             finishAttendedTransfer();
         }
@@ -947,6 +1062,8 @@ var ListingsViewModel = function(){
 
     self.cancelTransfer = function()
     {
+        console.log("Cancel attended transfer");
+
         if (self.callingState() == "transfer") {
             cancelAttendedTransfer();
             self.callingState("calling");
@@ -986,6 +1103,8 @@ var ListingsViewModel = function(){
     }
 
     self.markUserFavorite = function(item) {
+        console.log("Marking user favorite");
+
         if (item.user && !item.user.favorite()) {
             item.user.favorite(true);
             UserListItem.saveFavs(self.currentList().entries());
@@ -993,6 +1112,8 @@ var ListingsViewModel = function(){
     }
 
     self.unmarkUserFavorite = function(item) {
+        console.log("Unmarking user favorite");
+
         if (item.fav && item.fav.favorite) {
             item.fav.favorite(false);
             UserListItem.saveFavs(self.currentList().entries());
@@ -1140,6 +1261,9 @@ var ListingsViewModel = function(){
         } else if (matchesKey(e.which, "s")) { // S - Focus zoekveld
             $("#inputField").focus();
             e.preventDefault();
+        } else if (matchesKey(e.which, "p")) { // P - Pauze
+            listingViewModel.togglePauseGlobally();
+            e.preventDefault();
         }
     });
 
@@ -1206,21 +1330,24 @@ var ListingsViewModel = function(){
         options: {}    
     };
 
-    self.obfuscateNumber.subscribe(function(value) {
-        storeSettingObfuscateNumber(value);
-    });
-
     self.connectSnom.subscribe(function(value) {
        storeSettingConnectSnom(value);
     });
 
     self.crmUrl.subscribe(function(value) {
         // Don't update on server until we haven't received new input for 5 seconds.
+        companySettings.crmUrl = value;
         debouncedStoreSettingCrmUrl(value);
     });
 
     self.allowPause.subscribe(function(value) {
+        companySettings.allowPause = value;
         storeSettingAllowPause(value);
+    });
+
+    self.logDownloadEnabled.subscribe(function(value) {
+        companySettings.logDownloadEnabled = value;
+        storeSettingLogDownloadEnabled(value);
     });
 
     self.noteUpdated= function() {

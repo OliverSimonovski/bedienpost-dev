@@ -227,6 +227,10 @@ function getPhoneAuthFromCompass(user, server, pass) {
                 listingViewModel.connectSnom(true);
                 // next step
                 getPhoneStatus();
+            } else if (companySettings.connectSnomSetting){
+                // Enabled company-wide
+                console.log("Snom-connection enabled company-wide. Attempting to retrieve phone-info from Compass.");
+                getPhoneStatus();
             } else {
                 currentServerConnectSnomSetting = false;
                 listingViewModel.connectSnom(false);
@@ -246,12 +250,18 @@ function getPhoneAuthFromCompass(user, server, pass) {
             data: postObj,
             success: phoneAuthReceived,
             error: function (response) {
-                console.log("User not authorized for SNOM control.")
-                phoneIp = "";
-                phoneUser = "";
-                phonePass = "";
-                listingViewModel.phoneIp(phoneIp);
-                listingViewModel.connectedPhone(false);
+                if (companySettings.connectSnomSetting) {
+                    // Enabled company-wide
+                    console.log("retrievePhoneAuth rejects, but Snom-connection enabled company-wide. Attempting to retrieve phone-info from Compass.");
+                    getPhoneStatus();
+                } else {
+                    console.log("User not authorized for SNOM control.")
+                    phoneIp = "";
+                    phoneUser = "";
+                    phonePass = "";
+                    listingViewModel.phoneIp(phoneIp);
+                    listingViewModel.connectedPhone(false);
+                }
             }
         });
     }
@@ -403,7 +413,6 @@ function logout() {
 }
 
 function gotModel(newmodel) {
-    getPhoneAuth(USERNAME, DOMAIN, PASS);
     retrieveSettings();
 
     // initialise the queuePause module.
@@ -444,6 +453,9 @@ function retrieveSettings() {
                 companySettings = parsedSettings;
                 processRetrievedCompanySettings();
             }
+
+            // Retrieve phone-auth after company-settings have been retrieved.
+            getPhoneAuth(USERNAME, DOMAIN, PASS);
         });
 
     _.delay(function() {
@@ -534,7 +546,7 @@ function obfuscateNumberFromSelectedProtectNumberOption() {
         case "Niet verbergen":
             listingViewModel.obfuscateNumber(false);
             listingViewModel.obfuscateWholeNumber(false);
-            console.log("Niet Verberden selected");
+            console.log("Niet Verbergen selected");
             break;
         case "Verberg laatste 5 nummers":
             listingViewModel.obfuscateNumber(true);
@@ -1164,11 +1176,13 @@ function storeSettingConnectSnom(value) {
             console.log("Successfully stored setting ConnectSnom to " + value);
             currentServerConnectSnomSetting = value;
             companySettings.connectSnomSetting = value;
+            debouncedStoreCompanySettings();
             // Immediately effectuate the new settings.
             getPhoneAuth(USERNAME, DOMAIN, PASS);
         },
         function(){console.warn("Error storing ConnectSnom setting.");}
     );
+
 }
 
 function uploadVCard(data) {

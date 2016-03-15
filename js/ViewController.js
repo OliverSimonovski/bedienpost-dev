@@ -627,6 +627,7 @@ var ListingsViewModel = function(){
 
         // Some more data-structures to reset
         self.favoriteList = ko.observable(null);
+        self.phoneIp("");
     }
 
     self.markQueueFavorite = function(favorite)

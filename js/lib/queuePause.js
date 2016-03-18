@@ -56,10 +56,10 @@
 
     /* One of the queues that we're watching has changed */
     function queueChanged(queue, type, item) {
-           if (type == Lisa.Queue.EventTypes.CallAdded) {
+           if (type == Lisa.Queue.EventTypes.CallRemoved) {
                var call = item;
                call.lastQueue = queue;
-               Lisa.Connection.logging.log("AutoPause: Call " + call.id + " added to queue " + queue.name + ". Setting lastQueue var for call");
+               Lisa.Connection.logging.log("AutoPause: Call " + call.id + " removed from queue " + queue.name + ". Setting lastQueue var for call");
            }
     }
 

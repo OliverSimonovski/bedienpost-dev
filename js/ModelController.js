@@ -723,7 +723,8 @@ function getCallInfo(call, user) {
     if (callInfo.directionIsOut) {      // The agent is calling out.
         callInfo.description += " vanaf " + user.name; // TODO: Grafisch aanpakken.
     } else {                            // The agent is receiving a call.
-        callInfo.description += " naar "; // TODO: Grafisch aanpakken.
+
+
         var destNumber = "";
         if (call.queueCallForCall) {    //
             //console.log("#### call.queueCallForCall");
@@ -733,20 +734,18 @@ function getCallInfo(call, user) {
             destNumber = call.firstDestinationObj;
         }
 
-        /* This happens if the operator is refreshed after a call has already started. */
-        if (destNumber == null) {
-            destNumber = "?";
-        } else if (destNumber instanceof Lisa.User) {
-            destNumber = "?";
-        }
-
         //console.log("Destnumber:")
         //console.log(destNumber);
 
         //console.log("externalNumbers:")
         //console.log(externalNumbers);
 
-        callInfo.description += externalNumbers[destNumber] ? externalNumbers[destNumber] : destNumber;
+        /* This is false if the operator is refreshed after a call has already started. */
+        if (!((destNumber == null) || (destNumber instanceof Lisa.User))) {
+            callInfo.description += " naar "; // TODO: Grafisch aanpakken.
+            callInfo.description += externalNumbers[destNumber] ? externalNumbers[destNumber] : destNumber;
+        }
+
     }
 
     return callInfo;

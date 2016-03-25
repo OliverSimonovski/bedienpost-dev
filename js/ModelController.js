@@ -726,10 +726,26 @@ function getCallInfo(call, user) {
         callInfo.description += " naar "; // TODO: Grafisch aanpakken.
         var destNumber = "";
         if (call.queueCallForCall) {    //
+            //console.log("#### call.queueCallForCall");
             destNumber = model.calls[call.queueCallForCall].firstDestinationObj;
         } else {
+            //console.log("#### NOT call.queueCallForCall");
             destNumber = call.firstDestinationObj;
         }
+
+        /* This happens if the operator is refreshed after a call has already started. */
+        if (destNumber == null) {
+            destNumber = "Onbekend";
+        } else if (destNumber instanceof Lisa.User) {
+            destNumber = "Onbekend";
+        }
+
+        //console.log("Destnumber:")
+        //console.log(destNumber);
+
+        //console.log("externalNumbers:")
+        //console.log(externalNumbers);
+
         callInfo.description += externalNumbers[destNumber] ? externalNumbers[destNumber] : destNumber;
     }
 

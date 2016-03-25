@@ -735,9 +735,9 @@ function getCallInfo(call, user) {
 
         /* This happens if the operator is refreshed after a call has already started. */
         if (destNumber == null) {
-            destNumber = "Onbekend";
+            destNumber = "?";
         } else if (destNumber instanceof Lisa.User) {
-            destNumber = "Onbekend";
+            destNumber = "?";
         }
 
         //console.log("Destnumber:")

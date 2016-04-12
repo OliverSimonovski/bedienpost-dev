@@ -1242,7 +1242,6 @@ function getUserNoteModel() {
             parsedObj = {};
         }
         userNoteModel = parsedObj;
-        companySettings.userNoteModel = parsedObj;
         retrievedUserNoteModel = true;
         assignAllUserNotes();
 
@@ -1283,9 +1282,7 @@ function storeUserNote(userId, note) {
                 }
                 console.log("Pushing user-note model to server.")
                 console.log(userNoteModel);
-                companySettings.userNoteModel = userNoteModel;
-                //remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYID);
-                debouncedStoreCompanySettings();
+                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYID);
             }
         }
     }(userId, note));

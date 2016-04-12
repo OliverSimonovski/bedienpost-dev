@@ -36,6 +36,7 @@ var retrievedUserNoteModel = false;
 var userNoteModel = {}; // userId : note.
 var queuePause = null;
 var companySettings = {};
+var companySettingsOnServer = {};
 var externalNumbers = [];
 
 
@@ -73,6 +74,7 @@ function init() {
     retrievedUserNoteModel = false;
     userNoteModel = {};
     companySettings = {};
+    companySettingsOnServer = {};
     externalNumbers = [];
 }
 
@@ -441,22 +443,27 @@ function gotModel(newmodel) {
    closeLoginModal();
 }
 
-function retrieveSettings() {
-
-    // This is set to be the new way to store all company settings. For now, the settings from the old settings are authorative,
-    // So do this one first, and allow all the other settings to overwrite the object.
+function retrieveCompanySettingsNew() {
     remoteStorage.getItem("company_settings", "", COMPANYID)
         .done(function(response) {
             if (response != null) {
                 console.log("Retrieved company settings: " + response);
-                var parsedSettings = JSON.parse(response);
-                companySettings = parsedSettings;
+                // Make sure that these are clones. If they point to the same object, we can't see whether values have changed.
+                companySettings = JSON.parse(response);
+                companySettingsOnServer = JSON.parse(response);
                 processRetrievedCompanySettings();
             }
 
             // Retrieve phone-auth after company-settings have been retrieved.
             getPhoneAuth(USERNAME, DOMAIN, PASS);
         });
+}
+
+function retrieveSettings() {
+
+    // This is set to be the new way to store all company settings. For now, the settings from the old settings are authorative,
+    // So do this one first, and allow all the other settings to overwrite the object.
+    retrieveCompanySettingsNew();
 
     _.delay(function() {
         remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYID)
@@ -1233,9 +1240,18 @@ function uploadVCard(data) {
 }
 
 function storeCompanySettings() {
+    if (_.isEqual(companySettings, companySettingsOnServer)) {
+        console.log("Company settings not changed. Not uploading to server.");
+        return; // No changes, don't update.
+    }
+
+    // Update on server.
     var settingsStr = JSON.stringify(companySettings);
     console.log("Storing company-settings: " + settingsStr);
     remoteStorage.setItem("company_settings", settingsStr, "", COMPANYID);
+
+    // Update companySettingsOnServer
+    companySettingsOnServer = JSON.parse(settingsStr);
 }
 
 function storeSettingAllowPause(value) {

@@ -464,70 +464,28 @@ function retrieveSettings() {
     // This is set to be the new way to store all company settings. For now, the settings from the old settings are authorative,
     // So do this one first, and allow all the other settings to overwrite the object.
     retrieveCompanySettingsNew();
-
-    _.delay(function() {
-        remoteStorage.getItem("company_hideLastPartPhoneNumber", "", COMPANYID)
-            .done(function(response) {
-                if (response == "false") {
-                    currentServerObfuscateNumberSetting = false;
-                    listingViewModel.obfuscateNumber(false);
-                } else {
-                    currentServerObfuscateNumberSetting = true;
-                    listingViewModel.obfuscateNumber(true); // Default to hiding.
-                }
-                companySettings.obfuscateNumber = currentServerObfuscateNumberSetting;
-                processRetrievedCompanySettings();
-            });
-
-        remoteStorage.getItem("company_crmUrl", "", COMPANYID)
-            .done(function(response) {
-                listingViewModel.crmUrl(response);
-                companySettings.crmUrl = response;
-                processRetrievedCompanySettings();
-            });
-
-        remoteStorage.getItem("company_autoPauseSettings", "", COMPANYID)
-            .done(function(response) {
-                if (response != null) {
-                    var queuePauseSettings = JSON.parse(response);
-                    queuePause.changePauseTimes(queuePauseSettings);
-                    setAutoPauseSettingsInGui(queuePauseSettings);
-                    companySettings.queuePauseSettings = queuePauseSettings;
-                    processRetrievedCompanySettings();
-                }
-            });
-
-        remoteStorage.getItem("company_allowPause", "", COMPANYID)
-            .done(function (response) {
-                console.log("Retrieved company allowPaused setting: " + response);
-                if (response !== null) {
-                    var parsedResponse = JSON.parse(response);
-                    listingViewModel.allowPause(parsedResponse);
-                    companySettings.allowPause = parsedResponse;
-                    processRetrievedCompanySettings();
-                }
-            });
-
-        remoteStorage.getItem("company_logDownloadEnabled", "", COMPANYID)
-            .done(function (response) {
-                console.log("Retrieved company logDownloadEnabled setting: " + response);
-                if (response !== null) {
-                    var parsedResponse = JSON.parse(response);
-                    listingViewModel.logDownloadEnabled(parsedResponse);
-                    companySettings.logDownloadEnabled = parsedResponse;
-                    processRetrievedCompanySettings();
-                }
-            });
-    }, 1000);
-
     getExternalNumbersFromCompass();
 }
 
 function processRetrievedCompanySettings() {
+    if (!companySettings) {
+        console.log("WARN - processRetrievedCompanySettings called, but companySettings is not an object. Not processing company-settings.");
+        return;
+    }
+
     // ObfuscateNumber
     if (companySettings.obfuscateNumber === undefined) {companySettings.obfuscateNumber = true;}
     if (companySettings.obfuscateWholeNumber === undefined) {companySettings.obfuscateWholeNumber = false;}
     selectedProtectNumberOptionFromObfuscateNumber();
+
+    // Auto-pause settings
+    queuePause.changePauseTimes(companySettings.queuePauseSettings || {});
+    setAutoPauseSettingsInGui(companySettings.queuePauseSettings || {});
+
+    // Update the GUI for other settings.
+    listingViewModel.logDownloadEnabled(companySettings.logDownloadEnabled || false);               // logDownloadEnabled
+    listingViewModel.allowPause(companySettings.allowPause || false);                               // allowPause
+    listingViewModel.crmUrl(companySettings.crmUrl || "");                                          // crmUrl
 }
 
 function selectedProtectNumberOptionFromObfuscateNumber() {
@@ -617,7 +575,6 @@ function setAutoPauseSettingsInBackend(queuePauseSettings) {
     console.log("GUI changed, updating pause-times in back-end, and storing on server.")
     //console.log(queuePauseSettings);
     queuePause.changePauseTimes(queuePauseSettings);
-    remoteStorage.setItem("company_autoPauseSettings", JSON.stringify(queuePauseSettings), "", COMPANYID);
     companySettings.queuePauseSettings = queuePauseSettings;
 }
 
@@ -1179,7 +1136,6 @@ function storeSettingObfuscateNumber(value) {
         return;
 
     console.log("Setting hideLastPartPhoneNumber to " + value + " and storing on server.");
-    remoteStorage.setItem("company_hideLastPartPhoneNumber", value, "", COMPANYID);
     debouncedStoreCompanySettings();
 }
 
@@ -1256,19 +1212,16 @@ function storeCompanySettings() {
 
 function storeSettingAllowPause(value) {
     console.log("Setting allow-pause to " + value + " and storing on server.");
-    remoteStorage.setItem("company_allowPause", value, "", COMPANYID);
     debouncedStoreCompanySettings();
 }
 
 function storeSettingLogDownloadEnabled(value) {
     console.log("Setting log-download enabled to " + value + " and storing on server.");
-    remoteStorage.setItem("company_logDownloadEnabled", value, "", COMPANYID);
     debouncedStoreCompanySettings();
 }
 
 function storeSettingCrmUrl(value) {
     console.log("Setting CRM-url to " + value + " and storing on server.");
-    remoteStorage.setItem("company_crmUrl", value, "", COMPANYID);
     debouncedStoreCompanySettings();
 }
 
@@ -1331,7 +1284,7 @@ function storeUserNote(userId, note) {
                 console.log("Pushing user-note model to server.")
                 console.log(userNoteModel);
                 companySettings.userNoteModel = userNoteModel;
-                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYID);
+                //remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYID);
                 debouncedStoreCompanySettings();
             }
         }

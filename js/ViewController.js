@@ -476,7 +476,6 @@ var ListingsViewModel = function(){
     {
         obfuscateNumberFromSelectedProtectNumberOption();
         storeSettingObfuscateNumber(companySettings.obfuscateNumber);
-        debouncedStoreCompanySettings();
     });
 
  

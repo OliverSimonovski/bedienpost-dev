@@ -37,6 +37,7 @@ var userNoteModel = {}; // userId : note.
 var queuePause = null;
 var companySettings = {};
 var companySettingsOnServer = {};
+var companySettingsChangePending = false;
 var externalNumbers = [];
 
 
@@ -443,7 +444,16 @@ function gotModel(newmodel) {
    closeLoginModal();
 }
 
+/**
+ * The new method of retrieving settings from the bedienpost back-end, as opposed to the old way where each setting would require a new rest-request.
+ */
 function retrieveCompanySettingsNew() {
+
+    if (companySettingsChangePending == true) {
+        console.log("WARN - Still waiting to upload changed companySettings to the server. Don't download companySettings now, so our own change won't be overwritten.");
+        return;
+    }
+
     remoteStorage.getItem("company_settings", "", COMPANYID)
         .done(function(response) {
             if (response != null) {
@@ -461,8 +471,6 @@ function retrieveCompanySettingsNew() {
 
 function retrieveSettings() {
 
-    // This is set to be the new way to store all company settings. For now, the settings from the old settings are authorative,
-    // So do this one first, and allow all the other settings to overwrite the object.
     retrieveCompanySettingsNew();
     getExternalNumbersFromCompass();
 }
@@ -1130,15 +1138,6 @@ function bedienpostAdminAjaxPost(url, postObj, success, error) {
     });
 }
 
-function storeSettingObfuscateNumber(value) {
-    // Suppress call to server if the change came from the server in the first place
-    if (value == currentServerObfuscateNumberSetting)
-        return;
-
-    console.log("Setting hideLastPartPhoneNumber to " + value + " and storing on server.");
-    debouncedStoreCompanySettings();
-}
-
 function storeSettingConnectSnom(value) {
     // Suppress call to server if the change came from the server in the first place
     if (value == currentServerConnectSnomSetting)
@@ -1154,7 +1153,7 @@ function storeSettingConnectSnom(value) {
             console.log("Successfully stored setting ConnectSnom to " + value);
             currentServerConnectSnomSetting = value;
             companySettings.connectSnomSetting = value;
-            debouncedStoreCompanySettings();
+            requestStoreCompanySettings();
             // Immediately effectuate the new settings.
             getPhoneAuth(USERNAME, DOMAIN, PASS);
         },
@@ -1196,6 +1195,8 @@ function uploadVCard(data) {
 }
 
 function storeCompanySettings() {
+    companySettingsChangePending = false;
+
     if (_.isEqual(companySettings, companySettingsOnServer)) {
         console.log("Company settings not changed. Not uploading to server.");
         return; // No changes, don't update.
@@ -1212,17 +1213,17 @@ function storeCompanySettings() {
 
 function storeSettingAllowPause(value) {
     console.log("Setting allow-pause to " + value + " and storing on server.");
-    debouncedStoreCompanySettings();
+    requestStoreCompanySettings();
 }
 
 function storeSettingLogDownloadEnabled(value) {
     console.log("Setting log-download enabled to " + value + " and storing on server.");
-    debouncedStoreCompanySettings();
+    requestStoreCompanySettings();
 }
 
 function storeSettingCrmUrl(value) {
     console.log("Setting CRM-url to " + value + " and storing on server.");
-    debouncedStoreCompanySettings();
+    requestStoreCompanySettings();
 }
 
 function getUserNoteModel() {
@@ -1288,8 +1289,11 @@ function storeUserNote(userId, note) {
     }(userId, note));
 }
 
-var debouncedStoreSettingCrmUrl = _.debounce(storeSettingCrmUrl, 5000);
 var debouncedStoreCompanySettings = _.debounce(storeCompanySettings, 5000);
+function requestStoreCompanySettings() {
+    companySettingsChangePending = true;
+    debouncedStoreCompanySettings();
+}
 
 
 

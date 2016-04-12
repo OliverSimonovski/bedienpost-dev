@@ -475,7 +475,8 @@ var ListingsViewModel = function(){
     self.selectedProtectNumberOption.subscribe(function()
     {
         obfuscateNumberFromSelectedProtectNumberOption();
-        storeSettingObfuscateNumber(companySettings.obfuscateNumber);
+        console.log("obfuscateNumber: " + companySettings.obfuscateNumber + ", obfuscateWholeNumber: " + companySettings.obfuscateWholeNumber);
+        requestStoreCompanySettings();
     });
 
  
@@ -1339,7 +1340,7 @@ var ListingsViewModel = function(){
     self.crmUrl.subscribe(function(value) {
         // Don't update on server until we haven't received new input for 5 seconds.
         companySettings.crmUrl = value;
-        debouncedStoreSettingCrmUrl(value);
+        storeSettingCrmUrl(value);
     });
 
     self.allowPause.subscribe(function(value) {

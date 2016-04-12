@@ -473,6 +473,7 @@ function retrieveSettings() {
 
     retrieveCompanySettingsNew();
     getExternalNumbersFromCompass();
+    setInterval(retrieveCompanySettingsNew, 900000); // re-check every fifteen minutes.
 }
 
 function processRetrievedCompanySettings() {

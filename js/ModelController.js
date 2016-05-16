@@ -905,7 +905,7 @@ function updateUser(user) {
             var call = user.calls[key];
 
             var callInfo = getCallInfo(call, user);
-            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut, callInfo.descriptionWithNumber, callInfo.number);
+            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut, callInfo.descriptionWithNumber, call, callInfo.number);
             callObj.originalCallModel = call;
             newIncomingCallEntries.push(callObj);
         }

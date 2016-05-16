@@ -270,7 +270,7 @@ function setAutoPauseSettingsInGui(queuePauseSettings) {
     }
 }
 
-function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber, number) {
+function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber, callObj, number) {
     _.bindAll(this, 'stopCall');
 
     this.id = ko.observable(id                            || "");
@@ -282,6 +282,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
     this.isAutoPause = ko.observable(false);
     this.autoPauseQueue = null;
     this.number = ko.observable(number);
+    this.callObj = ko.observable(callObj);
 
     this.callDuration = ko.computed(function() {
         if (this.callStartTime() == 0) {
@@ -353,7 +354,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
  * If no call with this id exists, null is returned.
  */
 CallListItem.prototype.thisCallOrOriginalCall = function(id) {
-    var theCall = model.calls[this.id()];
+    var theCall = this.callObj();
     var originalCall = null;
     if (theCall) {
         var qcId = theCall.queueCallForCall;
@@ -372,11 +373,17 @@ CallListItem.prototype.stopCall = function() {
         var callid = this.id();
         var incomingNumber = this.number();
         var myUserId = Lisa.Connection.myUserId;
-        var queueId = -1;
         var duration = this.callDuration();
+        var queueId = -1;
+
+        // Try to determine the last queue that this call was in. - BEWARE, this only works with the queuePause module active.
+        var theCall = this.callObj();
+        if (theCall && theCall.lastQueue) {
+            queueId = theCall.lastQueue.id;
+        }
 
         console.log("Opening external modal on call-end, with following parameters: " + callid + " " + incomingNumber + " " + myUserId + " " + queueId + " " + duration);
-        
+
         //eModal.ajax("http://tinkertank.eu?name="+this.name(), "Handel gespek af.");
     }
 

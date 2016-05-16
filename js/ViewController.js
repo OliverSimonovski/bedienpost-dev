@@ -270,7 +270,7 @@ function setAutoPauseSettingsInGui(queuePauseSettings) {
     }
 }
 
-function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber) {
+function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber, number) {
     _.bindAll(this, 'stopCall');
 
     this.id = ko.observable(id                            || "");
@@ -281,25 +281,11 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
     this.descriptionWithNumber = ko.observable(descriptionWithNumber || "");
     this.isAutoPause = ko.observable(false);
     this.autoPauseQueue = null;
+    this.number = ko.observable(number);
 
-    /* We use the destroy-property to hide calls that have lasted less than 2 seconds */
-    // Hacky solution for hunkemoller
-    this._destroy = ko.computed(function() {
-        var callStart = moment.utc(this.callStartTime() * 1000.);
-        var duration = (currentTime() - callStart) - clockCompensation; // duration in milliseconds
-
-        var longEnough = ((duration > 1500));
-        var firstCall = (_.size(model.users[Lisa.Connection.myUserId].calls) == 1);
-        var visible = ((firstCall) || (longEnough) || this.isAutoPause());
-        if (!visible) console.log("Suppressing view for call " + this.id());
-
-        return !visible;
-    }, this);
-
-    this.timeConnected = ko.computed(function()
-    {
+    this.callDuration = ko.computed(function() {
         if (this.callStartTime() == 0) {
-            return "";
+            return 0;
         }
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
@@ -314,9 +300,32 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
             duration = -duration;
         }
 
-        var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
+        return duration;
+    }, this);
+
+    this.timeConnected = ko.computed(function() {
+        var timeString = moment.utc(this.callDuration()).format("H:mm:ss"); // Create a date object and format it.
         return timeString;
 
+    }, this);
+
+    this.visible = ko.computed(function() {
+        var callStart = moment.utc(this.callStartTime() * 1000.);
+        var duration = this.callDuration(); // duration in milliseconds
+
+        var longEnough = ((duration > 1500));
+        var firstCall = (_.size(model.users[Lisa.Connection.myUserId].calls) == 1);
+        var visible = ((firstCall) || (longEnough) || this.isAutoPause());
+        return visible;
+    }, this);
+
+    /* We use the destroy-property to hide calls that have lasted less than 2 seconds */
+    // Hacky solution for hunkemoller
+    this._destroy = ko.computed(function() {
+        var visible = this.visible();
+        if (!visible) console.log("Suppressing view for call " + this.id());
+
+        return !visible;
     }, this);
 
     this.toDisplay = ko.computed(function()
@@ -356,6 +365,20 @@ CallListItem.prototype.thisCallOrOriginalCall = function(id) {
 CallListItem.prototype.stopCall = function() {
 
     this.finished(true);
+
+    // Potentially open modal at the end of the call.
+    if (this.visible()) {
+        // Parameters (callid, incomingNumber, agentid, queueid, callduration)
+        var callid = this.id();
+        var incomingNumber = this.number();
+        var myUserId = Lisa.Connection.myUserId;
+        var queueId = -1;
+        var duration = this.callDuration();
+
+        console.log("Opening external modal on call-end, with following parameters: " + callid + " " + incomingNumber + " " + myUserId + " " + queueId + " " + duration);
+        
+        //eModal.ajax("http://tinkertank.eu?name="+this.name(), "Handel gespek af.");
+    }
 
     // Don't show 'finished' for queue-calls.
     if ((this.originalCallModel.queueCallForCall != null) && (this.originalCallModel.queueCallForCall != "")) { // Is this a queue-call?
@@ -454,6 +477,8 @@ var ListingsViewModel = function(){
     self.obfuscateWholeNumber = ko.observable(false);
     self.connectSnom = ko.observable(null);
     self.crmUrl = ko.observable("");
+    self.afterCallUrl = ko.observable("");
+    self.customAuthHeader = ko.observable("");
 
     self.allowPause = ko.observable(true);
     self.logDownloadEnabled = ko.observable(false);
@@ -1341,6 +1366,18 @@ var ListingsViewModel = function(){
         // Don't update on server until we haven't received new input for 5 seconds.
         companySettings.crmUrl = value;
         storeSettingCrmUrl(value);
+    });
+
+    self.afterCallUrl.subscribe(function(value) {
+        // Don't update on server until we haven't received new input for 5 seconds.
+        companySettings.afterCallUrl = value;
+        requestStoreCompanySettings();
+    });
+
+    self.customAuthHeader.subscribe(function(value) {
+        // Don't update on server until we haven't received new input for 5 seconds.
+        companySettings.customAuthHeader = value;
+        requestStoreCompanySettings();
     });
 
     self.allowPause.subscribe(function(value) {

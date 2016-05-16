@@ -487,14 +487,22 @@ function processRetrievedCompanySettings() {
     if (companySettings.obfuscateWholeNumber === undefined) {companySettings.obfuscateWholeNumber = false;}
     selectedProtectNumberOptionFromObfuscateNumber();
 
-    // Auto-pause settings
-    queuePause.changePauseTimes(companySettings.queuePauseSettings || {});
-    setAutoPauseSettingsInGui(companySettings.queuePauseSettings || {});
 
     // Update the GUI for other settings.
     listingViewModel.logDownloadEnabled(companySettings.logDownloadEnabled || false);               // logDownloadEnabled
     listingViewModel.allowPause(companySettings.allowPause || false);                               // allowPause
     listingViewModel.crmUrl(companySettings.crmUrl || "");                                          // crmUrl
+
+    processRetrievedCompanySettingsCustomerSpecific();
+}
+
+function processRetrievedCompanySettingsCustomerSpecific() {
+    // Auto-pause settings
+    queuePause.changePauseTimes(companySettings.queuePauseSettings || {});
+    setAutoPauseSettingsInGui(companySettings.queuePauseSettings || {});
+
+    listingViewModel.afterCallUrl(companySettings.afterCallUrl || "");
+    listingViewModel.customAuthHeader(companySettings.customAuthHeader || "");
 }
 
 function selectedProtectNumberOptionFromObfuscateNumber() {
@@ -897,7 +905,7 @@ function updateUser(user) {
             var call = user.calls[key];
 
             var callInfo = getCallInfo(call, user);
-            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut, callInfo.descriptionWithNumber);
+            var callObj = new CallListItem(call.id, callInfo.description, callInfo.startTime, callInfo.directionIsOut, callInfo.descriptionWithNumber, callInfo.number);
             callObj.originalCallModel = call;
             newIncomingCallEntries.push(callObj);
         }

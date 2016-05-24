@@ -93,6 +93,23 @@
             this.conn.pauseAllQueues();
 
         } else if (type == Lisa.User.EventTypes.CallRemoved) {
+            
+                // Staan er nog calls open met nawerktijd? Zo ja, don't start timer, maar laat de boel nog op pauze staan tot die calls ook afgerond zijn.
+                for (var callKey in user.calls){
+                    var otherCall = user.calls[callKey];
+                    var otherLastQueue = otherCall.lastQueue;
+                    var otherPauseTime = this.pauseTimes[otherLastQueue.id];
+                    if (otherPauseTime > 0) {
+                        console.log ("AutoPause: User still has other open calls from queues with an autoPause. Don't start the countdown timer for unpause yet, but start after the last call with autoPause has been handled.");
+                        return;
+                    }
+                }
+
+                // Staan we well op pauze? - zo niet, dan hoeven we ook niet van pauze af.
+                if (!listingViewModel.pausedGlobally()) {
+                    console.log ("AutoPause: User already unpaused. Not starting countdown for unpause.");
+                    return;
+                }
 
                 Lisa.Connection.logging.log("AutoPause: Starting wrap-up time for this user for " + pauseTime + " seconds");
                 lastQueue.observable.notify(lastQueue, "autoPaused", pauseTime, call);

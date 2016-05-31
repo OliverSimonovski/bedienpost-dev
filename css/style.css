@@ -677,3 +677,11 @@ li.list-group-item:hover i.fa-pencil-square-o
 .inactive {
     opacity: 0;
 }
+
+#callEndPopupIframe {
+    height: 400px;
+}
+
+.modal.fade.in {
+    overflow-y: auto;
+}

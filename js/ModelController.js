@@ -492,6 +492,7 @@ function processRetrievedCompanySettings() {
     listingViewModel.logDownloadEnabled(companySettings.logDownloadEnabled || false);               // logDownloadEnabled
     listingViewModel.allowPause(companySettings.allowPause || false);                               // allowPause
     listingViewModel.crmUrl(companySettings.crmUrl || "");                                          // crmUrl
+    listingViewModel.helpUrl(companySettings.helpUrl || "");                                        // helpUrl
 
     processRetrievedCompanySettingsCustomerSpecific();
 }
@@ -1220,20 +1221,6 @@ function storeCompanySettings() {
     companySettingsOnServer = JSON.parse(settingsStr);
 }
 
-function storeSettingAllowPause(value) {
-    console.log("Setting allow-pause to " + value + " and storing on server.");
-    requestStoreCompanySettings();
-}
-
-function storeSettingLogDownloadEnabled(value) {
-    console.log("Setting log-download enabled to " + value + " and storing on server.");
-    requestStoreCompanySettings();
-}
-
-function storeSettingCrmUrl(value) {
-    console.log("Setting CRM-url to " + value + " and storing on server.");
-    requestStoreCompanySettings();
-}
 
 function getUserNoteModel() {
     console.log("Retrieving user-note model from server.")

@@ -474,6 +474,7 @@ var ListingsViewModel = function(){
 
     self.protectNumberOptions = ["Niet verbergen", "Verberg laatste 5 nummers", "Volledig verbergen"];
     self.selectedProtectNumberOption = ko.observable("Verberg laatste 5 nummers");
+    self.helpUrl = ko.observable("");
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
@@ -972,10 +973,16 @@ var ListingsViewModel = function(){
     })
     
     self.showShortcuts = function()
-     { 
-        $('#shortcutModal').modal({
-            keyboard: false
-        })
+     {
+        if (listingViewModel.helpUrl() == "") {
+            $('#shortcutModal').modal({
+                keyboard: false
+            })
+        } else {
+            var url = listingViewModel.helpUrl();
+            console.log("Opening help url: " + url);
+            eModal.iframe(url, "Help");
+        }
     }
 
     self.showUserNoteModal = function()
@@ -1352,7 +1359,13 @@ var ListingsViewModel = function(){
     self.crmUrl.subscribe(function(value) {
         // Don't update on server until we haven't received new input for 5 seconds.
         companySettings.crmUrl = value;
-        storeSettingCrmUrl(value);
+        requestStoreCompanySettings();
+    });
+
+    self.helpUrl.subscribe(function(value) {
+        // Don't update on server until we haven't received new input for 5 seconds.
+        companySettings.helpUrl = value;
+        requestStoreCompanySettings();
     });
 
     self.afterCallUrl.subscribe(function(value) {
@@ -1369,12 +1382,12 @@ var ListingsViewModel = function(){
 
     self.allowPause.subscribe(function(value) {
         companySettings.allowPause = value;
-        storeSettingAllowPause(value);
+        requestStoreCompanySettings();
     });
 
     self.logDownloadEnabled.subscribe(function(value) {
         companySettings.logDownloadEnabled = value;
-        storeSettingLogDownloadEnabled(value);
+        requestStoreCompanySettings();
     });
 
     self.noteUpdated= function() {

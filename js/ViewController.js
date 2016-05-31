@@ -367,26 +367,6 @@ CallListItem.prototype.stopCall = function() {
 
     this.finished(true);
 
-    // Potentially open modal at the end of the call.
-    if (this.visible()) {
-        // Parameters (callid, incomingNumber, agentid, queueid, callduration)
-        var callid = this.id();
-        var incomingNumber = this.number();
-        var myUserId = Lisa.Connection.myUserId;
-        var duration = this.callDuration();
-        var queueId = -1;
-
-        // Try to determine the last queue that this call was in. - BEWARE, this only works with the queuePause module active.
-        var theCall = this.callObj();
-        if (theCall && theCall.lastQueue) {
-            queueId = theCall.lastQueue.id;
-        }
-
-        console.log("Opening external modal on call-end, with following parameters: " + callid + " " + incomingNumber + " " + myUserId + " " + queueId + " " + duration);
-
-        //eModal.ajax("http://tinkertank.eu?name="+this.name(), "Handel gespek af.");
-    }
-
     // Don't show 'finished' for queue-calls.
     if ((this.originalCallModel.queueCallForCall != null) && (this.originalCallModel.queueCallForCall != "")) { // Is this a queue-call?
         incomingCallEntries.remove(this);

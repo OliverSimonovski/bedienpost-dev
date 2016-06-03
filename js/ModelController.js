@@ -1212,13 +1212,17 @@ function storeCompanySettings() {
         return; // No changes, don't update.
     }
 
-    // Update on server.
-    var settingsStr = JSON.stringify(companySettings);
-    console.log("Storing company-settings: " + settingsStr);
-    remoteStorage.setItem("company_settings", settingsStr, "", COMPANYID);
+    if (listingViewModel.amAdmin()) {
+        // Update on server.
+        var settingsStr = JSON.stringify(companySettings);
+        console.log("Storing company-settings: " + settingsStr);
+        remoteStorage.setItem("company_settings", settingsStr, "", COMPANYID);
 
-    // Update companySettingsOnServer
-    companySettingsOnServer = JSON.parse(settingsStr);
+        // Update companySettingsOnServer
+        companySettingsOnServer = JSON.parse(settingsStr);
+    } else {
+        console.log("WARN - client without write-rights reached storeCompanySettings. This shouldn't happen.");
+    }
 }
 
 

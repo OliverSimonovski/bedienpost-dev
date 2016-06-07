@@ -659,6 +659,8 @@ var ListingsViewModel = function(){
     self.actionCalling = function(item)
     {
         dialing = false;
+        if (!self.clickedListItem()) return;
+
         var numberToCall = self.clickedListItem().ext().split(",")[0];
         if (numberToCall != "") {
             dialNumber(numberToCall);
@@ -671,6 +673,7 @@ var ListingsViewModel = function(){
 
     self.actionSelectedContactNumber = function(item) {
         selectingNumber = false;
+        if (!self.clickedListItem()) return;
         self.clickedListItem().ext(item.number);
 
         if (dialing) {
@@ -741,6 +744,7 @@ var ListingsViewModel = function(){
     self.actionTransfer = function()
     {
         transfering = false;
+        if (!self.clickedListItem()) return;
         var toCall = self.clickedListItem().ext().split(",")[0];
         transferToUser(toCall);
         self.dismissTransferModal();
@@ -751,6 +755,7 @@ var ListingsViewModel = function(){
     {
         transfering = false;
         self.callingState("transfer");
+        if (!self.clickedListItem()) return;
         var toCall = self.clickedListItem().ext().split(",")[0];
         attendedtransferToUser(toCall);
         self.dismissTransferModal();
@@ -1391,6 +1396,7 @@ var ListingsViewModel = function(){
     });
 
     self.noteUpdated= function() {
+        if (!self.clickedListItem()) return;
         self.clickedListItem().noteUpdated();
     }
 

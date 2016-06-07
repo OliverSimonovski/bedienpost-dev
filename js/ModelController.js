@@ -198,6 +198,15 @@ function getPhoneAuthFromCompass(user, server, pass) {
         var companyReceived = function(response) {
             //console.log(response);
             phoneUser = response.shortname;
+            if (companySettings.connectSnomSetting === true) {
+                getPhoneStatus();
+            } else {
+                listingViewModel.phoneIp("");
+                listingViewModel.connectedPhone(false);
+                phoneIp = "";
+                phoneUser = "";
+                phonePass = "";
+            }
         }
 
         $.ajax
@@ -210,62 +219,6 @@ function getPhoneAuthFromCompass(user, server, pass) {
             },
             url: restCompanyUrl,
             success: companyReceived
-        });
-    }
-
-    var getPhoneConnectionEnabledForUser = function() {
-    // Get phone-auth to see whether phone-connection is enabled for this user.
-        var phoneAuthReceived = function(response) {
-            if (response.phoneIp == "auto") {
-                currentServerConnectSnomSetting = true;
-                listingViewModel.connectSnom(true);
-                // next step
-                getPhoneStatus();
-            } else if (response.phoneIp != null) {
-                console.log("Legacy phone-auth data found.");
-                // phoneIP is filled out and not 'auto'.
-                // This originates from when the compass platform wasn't able to give us phone authentication information by itself.
-                // Those deployments don't exist anymore, so let's just retrieve phone-auth from the server anyway.
-                currentServerConnectSnomSetting = true;
-                listingViewModel.connectSnom(true);
-                // next step
-                getPhoneStatus();
-            } else if (companySettings.connectSnomSetting){
-                // Enabled company-wide
-                console.log("Snom-connection enabled company-wide. Attempting to retrieve phone-info from Compass.");
-                getPhoneStatus();
-            } else {
-                currentServerConnectSnomSetting = false;
-                listingViewModel.connectSnom(false);
-            }
-        }
-
-        var postObj = {};
-        postObj.username = user;
-        postObj.server = server;
-        postObj.auth = btoa(user + ":" + pass)
-
-        $.ajax
-        ({
-            type: "POST",
-            url: "https://www.bedienpost.nl/retrievePhoneAuth.php",
-            dataType: 'json',
-            data: postObj,
-            success: phoneAuthReceived,
-            error: function (response) {
-                if (companySettings.connectSnomSetting) {
-                    // Enabled company-wide
-                    console.log("retrievePhoneAuth rejects, but Snom-connection enabled company-wide. Attempting to retrieve phone-info from Compass.");
-                    getPhoneStatus();
-                } else {
-                    console.log("User not authorized for SNOM control.")
-                    phoneIp = "";
-                    phoneUser = "";
-                    phonePass = "";
-                    listingViewModel.phoneIp(phoneIp);
-                    listingViewModel.connectedPhone(false);
-                }
-            }
         });
     }
 
@@ -331,7 +284,7 @@ function getPhoneAuthFromCompass(user, server, pass) {
 
     // Start the sequence
     getCompany();
-    getPhoneConnectionEnabledForUser(); // Triggers the sequence that eventually retrieves the phone-auth. getCompany() is a prerequisite.
+    //getPhoneConnectionEnabledForUser(); // Triggers the sequence that eventually retrieves the phone-auth. getCompany() is a prerequisite.
 }
 
 
@@ -1135,42 +1088,10 @@ function dialNumber(numberToCall) {
     if (listingViewModel.connectedPhone()) _.delay(pickupPhone, 1000);
 }
 
-function bedienpostAdminAjaxPost(url, postObj, success, error) {
-    $.ajax
-    ({
-        type: "POST",
-        url: url,
-        data: postObj,
-        headers: {
-            "Authorization": "Basic " + btoa(JID + ":" + PASS)
-        },
-        success: success,
-        error: error
-    });
-}
-
 function storeSettingConnectSnom(value) {
-    // Suppress call to server if the change came from the server in the first place
-    if (value == currentServerConnectSnomSetting)
-        return;
-
-    var postObj = {ingeschakeld: (value) ? 1 : 0};
-    var url = "https://bedienpost.nl/admin/StoreSnomConnection.php";
-
-    console.log("Storing setting ConnectSnom to " + value);
-    bedienpostAdminAjaxPost(url, postObj,
-        function()
-        {
-            console.log("Successfully stored setting ConnectSnom to " + value);
-            currentServerConnectSnomSetting = value;
-            companySettings.connectSnomSetting = value;
-            requestStoreCompanySettings();
-            // Immediately effectuate the new settings.
-            getPhoneAuth(USERNAME, DOMAIN, PASS);
-        },
-        function(){console.warn("Error storing ConnectSnom setting.");}
-    );
-
+    companySettings.connectSnomSetting = value;
+    requestStoreCompanySettings();
+    getPhoneAuth(USERNAME, DOMAIN, PASS);
 }
 
 function uploadVCard(data) {

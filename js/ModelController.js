@@ -493,6 +493,7 @@ function processRetrievedCompanySettings() {
     listingViewModel.allowPause(companySettings.allowPause || false);                               // allowPause
     listingViewModel.crmUrl(companySettings.crmUrl || "");                                          // crmUrl
     listingViewModel.helpUrl(companySettings.helpUrl || "");                                        // helpUrl
+    listingViewModel.connectSnom(companySettings.connectSnomSetting || false);                      // connectSnom
 
     processRetrievedCompanySettingsCustomerSpecific();
 }

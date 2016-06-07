@@ -8,6 +8,34 @@ var selectingNumber = false;
 var clockCompensation = 0; // Compensate for a misconfigured clock.
 var contactPhoneNumberPriority = ["work", "mobile", "home"];
 
+
+
+/*
+ * Extend knockout.observable to have 'lightweight' events that don't trigger server updates.
+ * Based on: http://stackoverflow.com/a/33438956/331637
+ *
+ * Use as following (assuming 'this.name' is an observable):
+ * this.name.subscribeIgnoreServerUpdate(function(newValue) { } ));
+ * this.name.poke("Ted");
+ */
+
+ko.observable.fn.subscribeIgnoreServerUpdate = function (callback, thisValue, event){
+    var self = this;
+    this.subscribe(function(newValue) {
+        if (!self.paused)
+            callback(newValue);
+    }, thisValue, event);
+    return this;
+};
+ko.observable.fn.serverUpdate = function (newValue) {
+    this.paused = true;
+    var result = this(newValue);
+    this.paused = undefined;
+    return result;
+};
+
+/* ------------------------------------------------------------------------------------------ */
+
 function UserListItem(id, name, ext, log, avail, ringing, company) {
     _.bindAll(this, 'startCall', 'noCalls', 'setFavorite');
     var self = this;
@@ -164,7 +192,7 @@ function QueueListItem(id, name) {
 
     this.favorite = isFav(id, QueueListItem.storageKey());
 
-    this.pauseTime.subscribe(_.debounce(pauseTimeUpdated, 5000));
+    this.pauseTime.subscribeIgnoreServerUpdate(_.debounce(pauseTimeUpdated, 5000));
 
     this.maxWaitingTime = ko.computed(function()
     {
@@ -265,7 +293,7 @@ function setAutoPauseSettingsInGui(queuePauseSettings) {
         var queueItem = listingViewModel.filterWaitingQueue()[queueKey];
         var pauseTime = queuePauseSettings[queueItem.id()];
         if (pauseTime) {
-            queueItem.pauseTime(pauseTime);
+            queueItem.pauseTime.serverUpdate(pauseTime);
         }
     }
 }
@@ -485,7 +513,7 @@ var ListingsViewModel = function(){
         self.search(""); 
     });
 
-    self.selectedProtectNumberOption.subscribe(function()
+    self.selectedProtectNumberOption.subscribeIgnoreServerUpdate(function()
     {
         obfuscateNumberFromSelectedProtectNumberOption();
         console.log("obfuscateNumber: " + companySettings.obfuscateNumber + ", obfuscateWholeNumber: " + companySettings.obfuscateWholeNumber);
@@ -1357,40 +1385,40 @@ var ListingsViewModel = function(){
         options: {}    
     };
 
-    self.connectSnom.subscribe(function(value) {
+    self.connectSnom.subscribeIgnoreServerUpdate(function(value) {
        storeSettingConnectSnom(value);
     });
 
-    self.crmUrl.subscribe(function(value) {
+    self.crmUrl.subscribeIgnoreServerUpdate(function(value) {
         // Don't update on server until we haven't received new input for 5 seconds.
         companySettings.crmUrl = value;
         requestStoreCompanySettings();
     });
 
-    self.helpUrl.subscribe(function(value) {
+    self.helpUrl.subscribeIgnoreServerUpdate(function(value) {
         // Don't update on server until we haven't received new input for 5 seconds.
         companySettings.helpUrl = value;
         requestStoreCompanySettings();
     });
 
-    self.afterCallUrl.subscribe(function(value) {
+    self.afterCallUrl.subscribeIgnoreServerUpdate(function(value) {
         // Don't update on server until we haven't received new input for 5 seconds.
         companySettings.afterCallUrl = value;
         requestStoreCompanySettings();
     });
 
-    self.customAuthHeader.subscribe(function(value) {
+    self.customAuthHeader.subscribeIgnoreServerUpdate(function(value) {
         // Don't update on server until we haven't received new input for 5 seconds.
         companySettings.customAuthHeader = value;
         requestStoreCompanySettings();
     });
 
-    self.allowPause.subscribe(function(value) {
+    self.allowPause.subscribeIgnoreServerUpdate(function(value) {
         companySettings.allowPause = value;
         requestStoreCompanySettings();
     });
 
-    self.logDownloadEnabled.subscribe(function(value) {
+    self.logDownloadEnabled.subscribeIgnoreServerUpdate(function(value) {
         companySettings.logDownloadEnabled = value;
         requestStoreCompanySettings();
     });

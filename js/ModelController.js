@@ -442,11 +442,11 @@ function processRetrievedCompanySettings() {
 
 
     // Update the GUI for other settings.
-    listingViewModel.logDownloadEnabled(companySettings.logDownloadEnabled || false);               // logDownloadEnabled
-    listingViewModel.allowPause(companySettings.allowPause || false);                               // allowPause
-    listingViewModel.crmUrl(companySettings.crmUrl || "");                                          // crmUrl
-    listingViewModel.helpUrl(companySettings.helpUrl || "");                                        // helpUrl
-    listingViewModel.connectSnom(companySettings.connectSnomSetting || false);                      // connectSnom
+    listingViewModel.logDownloadEnabled.serverUpdate(companySettings.logDownloadEnabled || false);               // logDownloadEnabled
+    listingViewModel.allowPause.serverUpdate(companySettings.allowPause || false);                               // allowPause
+    listingViewModel.crmUrl.serverUpdate(companySettings.crmUrl || "");                                          // crmUrl
+    listingViewModel.helpUrl.serverUpdate(companySettings.helpUrl || "");                                        // helpUrl
+    listingViewModel.connectSnom.serverUpdate(companySettings.connectSnomSetting || false);                      // connectSnom
 
     processRetrievedCompanySettingsCustomerSpecific();
 }
@@ -456,8 +456,8 @@ function processRetrievedCompanySettingsCustomerSpecific() {
     queuePause.changePauseTimes(companySettings.queuePauseSettings || {});
     setAutoPauseSettingsInGui(companySettings.queuePauseSettings || {});
 
-    listingViewModel.afterCallUrl(companySettings.afterCallUrl || "");
-    listingViewModel.customAuthHeader(companySettings.customAuthHeader || "");
+    listingViewModel.afterCallUrl.serverUpdate(companySettings.afterCallUrl || "");
+    listingViewModel.customAuthHeader.serverUpdate(companySettings.customAuthHeader || "");
 }
 
 function selectedProtectNumberOptionFromObfuscateNumber() {
@@ -469,11 +469,11 @@ function selectedProtectNumberOptionFromObfuscateNumber() {
     //console.log(companySettings.obfuscateWholeNumber)
 
     if (companySettings.obfuscateNumber === false) {
-        listingViewModel.selectedProtectNumberOption("Niet verbergen");
+        listingViewModel.selectedProtectNumberOption.serverUpdate("Niet verbergen");
     } else if (companySettings.obfuscateWholeNumber === false) {
-        listingViewModel.selectedProtectNumberOption("Verberg laatste 5 nummers");
+        listingViewModel.selectedProtectNumberOption.serverUpdate("Verberg laatste 5 nummers");
     } else {
-        listingViewModel.selectedProtectNumberOption("Volledig verbergen");
+        listingViewModel.selectedProtectNumberOption.serverUpdate("Volledig verbergen");
     }
 }
 
@@ -548,6 +548,7 @@ function setAutoPauseSettingsInBackend(queuePauseSettings) {
     //console.log(queuePauseSettings);
     queuePause.changePauseTimes(queuePauseSettings);
     companySettings.queuePauseSettings = queuePauseSettings;
+    requestStoreCompanySettings();
 }
 
 function getContactListData(user, server, pass, companyId) {
@@ -1213,6 +1214,7 @@ function storeUserNote(userId, note) {
 
 var debouncedStoreCompanySettings = _.debounce(storeCompanySettings, 5000);
 function requestStoreCompanySettings() {
+    console.log("Requesting to upload company settings.");
     companySettingsChangePending = true;
     debouncedStoreCompanySettings();
 }
@@ -1261,3 +1263,4 @@ BedienpostLogging.prototype.getLog = function() {
 }
 
 var myLogging = new BedienpostLogging();
+

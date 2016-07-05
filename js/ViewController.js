@@ -220,6 +220,8 @@ QueueListItem.prototype.queueLogin = function (amLoggingIn) {
     if (amLoggingIn) {
         conn.queueLogin(queue);
     } else {
+        // When logging out of queue, remove any autopause-items that might still be running.
+        this.removeAutopauseItem(queue);
         conn.queueLogout(queue);   
     }
 }

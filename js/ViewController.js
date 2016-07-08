@@ -66,6 +66,7 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart); // duration in milliseconds
+        duration = (duration >= 0) ? duration : 0; // no negative values.
 
         var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         var timePart = "[" + timeString + "]";
@@ -193,6 +194,7 @@ function QueueListItem(id, name) {
         if (this.waitingAmount() != 0) {
             var waitingStart = moment.utc(this.maxWaitingStartTime());
             duration = (currentTime() - waitingStart); // duration in milliseconds
+            duration = (duration >= 0) ? duration : 0; // no negative values.
         }
 
 
@@ -314,6 +316,7 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart); // duration in milliseconds
+        duration = (duration >= 0) ? duration : 0; // no negative values.
         return duration;
     }, this);
 

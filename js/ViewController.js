@@ -5,9 +5,7 @@ var keypadActive = false;
 var dialing = false;
 var transfering = false;
 var selectingNumber = false;
-var clockCompensation = 0; // Compensate for a misconfigured clock.
 var contactPhoneNumberPriority = ["work", "mobile", "home"];
-
 
 
 /*
@@ -68,11 +66,6 @@ function UserListItem(id, name, ext, log, avail, ringing, company) {
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart); // duration in milliseconds
-        if (duration < 0) {
-            if (duration < clockCompensation)
-                clockCompensation = duration; // We want the minimum value that we've seen in clockCompensation.
-        }
-        duration -= clockCompensation;
 
         var timeString = moment.utc(duration).format("H:mm:ss"); // Create a date object and format it.
         var timePart = "[" + timeString + "]";
@@ -321,16 +314,6 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
         var duration = (currentTime() - callStart); // duration in milliseconds
-        if (!this.isAutoPause()) {
-            if (duration < 0) {
-                if (duration < clockCompensation)
-                    clockCompensation = duration; // We want the minimum value that we've seen in clockCompensation.
-            }
-            duration -= clockCompensation;
-        } else if (duration < 0) {
-            duration = -duration;
-        }
-
         return duration;
     }, this);
 
@@ -446,8 +429,8 @@ currentTime = ko.observable(0);
 
 setInterval(function() {
     var myDate = new Date();
-    currentTime(moment.utc());
-}, 1000); // Update UserListItem.currentTime every second.
+    currentTime(moment.utc(moment.utc().valueOf() + Lisa.Connection.serverTimeOffset));
+}, 500); // Update UserListItem.currentTime every second.
 
 function nameComparator(left, right) {
     return left.name() == right.name() ? 0 : (left.name() < right.name() ? -1 : 1);    

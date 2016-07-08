@@ -451,8 +451,6 @@ function favComparator(left, right) {
 var ListingsViewModel = function(){
     var self = this;
     
-    self.availableWaitingList = ko.observableArray(initialWaitingQueueList);
-    
     self.currentList = ko.observable();
     self.favoriteList = ko.observable();
     self.waitingQueueList = ko.observable();
@@ -1166,16 +1164,10 @@ var ListingsViewModel = function(){
     self.favoriteList( self.favFilteredItems()) ;
    
     self.setSearch("");
-    
-    if (demoData) {
-        self.currentList( demoUserLists[0] );
-        self.waitingQueueList( initialWaitingQueueList[0] );
-        self.incomingCallList( initialIncomingCallList[0] );
-    } else {
-        self.currentList( xmppUserLists[0] );
-        self.waitingQueueList( xmppWaitingQueueList[0] );
-        self.incomingCallList( xmppIncomingCallList[0] );
-    }
+
+    self.currentList( xmppUserLists[0] );
+    self.waitingQueueList( xmppWaitingQueueList[0] );
+    self.incomingCallList( xmppIncomingCallList[0] );
 
     $( "#loginModal" ).keypress(function(e)
     {

@@ -214,9 +214,15 @@ QueueListItem.prototype.queueLogin = function (amLoggingIn) {
 
     if (amLoggingIn) {
         conn.queueLogin(queue);
+
+        // If 'globalPause' if activated, also pause the new queue. However, give the queue some time to logon.
+        _.delay(function(){
+            if (listingViewModel.pausedGlobally()) {
+                conn.queuePause(queue);
+            }
+        }, 100);
+
     } else {
-        // When logging out of queue, remove any autopause-items that might still be running.
-        this.removeAutopauseItem(queue);
         conn.queueLogout(queue);   
     }
 }

@@ -8,16 +8,32 @@
         exit;
     }
 
+    // Retrieve username and password
+    $user = false;
+    $password = false;
+    /* If using PHP in CGI mode. */
+    if (isset($_SERVER["HTTP_AUTHORIZATION"])) {
+        if (preg_match("/Basic\s+(.*)$/i", $_SERVER["HTTP_AUTHORIZATION"], $matches)) {
+            list($user, $password) = explode(":", base64_decode($matches[1]));
+        }
+    } else {
+        if (isset($_SERVER["PHP_AUTH_USER"])) {
+            $user = $_SERVER["PHP_AUTH_USER"];
+        }
+        if (isset($_SERVER["PHP_AUTH_PW"])) {
+            $password = $_SERVER["PHP_AUTH_PW"];
+        }
+    }
+
     // split the user/pass parts
-    list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
-    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+    if (($user == "") || ($password == "")) {
         header('WWW-Authenticate: Basic realm="My Realm"');
         header('HTTP/1.0 401 Unauthorized');
         echo 'Please authenticate';
         exit;
     }
 
-    $companyFromRest = checkUser($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+    $companyFromRest = checkUser($user, $password);
     if ($companyFromRest != false) {
 
         // Extract the company-id.

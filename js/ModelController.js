@@ -1101,7 +1101,7 @@ function uploadVCard(data) {
         type: 'POST',
         data: data,
         headers: {
-            "Authorization": "Basic " + btoa(JID + ":" + PASS)
+            "Authorization": "Basic " + btoa(LOGINDATA.rest_user + ":" + PASS)
         },
         cache: false,
         dataType: 'json',

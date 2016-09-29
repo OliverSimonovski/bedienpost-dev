@@ -57,6 +57,7 @@
         res.jid = "";
         res.rest_user = "";
         res.domain = "";
+        res.base_domain = "";
         res.xmpp_server = "";
         res.bosh_server = "";
         res.rest_server = "";
@@ -100,8 +101,9 @@
 
         dnsLookupDeferred.done(function() {
             res.jid = res.username + "@" + res.domain;
-            res.bosh_server = Lisa.getEnvWithPrefix("bosh", res.xmpp_server);
-            res.rest_server = Lisa.getEnvWithPrefix("rest", res.xmpp_server);
+            res.base_domain = res.xmpp_server.split(".").slice(1).join(".");
+            res.bosh_server = "bosh." + res.base_domain;
+            res.rest_server = "rest." + res.base_domain;
             console.log("Login parsed:");
             console.log(JSON.stringify(res));
             res.resultDeferred.resolve(res);

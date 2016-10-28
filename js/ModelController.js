@@ -198,7 +198,7 @@ function getPhoneAuthFromCompass(user, server, pass) {
         var companyReceived = function(response) {
             //console.log(response);
             phoneUser = response.shortname;
-            if (companySettings.connectSnomSetting === true) {
+            if (companySettings && (companySettings.connectSnomSetting === true)) {
                 getPhoneStatus();
             } else {
                 listingViewModel.phoneIp("");
@@ -407,7 +407,7 @@ function retrieveCompanySettingsNew() {
         return;
     }
 
-    remoteStorage.getItem("company_settings", "", COMPANYID)
+    remoteStorage.getItem("company_settings", "companyAdmin", true)
         .done(function(response) {
             if (response != null) {
                 console.log("Retrieved company settings: " + response);
@@ -1139,7 +1139,7 @@ function storeCompanySettings() {
         // Update on server.
         var settingsStr = JSON.stringify(companySettings);
         console.log("Storing company-settings: " + settingsStr);
-        remoteStorage.setItem("company_settings", settingsStr, "", COMPANYID);
+        remoteStorage.setItem("company_settings", settingsStr, "companyAdmin", true);
 
         // Update companySettingsOnServer
         companySettingsOnServer = JSON.parse(settingsStr);
@@ -1151,7 +1151,7 @@ function storeCompanySettings() {
 
 function getUserNoteModel() {
     console.log("Retrieving user-note model from server.")
-    var deferred =  remoteStorage.getItem("company_userNoteModel", "", COMPANYID);
+    var deferred =  remoteStorage.getItem("company_userNoteModel", "company", true);
     deferred.done(function (val) {
         console.log("retrieved: " + val);
 
@@ -1206,7 +1206,7 @@ function storeUserNote(userId, note) {
                 }
                 console.log("Pushing user-note model to server.")
                 console.log(userNoteModel);
-                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYID);
+                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "company", true);
             }
         }
     }(userId, note));

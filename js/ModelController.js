@@ -213,7 +213,7 @@ function getPhoneAuthFromCompass(user, server, pass) {
         ({
             type: "GET",
             headers: {
-                "Accept" : "application/vnd.iperity.compass.v1+json",
+                "Accept" : "application/vnd.iperity.compass.v2+json",
                 "Authorization": Lisa.Connection.restAuthHeader,
                 "X-No-Redirect": true
             },
@@ -256,7 +256,7 @@ function getPhoneAuthFromCompass(user, server, pass) {
             ({
                 type: "GET",
                 headers: {
-                    "Accept" : "application/vnd.iperity.compass.v1+json",
+                    "Accept" : "application/vnd.iperity.compass.v2+json",
                     "Authorization": Lisa.Connection.restAuthHeader,
                     "X-No-Redirect": true
                 },
@@ -272,7 +272,7 @@ function getPhoneAuthFromCompass(user, server, pass) {
         ({
             type: "GET",
             headers: {
-                "Accept" : "application/vnd.iperity.compass.v1+json",
+                "Accept" : "application/vnd.iperity.compass.v2+json",
                 "Authorization": Lisa.Connection.restAuthHeader,
                 "X-No-Redirect": true
             },
@@ -503,12 +503,12 @@ function obfuscateNumberFromSelectedProtectNumberOption() {
 
 function getExternalNumbersFromCompass() {
     var restCompanyUrl = "https://" + Lisa.Connection.restServer + "/company";
-    var externalNumbersUrl = restCompanyUrl + "/" + COMPANYID + "/fullExternalNumbers";
+    var externalNumbersUrl = restCompanyUrl + "/" + COMPANYID + "/externalNumbers";
     $.ajax
     ({
         type: "GET",
         headers: {
-            "Accept": "application/vnd.iperity.compass.v1+json",
+            "Accept": "application/vnd.iperity.compass.v2+json",
             "Authorization": Lisa.Connection.restAuthHeader,
             "X-No-Redirect": true
         },
@@ -522,12 +522,12 @@ function getExternalNumbersFromCompass() {
         }
     });
 
-    var url = Lisa.Connection.restUserUrl + "/permission?targetEntity=company/" + COMPANYID;
+    var url = Lisa.Connection.restUserUrl + "/permission?targetEntity=" + restCompanyUrl + "/" + COMPANYID;
     $.ajax
     ({
         type: "GET",
         headers: {
-            "Accept" : "application/vnd.iperity.compass.v1+json",
+            "Accept" : "application/vnd.iperity.compass.v2+json",
             "Authorization": Lisa.Connection.restAuthHeader,
             "X-No-Redirect": true
         },

@@ -412,8 +412,8 @@ function retrieveCompanySettingsNew() {
             if (response != null) {
                 console.log("Retrieved company settings: " + response);
                 // Make sure that these are clones. If they point to the same object, we can't see whether values have changed.
-                companySettings = JSON.parse(response);
-                companySettingsOnServer = JSON.parse(response);
+                companySettings = JSON.parse(response) || {};
+                companySettingsOnServer = JSON.parse(response) || {};
                 processRetrievedCompanySettings();
             }
 

@@ -117,7 +117,7 @@ UserListItem.prototype.setFavorite = function (fav) {
 }
 
 UserListItem.storageKey = function() {
-    return USERNAME + "@" + DOMAIN + "_UserListFavs";
+    return "UserListFavs";
 }
 
 UserListItem.saveFavs = function(userList) {
@@ -269,7 +269,7 @@ QueueListItem.saveFavs = function(queueList) {
 }
 
 QueueListItem.storageKey = function() {
-    return USERNAME + "@" + DOMAIN + "_QueueListFavs";
+    return "QueueListFavs";
 }
 
 // Set the new pause-times for the queues after one of the values has been changed.

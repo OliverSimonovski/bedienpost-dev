@@ -54,7 +54,12 @@
 
 
     header('Content-type: application/json');
-    echo json_encode($data);
+    if (version_compare(phpversion(), '5.5', '<')) {
+        echo json_encode($data);
+    } else {
+        echo json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR);
+    }
+
 
     $statement->close();
     $numstatement->close();

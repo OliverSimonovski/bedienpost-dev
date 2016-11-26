@@ -228,10 +228,18 @@ function getPhoneAuthFromCompass(user, server, pass) {
         // After user-status is received, retrieve the phone-info.
         var statusReceived = function(response) {
             //console.log(response.phone);
-            var url = response.phone;
+            if (response.phone === null) {
+                console.log("User is not currently logged on to any phone. Disabling SNOM connection.");
+                return;
+            }
+            console.log("User is logged onto phone. Retrieving ip for phone.");
+            var url = response.phone + "/phoneStatus";
+            // Phone Password is phone-id. Parse the phone-id from the URL.
+            var phoneUrlSplit = response.phone.split("/");
+            phonePass = phoneUrlSplit[_.size(phoneUrlSplit) - 1];
+
             var phoneUrlReceived = function(response) {
                 //console.log(response);
-                phonePass = response.resourceId;
                 var ip = response.privateIP;
                 if (!ip) {
                     ip = response.publicIP;
@@ -239,8 +247,6 @@ function getPhoneAuthFromCompass(user, server, pass) {
                 if (ip) {
                     phoneIp = ip.split(":")[0];
                 }
-                //phoneIp = response.pubIP;
-                //console.log(response);
                 console.log("phone user: " + phoneUser + " pass: " + phonePass + " ip: " + phoneIp);
                 if (navigator.userAgent.indexOf("Chrome") != -1) {
                     chromeLoginPhone();

@@ -1070,7 +1070,7 @@ var ListingsViewModel = function(){
   
     self.attendedTransfer = function()
     {
-        console.log("Attended transfer clicked").
+        console.log("Attended transfer clicked");
 
         self.callingState("transfer");
         var number = self.numericInput().replace(/\D/g,'');

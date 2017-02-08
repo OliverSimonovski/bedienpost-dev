@@ -18,7 +18,6 @@ var phoneIp = "";
 var phoneUser = "";
 var phonePass = "";
 var loggedIn = false;
-var reconnecting = 0;
 var serverNotExpected = false;
 
 var restUrl = "";
@@ -62,7 +61,6 @@ function init() {
     phoneUser = "";
     phonePass = "";
     loggedIn = false;
-    reconnecting = 0;
     serverNotExpected = false;
     restUrl = "";
     userIdToUserObservable = [];
@@ -143,7 +141,7 @@ function connect(connectServer, connectPort) {
     // Setup logging and status messages.
     conn.logging.setCallback(function(msg) {
         console.log(msg);
-        if ((serverNotExpected == false) &&
+        /*if ((serverNotExpected == false) &&
             (msg.indexOf("request") != -1) &&
             (msg.indexOf("error") != -1) &&
             (msg.indexOf("happened") != -1)) {
@@ -151,7 +149,7 @@ function connect(connectServer, connectPort) {
                 "Is your internet connection working?");
             $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
             serverNotExpected = true;
-        }
+        }*/
     });
 
     // Setup connection-status callback.
@@ -328,21 +326,10 @@ function checkSnomConnected() {
 function connectionStatusCallback(status) {
     if (status == Strophe.Status.CONNFAIL) {
     } else if (status == Strophe.Status.DISCONNECTED) {
-        // Reconnect
-        if (loggedIn) {
-            console.log("Connection lost, reconnecting...");
-            reconnecting += 1;
-            tryAutoLogin();
-        }
     } else if (status == Strophe.Status.AUTHFAIL) {
-        if ((reconnecting == 0) || (reconnecting > 10)) {
-            listingViewModel.authError(true);
-            alert("Inloggen mislukt. Voer uw login en wachtwoord opnieuw in, en probeer het nog een keer.");
-            $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
-        } else {
-            reconnecting += 1;
-            tryAutoLogin();
-        }
+        listingViewModel.authError(true);
+        alert("Inloggen mislukt. Voer uw login en wachtwoord opnieuw in, en probeer het nog een keer.");
+        $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
     }
 }
 
@@ -382,7 +369,6 @@ function gotModel(newmodel) {
 
     // Show interface
     loggedIn = true;
-    reconnecting = 0;
     serverNotExpected = false;
     var loginInfo = {};
     loginInfo.loggedIn = true;
@@ -397,8 +383,8 @@ function gotModel(newmodel) {
     refreshModel(model);
     
     // Listen for added or removed users or queues, which requires to redraw the whole structure.
-    model.userListObservable.addObserver(refreshModel);
-    model.queueListObservable.addObserver(refreshModel);
+    model.userListObservable.addObserver(function() {refreshModel(model)});
+    model.queueListObservable.addObserver(function() {refreshModel(model)});
 
    closeLoginModal();
 }
@@ -470,9 +456,6 @@ function selectedProtectNumberOptionFromObfuscateNumber() {
 
     listingViewModel.obfuscateNumber(companySettings.obfuscateNumber);
     listingViewModel.obfuscateWholeNumber(companySettings.obfuscateWholeNumber);
-
-    //console.log(companySettings.obfuscateNumber);
-    //console.log(companySettings.obfuscateWholeNumber)
 
     if (companySettings.obfuscateNumber === false) {
         listingViewModel.selectedProtectNumberOption.serverUpdate("Niet verbergen");

@@ -495,6 +495,7 @@ var ListingsViewModel = function(){
     self.protectNumberOptions = ["Niet verbergen", "Verberg laatste 5 nummers", "Volledig verbergen"];
     self.selectedProtectNumberOption = ko.observable("Verberg laatste 5 nummers");
     self.helpUrl = ko.observable("");
+    self.connectionStatus = ko.observable(false);
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));

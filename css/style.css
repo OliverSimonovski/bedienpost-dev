@@ -685,3 +685,11 @@ li.list-group-item:hover i.fa-pencil-square-o
 .modal.fade.in {
     overflow-y: auto;
 }
+
+.connected {
+    color: black;
+}
+
+.disconnected {
+    color: red;
+}

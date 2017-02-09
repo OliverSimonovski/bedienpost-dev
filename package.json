@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "strophe": "^1.2.0",
-    "lisa-api": "^1.5.5",
+    "lisa-api": "^1.6.0",
     "backbone": "^1.2.0",
     "underscore": "^1.8.3",
     "moment": "^2.10.3"

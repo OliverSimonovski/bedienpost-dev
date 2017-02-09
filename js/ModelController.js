@@ -177,6 +177,10 @@ function connect(connectServer, connectPort) {
     conn.connect(LOGINDATA.bosh_server, LOGINDATA.jid, PASS);
 
     listingViewModel.numericInput("");
+
+    Lisa.Connection.model.pingSuccessObservable.addObserver(function (newValue) {
+       listingViewModel.connectionStatus(newValue);
+    });
 }
 
 /*

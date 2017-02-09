@@ -44,6 +44,10 @@
                             <i class="fa fa-arrow-circle-right pull-right"></i>
                         </div>
 
+                        <div class="shortcuts pull-right"  title="connection status">
+                            <i class="fa pull-right fa-signal" data-bind="attr: { class: ($root.connectionStatus() ? 'connected fa pull-right fa-signal' : 'disconnected fa pull-right fa-spinner fa-spin') }"></i>
+                        </div>
+
                         <span class="loginname" data-bind="text: loggedInName"><i></i></span>
                         
                         <span class="phonelinkstatus pull-right" data-bind="attr: { class: ($root.phoneAuthAvailable() ? 'phonelinkstatus pull-right active' : 'hidden') }"> 

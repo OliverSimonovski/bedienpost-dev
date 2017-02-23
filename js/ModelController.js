@@ -789,6 +789,8 @@ function refreshModel(model) {
         addUser(user);
     }
 
+    getContactListData(USERNAME, DOMAIN, PASS, COMPANYID);
+
     // Process queues
     queueListEntries.removeAll();
     for (var queueId in model.queues) {

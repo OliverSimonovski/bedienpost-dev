@@ -387,8 +387,8 @@ function gotModel(newmodel) {
     refreshModel(model);
     
     // Listen for added or removed users or queues, which requires to redraw the whole structure.
-    model.userListObservable.addObserver(function() {refreshModel(model)});
-    model.queueListObservable.addObserver(function() {refreshModel(model)});
+    model.userListObservable.addObserver(_.debounce(function() {refreshModel(model)}, 1000));
+    model.queueListObservable.addObserver(_.debounce(function() {refreshModel(model)}, 1000));
 
    closeLoginModal();
 }

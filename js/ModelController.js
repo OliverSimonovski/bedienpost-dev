@@ -762,8 +762,9 @@ function queueToClientModel(queue, queueObj) {
 
     // Calls
     var callCount = 1;
-    for (var callKey in queue.calls) {
-        var call = queue.calls[callKey];
+
+    for (var callKey in queue.callsOrdered) {
+        var call = queue.callsOrdered[callKey];
         var callInfo = getCallInfo(call, null);
         var curCallStr = callCount++ + ". " + callInfo.description + "\n";
         callsStr += curCallStr;

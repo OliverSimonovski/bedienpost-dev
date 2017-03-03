@@ -621,7 +621,6 @@ var ListingsViewModel = function(){
             $('#selectNumberModal').modal({
                 keyboard: true
             })
-            self.clickedListItemName("");
             return;
         }
 
@@ -793,8 +792,6 @@ var ListingsViewModel = function(){
 
     self.dismissModal = function(modalToDismiss, focusInputField) {
         modalToDismiss.modal('hide');
-        self.clickedListItem(null);
-        self.clickedListItemName("");
         dialing = false;
         transfering = false;
     }
@@ -803,7 +800,6 @@ var ListingsViewModel = function(){
     {
         self.dismissModal($('#transferModal'));
         self.clickedListItem(null);
-        self.clickedListItemName("");
         self.search("");
     }
     
@@ -1077,9 +1073,9 @@ var ListingsViewModel = function(){
     self.attendedTransfer = function()
     {
         console.log("Attended transfer clicked");
+
         self.callingState("transfer");
         var number = self.numericInput().replace(/\D/g,'');
-        self.clickedListItemName(number);
         attendedtransferToUser(number);
         self.dismissKeypadModal();
         self.showTransferEndModal();
@@ -1090,7 +1086,6 @@ var ListingsViewModel = function(){
         console.log("Unattended transfer clicked");
 
         var number = self.numericInput().replace(/\D/g,'');
-        self.clickedListItemName(number);
         transferToUser(number);
         self.dismissKeypadModal();
     }

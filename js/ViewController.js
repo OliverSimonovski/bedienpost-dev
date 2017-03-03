@@ -1076,6 +1076,7 @@ var ListingsViewModel = function(){
 
         self.callingState("transfer");
         var number = self.numericInput().replace(/\D/g,'');
+        self.clickedListItemName(number);
         attendedtransferToUser(number);
         self.dismissKeypadModal();
         self.showTransferEndModal();
@@ -1086,6 +1087,7 @@ var ListingsViewModel = function(){
         console.log("Unattended transfer clicked");
 
         var number = self.numericInput().replace(/\D/g,'');
+        self.clickedListItemName(number);
         transferToUser(number);
         self.dismissKeypadModal();
     }

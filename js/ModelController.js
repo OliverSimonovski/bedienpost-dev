@@ -784,6 +784,8 @@ function refreshModel(model) {
     
     // Add users to interface.
     userListEntries.removeAll();
+    userIdToUserObservable = [];
+
     for (var userId in model.users) {
 
         var user = model.users[userId];
@@ -805,11 +807,17 @@ var userListEntriesArray = [];
 
 /* Add / Update page for users */
 function addUser(user) {
-    console.log("Adding user " + user);
     if (user.name == "") {
         console.log("User has no name, not adding");
         return;
     }
+
+    if (userIdToUserObservable[user.id]) {
+        console.log("User " + user.name + " has already been added, not adding again.");
+        return;
+    }
+
+    console.log("Adding user " + user);
 
     if (user.observable)
         user.observable.addObserver(updateUser);

@@ -7,6 +7,7 @@ var CONNECTSERVER = null;
 var PASS = null;
 var COMPANYNAME = null;
 var COMPANYID = null;
+var LANGUAGE = null;
 
 var conn;
 var model;
@@ -54,6 +55,7 @@ function init() {
     PASS = null;
     COMPANYNAME = null;
     COMPANYID = null;
+    LANGUAGE = null;
     conn = null;
     model = null;
     inAttTransfer = false;
@@ -94,14 +96,15 @@ function tryAutoLogin() {
     if (loginInfo) loginInfo = JSON.parse(loginInfo);
     if ((loginInfo != null) && loginInfo.loggedIn) {
         console.log("Was previously logged in. Automatically logging in as " + loginInfo.username + "@" + loginInfo.server);
-        login(loginInfo.username, loginInfo.password, loginInfo.server);
+        login(loginInfo.username, loginInfo.password, loginInfo.server, loginInfo.language);
         closeLoginModal();
     }
 }
 
-function login(login, password, server) {
+function login(login, password, server, language) {
 
     PASS = password;
+    LANGUAGE = language;
 
     var parseLoginDeferred = ResolveServer.parseLogin(login);
     parseLoginDeferred.done(function(parsedLogin) {
@@ -389,6 +392,7 @@ function gotModel(newmodel) {
     loginInfo.username = LOGINDATA.given_login;
     loginInfo.password = PASS;
     loginInfo.server = DOMAIN;
+    loginInfo.language = LANGUAGE;
     localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
     listingViewModel.loggedInName(Lisa.Connection.model.users[Lisa.Connection.myUserId].name);
     
@@ -1224,10 +1228,6 @@ function requestStoreCompanySettings() {
     companySettingsChangePending = true;
     debouncedStoreCompanySettings();
 }
-
-
-
-
 
 /* Allow user to 'download' log files */
 function BedienpostLogging() {

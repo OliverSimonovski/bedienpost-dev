@@ -31,7 +31,7 @@
             <div class="container">
                 <div class='row'>
                     <div class='col-md-6 offset-6' id="titel">
-                        <h1>Bedienpost</h1>
+                        <h1 data-bind="click: $root.doChangeLang, i18n: language, key: 'Bedienpost', place: 'text'">Bedienpost</h1>
                     </div>
                     <div class='col-md-6' id="logo">
                         <img class='logo' src="./img/logo.png" alt="">
@@ -40,28 +40,28 @@
                 
                 <div class='row nopadding'>
                     <div class='col-md-12' id="controls">
-                        <div class="shortcuts pull-right" data-bind="click: $root.logOut" title="log uit">
+                        <div class="shortcuts pull-right" data-bind="click: $root.logOut, i18n: language, key: 'Log off', place: 'title'" title="Log off">
                             <i class="fa fa-arrow-circle-right pull-right"></i>
                         </div>
 
                         <span class="loginname" data-bind="text: loggedInName"><i></i></span>
                         
                         <span class="phonelinkstatus pull-right" data-bind="attr: { class: ($root.phoneAuthAvailable() ? 'phonelinkstatus pull-right active' : 'hidden') }"> 
-                                <i class="fa fa-phone-square pull-right"></i>
-                                <span class="icon-label" data-bind= "text:  connectedPhone() ? 'gekoppeld' : 'niet gekoppeld' "></span>
+                            <i class="fa fa-phone-square pull-right"></i>
+                            <span class="icon-label" data-bind= "i18n: language, key: connectedPhone() ? 'connected' : 'not connected', place: 'text'"></span>
                         </span>
 
                         <div class="shortcuts pull-right" data-bind="click: $root.showShortcuts">
                             <i class="fa fa-question pull-right"></i>
-                            <span class="icon-label">h<u>e</u>lp</span>
+                            <span class="icon-label" data-bind= "i18n: language, key: 'h<u>e</u>lp', place: 'text'">h<u>e</u>lp</span>
                         </div>
                         <div class="shortcuts pull-right" data-bind="click: $root.settingsClicked, visible:$root.amAdmin">
                             <i class="fa fa-cog pull-right"></i>
-                            <span class="icon-label">instellingen</span>
+                            <span class="icon-label" data-bind= "i18n: language, key: 'settings', place: 'text'">settings</span>
                         </div>
                         <div class="shortcuts pull-right" data-bind="click: $root.downloadLogsClicked, visible:$root.logDownloadEnabled">
                             <i class="fa fa-download pull-right"></i>
-                            <span class="icon-label">logs</span>
+                            <span class="icon-label" data-bind= "i18n: language, key: 'logs', place: 'text'">logs</span>
                         </div>
                     </div>
                 </div>
@@ -102,7 +102,7 @@
                                     <i class="fa fa-check-circle-o"></i>
                                 </div>
                             </div>
-                            <h4>Actieve gesprekken</h4>
+                            <h4 data-bind="i18n: language, key: 'Active calls', place: 'text'">Active calls</h4>
                         </div>
 
                     <div class="list-group queuelist" >
@@ -128,7 +128,7 @@
                 </div>
                 <div class='col-md-6'>
                         <div class="header">
-                            <h4>Wachtrijen</h4>
+                            <h4 data-bind="i18n: language, key:'Queues', place: 'text'">Queues</h4>
                         </div>
                         <div class="list-group queuelist">
 
@@ -397,70 +397,78 @@
             <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissShortcutModal">&times;</button>
             <h4 class="modal-title" id="myModalLabel">Help</h4>
           </div>
-           <div class="modal-body">
+            <div class="modal-body">
                 <div class="buttoncontainer text-left">
-                       <p>0 .. 9: Bel favoriet / Bel Contact</p>
+                    <p>0 .. 9: <span data-bind="i18n: language, key: 'Call favourive / call Contact', place: 'text'">Call favourive / call Contact</span></p>
                 </div>
-               <div class="buttoncontainer text-left">
-                   <p>S : Zet de cursor op het zoekveld.</p>
-               </div>
                 <div class="buttoncontainer text-left">
-                      <p>E : Laat Help zien</p>
+                    <p>S : <span data-bind="i18n: language, key: 'Go to search', place: 'text'">Go to search</span></p>
                 </div>
-               <div class="buttoncontainer text-left">
-                      <p>D : Laat Dialpad zien</p>
+                <div class="buttoncontainer text-left">
+                    <p>E : <span data-bind="i18n: language, key: 'Show Help', place: 'text'">Show Help</span></p>
                 </div>
-               <div class="buttoncontainer text-left">
-                       <p>N : Beantwoorden</p>
+                <div class="buttoncontainer text-left">
+                    <p>D : <span data-bind="i18n: language, key: 'Show dialpad', place: 'text'">Show dialpad</span></p>
                 </div>
-               <div class="buttoncontainer text-left">
-                       <p>H : Ophangen</p>
+                <div class="buttoncontainer text-left">
+                    <p>N : <span data-bind="i18n: language, key: 'Answer call', place: 'text'">Answer call</span></p>
                 </div>
-               <div class="buttoncontainer text-left">
-                   <p>P : Globaal op pauze, of van pauze af</p>
-               </div>
-               <div class="buttoncontainer text-left">
-                       <p>B : Bellen (Na het selecteren van een persoon)</p>
+                <div class="buttoncontainer text-left">
+                    <p>H : <span data-bind="i18n: language, key: 'Gesprek beëindigen', place: 'text'">Gesprek beëindigen</span></p>
                 </div>
-               <div class="buttoncontainer text-left">
-                       <p>A : Doorschakeling met ruggespraak (Na het selecteren van een persoon)</p>
+                <div class="buttoncontainer text-left">
+                    <p>P : <span data-bind="i18n: language, key: 'Toggle pause', place: 'text'">Toggle pause</span></p>
                 </div>
-               <div class="buttoncontainer text-left">
-                       <p>T : Doorschakeling zonder ruggespraak (Na het selecteren van een persoon)</p>
+                <div class="buttoncontainer text-left">
+                    <p>B : <span data-bind="i18n: language, key: 'Call', place: 'text'"></span> <span data-bind="i18n: language, key: '(after selecting a favourite or contact)', place: 'text'">(after selecting a favourite or contact)</span></p>
+                </div>
+                <div class="buttoncontainer text-left">
+                    <p>A : <span data-bind="i18n: language, key: 'Attended transfer', place: 'text'">Attended transfer</span> <span data-bind="i18n: language, key: '(after selecting a favourite or contact)', place: 'text'">(after selecting a favourite or contact)</span></p>
+                </div>
+                <div class="buttoncontainer text-left">
+                    <p>T : <span data-bind="i18n: language, key: 'Unattended transfer', place: 'text'">Unattended transfer</span> <span data-bind="i18n: language, key: '(after selecting a favourite or contact)', place: 'text'">(after selecting a favourite or contact)</span></p>
                 </div>
 
                 <div class="buttoncontainer text-left">
-                    <p><i class="fa fa-envelope-o legend" ></i>
-                      Verzend een notificatie-email naar beller of gebelde</p>
+                    <p>
+                        <i class="fa fa-envelope-o legend" ></i>
+                        <span data-bind="i18n: language, key: 'Send email to caller or callee', place: 'text'">Send email to caller or callee</span>
+                    </p>
                 </div>
                 <div class="buttoncontainer text-left">
                     <p>
-                    <i class="fa fa-arrow-circle-right legend"></i>
-                      Uitloggen </p>
+                        <i class="fa fa-arrow-circle-right legend"></i>
+                        <span data-bind="i18n: language, key: 'Log off', place: 'text'">Log off</span>
+                    </p>
                 </div>
                 <div class="buttoncontainer text-left">
                     <p>
-                    <i class="fa fa-question legend"></i>
-                     Help</p>            
+                        <i class="fa fa-question legend"></i>
+                        <span data-bind="i18n: language, key: 'Help', place: 'text'">Help</span>
+                     </p>            
                 </div>
                 <div class="buttoncontainer text-left">
                     <p>
-                    <i class="fa fa-sign-in legend"></i><i class="fa fa-sign-out legend"></i>
-                    Inloggen in een wachtrij / Uitloggen uit een wachtrij</p>
+                        <i class="fa fa-sign-in legend"></i>
+                        <i class="fa fa-sign-out legend"></i>
+                        <span data-bind="i18n: language, key: 'Enter queue / Leave queue', place: 'text'">Enter queue / Leave queue</span>
+                    </p>
                 </div>
-               <div class="buttoncontainer text-left">
-                   <p>
-                    <i class="fa fa-star legend"></i><i class="fa fa-star-o legend"></i>
-                    Markeer als favoriete wachtrij / Maak markering ongedaan</p>
+                <div class="buttoncontainer text-left">
+                    <p>
+                        <i class="fa fa-star legend"></i>
+                        <i class="fa fa-star-o legend"></i>
+                        <span data-bind="i18n: language, key: 'Mark as favourite / Unmark as favourite', place: 'text'">Mark as favourite / Unmark as favourite</span>
+                    </p>
                 </div>
-          </div>
+            </div>
             <div class="modal-footer">
-                 <div class="text-center">
-                     <div class="btn-group">
-                         <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissShortcutModal">Klaar</button>
-                     </div>
-                     </div>
-                 </div>
+                <div class="text-center">
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissShortcutModal, i18n: language, key: 'Done', place: 'text'">Done</button>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -591,6 +599,8 @@
       <script type='text/javascript' src='node_modules/underscore/underscore-min.js'></script>
       <script type='text/javascript' src='node_modules/backbone/backbone.js'></script>
       <script type='text/javascript' src='node_modules/strophe/strophe.js'></script>
+      <script type='text/javascript' src='node_modules/i18next/i18next.min.js'></script>
+      <script type='text/javascript' src='node_modules/i18next-xhr-backend/i18nextXHRBackend.min.js'></script>
       <script type='text/javascript' src='js/lib/strophe.pubsub.js'></script>
       <script type='text/javascript' src='js/lib/knockout-file-bindings.js'></script>
       <script type='text/javascript' src='js/lib/eModal.js'></script>
@@ -600,6 +610,7 @@
       <script type='text/javascript' src="node_modules/lisa-api/LisaApi.js"></script>
       <script type='text/javascript' src="js/lib/queuePause.js"></script>
 
+      <script type='text/javascript' src='js/translate.js'></script>
       <script type='text/javascript' src='js/dataModel.js'></script>
       <script type='text/javascript' src='js/ViewController.js'></script>
       <script type='text/javascript' src="js/RemoteStorage.js"></script>

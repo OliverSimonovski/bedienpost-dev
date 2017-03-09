@@ -496,6 +496,12 @@ var ListingsViewModel = function(){
     self.selectedProtectNumberOption = ko.observable("Verberg laatste 5 nummers");
     self.helpUrl = ko.observable("");
 
+    self.language = ko.observable(null);
+    self.language.subscribe(function(newValue) {
+        switchLanguage(newValue);
+    });
+
+
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
     }, self);
@@ -1144,6 +1150,37 @@ var ListingsViewModel = function(){
         }
     };
     
+    ko.bindingHandlers.i18n = {
+        update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+            var lang = self.language(); //need to use the  self.language(), so that update fires on change of it
+
+            var key = allBindings.get('key'), place = allBindings.get('place');;
+
+            var translation = self.gettext(key);
+            if (!translation) { console.log("Did not find a match for key " + key); return; }
+
+            switch(place){
+                case "text": element.innerHTML = translation; break;
+                case "title": element.setAttribute('title', translation); break;
+            }
+        }
+    }
+
+    self.gettext = function(key){
+        return i18next.t(key);
+    }
+
+    /** TODO: REMOVE COMPLETELY J02 */
+    self.doChangeLang = function () {
+        if (self.language() == "nl"){
+            self.language("en");
+        }
+        else{
+            self.language("nl");
+        }
+    }
+    /** END */
+
     self.setSearch = function(searchParam)
     {
         self.search(searchParam);

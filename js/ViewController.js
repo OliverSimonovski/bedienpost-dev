@@ -356,8 +356,8 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
         var result = this.name();
         var call = this.thisCallOrOriginalCall(this.id());
 
-        if (call && call.userHasChanged) result = "[terugval] " + result; //FIXME: Icon
-        if (this.finished()) result += " - finished";
+        if (call && call.userHasChanged) result = "[" + i18next.t("fallback") + "] " + result; //FIXME: Icon
+        if (this.finished()) result +=  i18next.t(" - finished");
 
         return result;
     }, this);
@@ -412,7 +412,7 @@ CallListItem.prototype.stopCall = function() {
 CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
     this.isAutoPause(true);
     this.finished(false);
-    this.name("Afhandeltijd voor: " + queue.name);
+    this.name(i18next.t("Roundup time") + ": " + queue.name);
     this.callStartTime(currentTime().valueOf() / 1000 + pauseTime);
     this.autoPauseQueue = queue;
     queue.autoPauseItem = this;
@@ -492,8 +492,19 @@ var ListingsViewModel = function(){
 
     self.pausedGlobally = ko.observable(false);
 
-    self.protectNumberOptions = ["Niet verbergen", "Verberg laatste 5 nummers", "Volledig verbergen"];
-    self.selectedProtectNumberOption = ko.observable("Verberg laatste 5 nummers");
+    /*self.protectNumberOptions = [ 
+        { text: "Do not hide" }, 
+        { text: "Hide only last 5 digits" }, 
+        { text: "Hide entire number" }
+    ];*/
+    self.protectNumberOptions = ko.observableArray([ 
+        { val: "Do not hide", text: "Do not hide" }, 
+        { val: "Hide only last 5 digits", text: "Hide only last 5 digits" },
+        { val: "Hide entire number", text: "Hide entire number" }
+    ]);
+
+    self.selectedProtectNumberOption = ko.observable("Hide only last 5 digits");
+
     self.helpUrl = ko.observable("");
 
     self.language = ko.observable(null);
@@ -653,7 +664,7 @@ var ListingsViewModel = function(){
     self.mailTo = function(incomingCall)
     {
         self.incomingCallMailTo(incomingCall);
-        var mailtoUrl = "mailto:?Subject=Terugbelverzoek: " + incomingCall.descriptionWithNumber();
+        var mailtoUrl = "mailto:?Subject=" + i18next.t("Call-back request") + ": " + incomingCall.descriptionWithNumber();
         $('<iframe src="'+mailtoUrl+'">').appendTo('body').css("display", "none");
     }
 
@@ -692,7 +703,7 @@ var ListingsViewModel = function(){
             dialNumber(numberToCall);
         } else {
             console.log("Can't call user without extension.");
-            alert("Can't call user without extension.");
+            alert( i18next.t("Can't call user without extension.") );
         }
         self.dismissCallModal();
     }
@@ -1154,19 +1165,29 @@ var ListingsViewModel = function(){
         update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
             var lang = self.language(); //need to use the  self.language(), so that update fires on change of it
 
-            var key = allBindings.get('key'), place = allBindings.get('place');;
+            var key = allBindings.get('key'), 
+                place = allBindings.get('place'),
+                obj = allBindings.get('obj');
 
-            var translation = self.gettext(key);
-            if (!translation) { console.log("Did not find a match for key " + key); return; }
+            var translation = self.gettext(key, obj);
+            if (!translation) { 
+                console.log("Did not find a match for key " + key); 
+                return; 
+            }
 
             switch(place){
+                case "valueandtext": element.setAttribute("value", key);    //intentional fall back to 'text'
                 case "text": element.innerHTML = translation; break;
-                case "title": element.setAttribute('title', translation); break;
+                case "title":
+                case "placeholder": element.setAttribute(place, translation); break;
             }
         }
     }
 
-    self.gettext = function(key){
+    self.gettext = function(key, obj){
+        if (obj) {
+            return i18next.t(key, obj);
+        }
         return i18next.t(key);
     }
 

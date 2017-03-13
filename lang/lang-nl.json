@@ -12,6 +12,7 @@
     "Queues": "Wachtrijen",
     "dialpad": "dialpad",
     "Dialpad": "Dialpad",
+    "<u>d</u>ialpad": "<u>d</u>ialpad",
     "Favorites": "Favorieten",
     "Contacts": "Contacten",
     "Done": "Klaar",
@@ -19,20 +20,20 @@
     "Search!": "Zoek hier!",
     
     "Hide phone numbers": "Nummerafscherming",
-    "Hide phone numbers. This is a company setting: ": "Verberg telefoonnummers. Dit geldt voor het gehele bedrijf: ",
+    "Hide phone numbers. This is a company setting:": "Verberg telefoonnummers. Dit geldt voor het gehele bedrijf:",
     "Do not hide": "Niet verbergen",
     "Hide only last 5 digits": "Verberg laatste 5 nummers",
     "Hide entire number": "Volledig verbergen",
     
     "SNOM-link": "SNOM-koppeling",
-    "By activating the SNOM-link, Bedienpost can control your SNOM phone": "Door het activeren van de SNOM-koppeling kan je, als je een SNOM-toestel hebt, gesprekken aannemen, doorschakelen en ophangen via de Bedienpost.",
-    "SNOM-link supported devices: ": "Op dit moment worden de volgende SNOM-toestellen ondersteund: ",
+    "By activating the SNOM-link, Bedienpost can control your SNOM phone.": "Door het activeren van de SNOM-koppeling kan je, als je een SNOM-toestel hebt, gesprekken aannemen, doorschakelen en ophangen via de Bedienpost.",
+    "SNOM-link supported devices:": "Op dit moment worden de volgende SNOM-toestellen ondersteund:",
     "To use this feature, a direct network-link between phone and PC is required.": "Om gebruik te maken van deze functionaliteit is een directe koppeling op netwerkniveau tussen het SNOM-toestel en de PC waar de Bedienpost op draait noodzakelijk.",
-    "Activate SNOM-link: ": "SNOM-koppeling activeren: ",
+    "Activate SNOM-link:": "SNOM-koppeling activeren:",
     "This allows you to import your company-addressbook in vCard-format (.vcf). The addressbook will be shared in your company.": "Hiermee is het mogelijk om een bedrijfsadresboek te importeren in het vCard-formaat (.vcf). Dit adresboek wordt gedeeld binnen het gehele bedrijf.",
     "All users in your company will be able to view and dial to all contacts.": "Alle gebruikers zien in hun contactenlijst de nieuwe contacten en kunnen deze direct aankiezen.",
     "Uploading a new addressbook will replace the old one.": "Een nieuwe import overschrijft het bestaande adresboek.",
-    "Users are allowed to use pause: ": "Gebruikers mogen zichzelf pauzeren: ",
+    "Users are allowed to use pause:": "Gebruikers mogen zichzelf pauzeren:",
     "CRM-integration": "CRM-integratie",
     "By activating CRM-integration, each incoming call will show a link to your CRM.": "Door CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem.",
     "Provide a URL. The ‘$’ will be replaced by the actual phonenumber.": "Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.",
@@ -42,7 +43,7 @@
     "Download log-files": "Logs downloaden",
     "Allow all users to download company log-files.": "Activeer de 'download Logfiles' knop voor het bedrijf.",
     
-    "Call favourive / call Contact": "Bel favoriet / Bel Contact",
+    "Call favorite / call Contact": "Bel favoriet / Bel Contact",
     "Go to search": "Zet de cursor op het zoekveld.",
     "Show Help": "Laat Help zien",
     "Show dialpad": "Laat Dialpad zien",
@@ -50,6 +51,7 @@
     "End call": "Gesprek beëindigen",
     "Toggle pause": "Globaal op pauze, of van pauze af",
     "Call": "Bellen",
+    "Call (<u>B</u>)": "<u>B</u>ellen",
     "(after selecting a favourite or contact)": "(Na het selecteren van een persoon)",
     "Attended transfer": "Doorschakeling met ruggespraak",
     "Unattended transfer": "Doorschakeling zonder ruggespraak",
@@ -60,7 +62,7 @@
     "Clr": "Clr",
     "Att. Transfer": "Doorverb. Rug.",
     "Transfer": "Doorverbinden",
-    "Status for: ": "status voor: ",
+    "Status for:": "status voor:",
     "Status for user": "Status voor gebruiker",
     
     "Available:": "Beschikbaar:",
@@ -81,7 +83,7 @@
     "not connected": "niet gekoppeld",
     "logs": "logs",
     "Minimum amount of agents reached": "Minimum aantal agenten voor wachtrij bereikt",
-    "The queue reached the minimum amount of agents": "De wachtrij heeft het ingestelde minimaal aantal agenten bereikt.",
+    "The queue reached the minimum amount of agents.": "De wachtrij heeft het ingestelde minimaal aantal agenten bereikt.",
     "Pause": "Pauze",
     "Which number for": "Welk nummer van",
     "How do you want to tranfer to {{clickedListItemName}}?": "Hoe wil je doorverbinden naar {{clickedListItemName}}?",
@@ -93,5 +95,6 @@
     "Log on": "Inloggen",
     "Import address book": "Adresboekimport",
     "Can pause": "Pauzerechten",
-    "pause automatically for {{pauseTime}} seconds.": "pauzeer automatisch voor {{pauseTime}} seconden."
-    }
+    "pause automatically for": "pauzeer automatisch voor",
+    "seconds.": "seconden."
+}

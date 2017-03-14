@@ -16,7 +16,7 @@
     "Favorites": "Favorites",
     "Contacts": "Contacts",
     "Done": "Done",
-    "Log off": "Log off",
+    "Log off": "Log off123",
     "Search!": "Search!",
     
     "Hide phone numbers": "Hide phone numbers",
@@ -51,6 +51,7 @@
     "End call": "End call",
     "Toggle pause": "Toggle pause",
     "Call": "Call",
+    "Call (short)": "Call",
     "Call (<u>B</u>)": "Call (<u>B</u>)",
     "(after selecting a favourite or contact)": "(after selecting a favourite or contact)",
     "Attended transfer": "Attended transfer",

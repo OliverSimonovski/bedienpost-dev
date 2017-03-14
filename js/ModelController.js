@@ -7,7 +7,6 @@ var CONNECTSERVER = null;
 var PASS = null;
 var COMPANYNAME = null;
 var COMPANYID = null;
-var LANGUAGE = null;
 
 var conn;
 var model;
@@ -55,7 +54,6 @@ function init() {
     PASS = null;
     COMPANYNAME = null;
     COMPANYID = null;
-    LANGUAGE = null;
     conn = null;
     model = null;
     inAttTransfer = false;
@@ -96,15 +94,14 @@ function tryAutoLogin() {
     if (loginInfo) loginInfo = JSON.parse(loginInfo);
     if ((loginInfo != null) && loginInfo.loggedIn) {
         console.log("Was previously logged in. Automatically logging in as " + loginInfo.username + "@" + loginInfo.server);
-        login(loginInfo.username, loginInfo.password, loginInfo.server, loginInfo.language);
+        login(loginInfo.username, loginInfo.password, loginInfo.server);
         closeLoginModal();
     }
 }
 
-function login(login, password, server, language) {
+function login(login, password, server) {
 
     PASS = password;
-    LANGUAGE = language;
 
     var parseLoginDeferred = ResolveServer.parseLogin(login);
     parseLoginDeferred.done(function(parsedLogin) {
@@ -391,7 +388,6 @@ function gotModel(newmodel) {
     loginInfo.username = LOGINDATA.given_login;
     loginInfo.password = PASS;
     loginInfo.server = DOMAIN;
-    loginInfo.language = LANGUAGE;
     localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
     listingViewModel.loggedInName(Lisa.Connection.model.users[Lisa.Connection.myUserId].name);
     
@@ -432,10 +428,41 @@ function retrieveCompanySettingsNew() {
 }
 
 function retrieveSettings() {
-
     retrieveCompanySettingsNew();
     getExternalNumbersFromCompass();
+
+    retrieveUserSettings();
+
     setInterval(retrieveCompanySettingsNew, 900000); // re-check every fifteen minutes.
+}
+
+function retrieveUserSettings(){
+    var getUser = function() {
+
+        var restUserUrl = "https://" + Lisa.Connection.restServer + "/user/" + Lisa.Connection.myUserId;
+
+        var userReceived = function(response) {
+            //console.info(response);
+
+            if (response && response.theLanguage) {
+                listingViewModel.language(response.theLanguage);
+            }
+        }
+
+        $.ajax
+        ({
+            type: "GET",
+            headers: {
+                "Accept" : "application/vnd.iperity.compass.v2+json",
+                "Authorization": Lisa.Connection.restAuthHeader,
+                "X-No-Redirect": true
+            },
+            url: restUserUrl,
+            success: userReceived
+        });
+    }
+
+    getUser();
 }
 
 function processRetrievedCompanySettings() {

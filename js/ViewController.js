@@ -492,11 +492,6 @@ var ListingsViewModel = function(){
 
     self.pausedGlobally = ko.observable(false);
 
-    /*self.protectNumberOptions = [ 
-        { text: "Do not hide" }, 
-        { text: "Hide only last 5 digits" }, 
-        { text: "Hide entire number" }
-    ];*/
     self.protectNumberOptions = ko.observableArray([ 
         { val: "Do not hide", text: "Do not hide" }, 
         { val: "Hide only last 5 digits", text: "Hide only last 5 digits" },
@@ -511,7 +506,7 @@ var ListingsViewModel = function(){
     self.language.subscribe(function(newValue) {
         switchLanguage(newValue);
     });
-
+    //self.language(navigator.language || null);
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
@@ -1168,6 +1163,10 @@ var ListingsViewModel = function(){
             var key = allBindings.get('key'), 
                 place = allBindings.get('place'),
                 obj = allBindings.get('obj');
+
+            if (key == "Favorites"){
+                console.info(self.gettext("Favorites"));
+            }
 
             var translation = self.gettext(key, obj);
             if (!translation) { 

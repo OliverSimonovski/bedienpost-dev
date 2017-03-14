@@ -1164,10 +1164,6 @@ var ListingsViewModel = function(){
                 place = allBindings.get('place'),
                 obj = allBindings.get('obj');
 
-            if (key == "Favorites"){
-                console.info(self.gettext("Favorites"));
-            }
-
             var translation = self.gettext(key, obj);
             if (!translation) { 
                 console.log("Did not find a match for key " + key); 

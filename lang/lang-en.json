@@ -36,7 +36,7 @@
     "Users are allowed to use pause:": "Users are allowed to use pause:",
     "CRM-integration": "CRM-integration",
     "By activating CRM-integration, each incoming call will show a link to your CRM.": "By activating CRM-integration, each incoming call will show a link to your CRM.",
-    "Provide a URL. The ‘$’ will be replaced by the actual phonenumber.": "Provide a URL. The ‘$’ will be replaced by the actual phonenumber.",
+    "Provide a URL. The '$' will be replaced by the actual phonenumber.": "Provide a URL. The '$' will be replaced by the actual phonenumber.",
     "https://crm.example.com/?search=$": "https://crm.example.com/?search=$",
     "Alternate Help-page:": "Alternate Help-page:",
     "https://intranet.example.com/help": "https://intranet.example.com/help",

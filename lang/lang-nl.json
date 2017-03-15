@@ -36,7 +36,7 @@
     "Users are allowed to use pause:": "Gebruikers mogen zichzelf pauzeren:",
     "CRM-integration": "CRM-integratie",
     "By activating CRM-integration, each incoming call will show a link to your CRM.": "Door CRM-integratie te activeren wordt bij elk binnenkomend gesprek een link getoond naar de klantenkaart in het CRM-systeem.",
-    "Provide a URL. The ‘$’ will be replaced by the actual phonenumber.": "Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.",
+    "Provide a URL. The '$' will be replaced by the actual phonenumber.": "Geef hiervoor de gewenste URL op. Op de plek van het dollarteken ($) plaatst de Bedienpost het telefoonnummer van het binnenkomende gesprek.",
     "https://crm.example.com/?search=$": "https://mijn-crm.bedrijf.nl/inkomend-nr/$",
     "Alternate Help-page:": "Alternatieve help-pagina:",
     "https://intranet.example.com/help": "https://mijn.bedrijf.nl/help-pagina",

@@ -117,7 +117,7 @@ UserListItem.prototype.setFavorite = function (fav) {
 }
 
 UserListItem.storageKey = function() {
-    return USERNAME + "@" + DOMAIN + "_UserListFavs";
+    return "UserListFavs";
 }
 
 UserListItem.saveFavs = function(userList) {
@@ -137,7 +137,7 @@ function isFav(id, storageKey) {
     if (global[storageKey] == null) {
         // We haven't retrieved this storage-key from remote yet, let's do so now.
         global[storageKey] = {};
-        global[storageKey].deferred = remoteStorage.getItem(storageKey);
+        global[storageKey].deferred = remoteStorage.getItem(storageKey, "user", true);
         global[storageKey].favs = {};
     }
 
@@ -166,7 +166,7 @@ function saveFavs(list, storageKey) {
     var json = JSON.stringify(favIndices);
     console.log("Saving favorite ids: " + JSON.stringify(favIndices) + " for key " + storageKey);
     global[storageKey].favs = favIndices;
-    remoteStorage.setItem(storageKey, json);
+    remoteStorage.setItem(storageKey, json, "user", true);
 }
 
 
@@ -269,7 +269,7 @@ QueueListItem.saveFavs = function(queueList) {
 }
 
 QueueListItem.storageKey = function() {
-    return USERNAME + "@" + DOMAIN + "_QueueListFavs";
+    return "QueueListFavs";
 }
 
 // Set the new pause-times for the queues after one of the values has been changed.

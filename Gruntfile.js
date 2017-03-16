@@ -10,6 +10,7 @@ module.exports = function(grunt) {
                     files: [
                         {src: 'index.html', dest: 'dist/public_html/index.html'},
                         {src: 'img/logo.png', dest: 'dist/public_html/img/logo.png'},
+            {cwd: 'lang/', src: '**/*', dest: 'dist/public_html/lang', expand: true },
 			{cwd: 'fonts/', src: '**/*', dest: 'dist/public_html/fonts', expand: true },
                         {src: 'index-https.html', dest: 'dist/private_html/index.html'},
                         {src: 'retrievePhoneAuth.php', dest: 'dist/private_html/retrievePhoneAuth.php'},

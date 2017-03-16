@@ -145,8 +145,7 @@ function connect(connectServer, connectPort) {
             (msg.indexOf("request") != -1) &&
             (msg.indexOf("error") != -1) &&
             (msg.indexOf("happened") != -1)) {
-            alert("Server not responding as expected. Please check the server and try again. " +
-                "Is your internet connection working?");
+            alert( i18next.t("Server not responding as expected. Please check the server and try again. Is your internet connection working?") );
             $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
             serverNotExpected = true;
         }*/
@@ -331,7 +330,7 @@ function connectionStatusCallback(status) {
     if (status == Strophe.Status.CONNFAIL) {
     } else if (status == Strophe.Status.DISCONNECTED) {
     } else if (status == Strophe.Status.AUTHFAIL) {
-        listingViewModel.authError(true);
+	listingViewModel.authError(true);
         alert("Inloggen mislukt. Voer uw login en wachtwoord opnieuw in, en probeer het nog een keer.");
         $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
     }
@@ -419,10 +418,41 @@ function retrieveCompanySettingsNew() {
 }
 
 function retrieveSettings() {
-
     retrieveCompanySettingsNew();
     getExternalNumbersFromCompass();
+
+    retrieveUserSettings();
+
     setInterval(retrieveCompanySettingsNew, 900000); // re-check every fifteen minutes.
+}
+
+function retrieveUserSettings(){
+    var getUser = function() {
+
+        var restUserUrl = "https://" + Lisa.Connection.restServer + "/user/" + Lisa.Connection.myUserId;
+
+        var userReceived = function(response) {
+            //console.info(response);
+
+            if (response && response.theLanguage) {
+                listingViewModel.language(response.theLanguage);
+            }
+        }
+
+        $.ajax
+        ({
+            type: "GET",
+            headers: {
+                "Accept" : "application/vnd.iperity.compass.v2+json",
+                "Authorization": Lisa.Connection.restAuthHeader,
+                "X-No-Redirect": true
+            },
+            url: restUserUrl,
+            success: userReceived
+        });
+    }
+
+    getUser();
 }
 
 function processRetrievedCompanySettings() {
@@ -462,31 +492,31 @@ function selectedProtectNumberOptionFromObfuscateNumber() {
     listingViewModel.obfuscateWholeNumber(companySettings.obfuscateWholeNumber);
 
     if (companySettings.obfuscateNumber === false) {
-        listingViewModel.selectedProtectNumberOption.serverUpdate("Niet verbergen");
+        listingViewModel.selectedProtectNumberOption.serverUpdate("Do not hide");
     } else if (companySettings.obfuscateWholeNumber === false) {
-        listingViewModel.selectedProtectNumberOption.serverUpdate("Verberg laatste 5 nummers");
+        listingViewModel.selectedProtectNumberOption.serverUpdate("Hide only last 5 digits");
     } else {
-        listingViewModel.selectedProtectNumberOption.serverUpdate("Volledig verbergen");
+        listingViewModel.selectedProtectNumberOption.serverUpdate("Hide entire number");
     }
 }
 
 function obfuscateNumberFromSelectedProtectNumberOption() {
     // Bit cumbersome for backward-compatibility with older settings.
     switch(listingViewModel.selectedProtectNumberOption()) {
-        case "Niet verbergen":
+        case "Do not hide":
             listingViewModel.obfuscateNumber(false);
             listingViewModel.obfuscateWholeNumber(false);
-            console.log("Niet Verbergen selected");
+            console.log("Do not hide selected");
             break;
-        case "Verberg laatste 5 nummers":
+        case "Hide only last 5 digits":
             listingViewModel.obfuscateNumber(true);
             listingViewModel.obfuscateWholeNumber(false);
-            console.log("Verberg laatste 5 nummers selected");
+            console.log("Hide only last 5 digits selected");
             break;
-        case "Volledig verbergen":
+        case "Hide entire number":
             listingViewModel.obfuscateNumber(true);
             listingViewModel.obfuscateWholeNumber(true);
-            console.log("Volledig verbergen selected");
+            console.log("Hide entire number selected");
             break;
     }
 
@@ -651,7 +681,7 @@ function getCallInfo(call, user) {
 
     // Arrow to other number
     if (callInfo.directionIsOut) {      // The agent is calling out.
-        callInfo.description += " vanaf " + user.name; // TODO: Grafisch aanpakken.
+        callInfo.description += i18next.t(" from ") + user.name; // TODO: Grafisch aanpakken.
     } else {                            // The agent is receiving a call.
 
 
@@ -672,7 +702,7 @@ function getCallInfo(call, user) {
 
         /* This is false if the operator is refreshed after a call has already started. */
         if (!((destNumber == null) || (destNumber instanceof Lisa.User))) {
-            callInfo.description += " naar "; // TODO: Grafisch aanpakken.
+            callInfo.description += i18next.t(" to "); // TODO: Grafisch aanpakken.
             callInfo.description += externalNumbers[destNumber] ? externalNumbers[destNumber] : destNumber;
         }
 
@@ -770,11 +800,11 @@ function queueToClientModel(queue, queueObj) {
         callsStr += curCallStr;
     }
 
-    var memberStr = "Beschikbaar: \n " + availableStr +
-        "\n\nIn Gesprek:\n" + unAvailableStr +
-        "\n\nGepauzeerd:\n" + pausedStr +
-        "\n\nWachtende gesprekken: \n" + callsStr;
-    queueObj.membersStr(memberStr);
+    var memberStrTranslation = ["Available:", "Calling:", "In pause:", "Waiting calls:"];
+    var memberStrValues = [availableStr, unAvailableStr, pausedStr, callsStr];
+
+    queueObj.membersStrTranslation(memberStrTranslation);
+    queueObj.membersStrValues(memberStrValues);
 
     return queueObj;
 }
@@ -1120,12 +1150,12 @@ function uploadVCard(data) {
 
             if (jqXHR.responseText.indexOf("completed successfully") != -1) {
                 console.log("VCards imported successfully!");
-                listingViewModel.vcardUploadFeedback("VCard import Klaar.. Herlaad de bedienpost om de geimporteerde contacten te zien.");
+                listingViewModel.vcardUploadFeedback( i18next.t("VCard import ready.. Reload Bedienpost to see the imported contacts.") );
 
                 // re-load contacts
                 //getContactListData(USERNAME, DOMAIN, PASS, COMPANYID);
             } else {
-                listingViewModel.vcardUploadFeedback("VCard-upload mislukt. Meer informatie beschikbaar in de debugging console van de browser.");
+                listingViewModel.vcardUploadFeedback( i18next.t("VCard upload failed. More information is available in the debugging console browser.") );
             }
         }
     });
@@ -1222,10 +1252,6 @@ function requestStoreCompanySettings() {
     companySettingsChangePending = true;
     debouncedStoreCompanySettings();
 }
-
-
-
-
 
 /* Allow user to 'download' log files */
 function BedienpostLogging() {

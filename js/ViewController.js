@@ -992,16 +992,6 @@ var ListingsViewModel = function(){
        
     }
 
-    self.showKeypadWithNumber = function(number)
-    {
-        shortcutsActive = false;
-        keypadActive = true;
-        $('#keypadModal').modal({
-                keyboard: true
-            })
-        self.numericInput(number);
-    }
-    
     $('#keypadModal').on('shown.bs.modal', function () {
        $("#keypadInputField").focus();
     })

@@ -177,7 +177,6 @@ function QueueListItem(id, name) {
     this.name = ko.observable(name                        || "");
 
     this.signInOut = ko.observable(false);
-    this.membersStr = ko.observable("");
     this.membersStrTranslation = ko.observableArray();
     this.membersStrValues = ko.observableArray();
     this.waitingAmount = ko.observable(0);
@@ -992,6 +991,16 @@ var ListingsViewModel = function(){
         self.clearNumber();
        
     }
+
+    self.showKeypadWithNumber = function(number)
+    {
+        shortcutsActive = false;
+        keypadActive = true;
+        $('#keypadModal').modal({
+                keyboard: true
+            })
+        self.numericInput(number);
+    }
     
     $('#keypadModal').on('shown.bs.modal', function () {
        $("#keypadInputField").focus();
@@ -1201,17 +1210,6 @@ var ListingsViewModel = function(){
         }
         return i18next.t(key);
     }
-
-    /** TODO: REMOVE COMPLETELY J02 */
-    self.doChangeLang = function () {
-        if (self.language() == "nl"){
-            self.language("en");
-        }
-        else{
-            self.language("nl");
-        }
-    }
-    /** END */
 
     self.setSearch = function(searchParam)
     {

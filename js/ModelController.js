@@ -812,16 +812,9 @@ function queueToClientModel(queue, queueObj) {
         callsStr += curCallStr;
     }
 
-    //memberStr will not be used
-    var memberStr = "Available:" + " \n " + availableStr +
-        "\n\n" + "Calling:" + "\n" + unAvailableStr +
-        "\n\n" + "In pause:" + "\n" + pausedStr +
-        "\n\n" + "Waiting calls:" + "\n" + callsStr;
-
     var memberStrTranslation = ["Available:", "Calling:", "In pause:", "Waiting calls:"];
     var memberStrValues = [availableStr, unAvailableStr, pausedStr, callsStr];
 
-    queueObj.membersStr(memberStr);
     queueObj.membersStrTranslation(memberStrTranslation);
     queueObj.membersStrValues(memberStrValues);
 

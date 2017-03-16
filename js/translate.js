@@ -5,14 +5,14 @@ console.time('loaded');
 i18next
     .use(window.i18nextXHRBackend)
     .init({
-        debug: true,
+        /*debug: true,*/
         preload: availableLangs,
         fallbackLng: 'en',
         keySeparator: false,
         nsSeparator: false,
         backend: {
-            "loadPath": "lang/lang-{{lng}}.json"
-        }
+            "loadPath": "lang/lang-{{lng}}.json"            
+       }
     })
     .on('loaded', function(loaded) {
         console.timeEnd('loaded');

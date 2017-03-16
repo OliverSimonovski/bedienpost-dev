@@ -137,7 +137,8 @@
 
                             <ul data-bind="foreach: { data: filterWaitingQueue, as: 'entry' },
                                                 css: { 'queue_2':true }">
-                                <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut()), title: entry.membersStr() }">
+                                <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut())}, i18n: language, key: entry.membersStrTranslation(), place: 'title', keytype: 'array', obj: entry.membersStrValues()">
+                                    <!--title: entry.membersStr(),-->
                                     <span class="badge time pull-right" data-bind="text: entry.maxWaitingTime">"></span>
                                     <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
                                     <div class="options">
@@ -277,7 +278,7 @@
                     <div class="modal-header">
                         <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissTransferModal">&times;</button>
                         <h4 class="modal-title" id="myModalLabel">
-                            <span data-bind="i18n: language, key: 'How do you want to tranfer to {{clickedListItemName}}?', place: 'text', obj: { 'clickedListItemName' : $root.clickedListItemName }">How do you want to tranfer to {{clickedListItemName}}?</span>
+                            <span data-bind="i18n: language, key: 'How do you want to tranfer to {{clickedListItemName}}?', place: 'text', obj: { 'clickedListItemName' : $root.clickedListItemName() }">How do you want to tranfer to {{clickedListItemName}}?</span>
                         </h4>
                     </div>
                     <div class="modal-body call">
@@ -304,7 +305,7 @@
                     <div class="modal-header">
                         <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissEndTransferModal">&times;</button>
                         <h4 class="modal-title" id="myModalLabel">
-                            <span data-bind="i18n: language, key: 'Transfer to {{clickedListItemName}} in progress...', place: 'text', obj: { 'clickedListItemName' : $root.clickedListItemName }">Transfer to {{clickedListItemName}} in progress...</span>
+                            <span data-bind="i18n: language, key: 'Transfer to {{clickedListItemName}} in progress...', place: 'text', obj: { 'clickedListItemName' : $root.clickedListItemName() }">Transfer to {{clickedListItemName}} in progress...</span>
                         </h4>
                     </div>
                     <div class="modal-body call">
@@ -328,7 +329,7 @@
                     <div class="modal-header">
                         <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissCallModal">&times;</button>
                         <center>
-                            <h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.clickedListItemName"></span></h4>
+                            <h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.clickedListItemName()"></span></h4>
                         </center>
                     </div>
                     <div class="modal-body call">
@@ -438,7 +439,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="buttoncontainer text-left">
-                            <p>0 .. 9: <span data-bind="i18n: language, key: 'Call favorite / call Contact', place: 'text'">Call favorite / call Contact</span></p>
+                            <p>0 .. 9 : <span data-bind="i18n: language, key: 'Call favorite / call Contact', place: 'text'">Call favorite / call Contact</span></p>
                         </div>
                         <div class="buttoncontainer text-left">
                             <p>S : <span data-bind="i18n: language, key: 'Go to search', place: 'text'">Go to search</span></p>
@@ -459,13 +460,13 @@
                             <p>P : <span data-bind="i18n: language, key: 'Toggle pause', place: 'text'">Toggle pause</span></p>
                         </div>
                         <div class="buttoncontainer text-left">
-                            <p>B : <span data-bind="i18n: language, key: 'Call', place: 'text'"></span> <span data-bind="i18n: language, key: '(after selecting a favourite or contact)', place: 'text'">(after selecting a favourite or contact)</span></p>
+                            <p>B : <span data-bind="i18n: language, key: 'Call', place: 'text'"></span> <span data-bind="i18n: language, key: '(after selecting a favorite or contact)', place: 'text'">(after selecting a favorite or contact)</span></p>
                         </div>
                         <div class="buttoncontainer text-left">
-                            <p>A : <span data-bind="i18n: language, key: 'Attended transfer', place: 'text'">Attended transfer</span> <span data-bind="i18n: language, key: '(after selecting a favourite or contact)', place: 'text'">(after selecting a favourite or contact)</span></p>
+                            <p>A : <span data-bind="i18n: language, key: 'Attended transfer', place: 'text'">Attended transfer</span> <span data-bind="i18n: language, key: '(after selecting a favorite or contact)', place: 'text'">(after selecting a favorite or contact)</span></p>
                         </div>
                         <div class="buttoncontainer text-left">
-                            <p>T : <span data-bind="i18n: language, key: 'Unattended transfer', place: 'text'">Unattended transfer</span> <span data-bind="i18n: language, key: '(after selecting a favourite or contact)', place: 'text'">(after selecting a favourite or contact)</span></p>
+                            <p>T : <span data-bind="i18n: language, key: 'Unattended transfer', place: 'text'">Unattended transfer</span> <span data-bind="i18n: language, key: '(after selecting a favorite or contact)', place: 'text'">(after selecting a favorite or contact)</span></p>
                         </div>
 
                         <div class="buttoncontainer text-left">
@@ -497,7 +498,7 @@
                             <p>
                                 <i class="fa fa-star legend"></i>
                                 <i class="fa fa-star-o legend"></i>
-                                <span data-bind="i18n: language, key: 'Mark as favourite / Unmark as favourite', place: 'text'">Mark as favourite / Unmark as favourite</span>
+                                <span data-bind="i18n: language, key: 'Mark as favorite / Unmark as favorite', place: 'text'">Mark as favorite / Unmark as favorite</span>
                             </p>
                         </div>
                     </div>
@@ -528,7 +529,7 @@
                             <!-- <li role="presentation"><a href="#autopause" aria-controls="autopause" role="tab" data-toggle="tab">Auto-pauze</a></li> -->
                             <li role="presentation"><a href="#snom" aria-controls="snom" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'SNOM-link', place: 'text'">SNOM-link</a></li>
                             <li role="presentation"><a href="#import" aria-controls="import" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'Import address book', place: 'text'">Import address book</a></li>
-                            <li role="presentation"><a href="#pauserights" aria-controls="import" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'Can pause', place: 'text'">Can pause</a></li>
+                            <li role="presentation"><a href="#pauserights" aria-controls="import" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'Queue pause', place: 'text'">Queue pause</a></li>
                             <li role="presentation"><a href="#crm" aria-controls="crm" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'CRM-integration', place: 'text'">CRM-integration</a></li>
                             <li role="presentation"><a href="#logDownload" aria-controls="crm" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'Download log-files', place: 'text'">Download log-files</a></li>
                         </ul>
@@ -570,17 +571,17 @@
                                     <span data-bind="i18n: language, key: 'SNOM-link supported devices:', place: 'text'">SNOM-link supported devices:</span> 
                                     SNOM 300, SNOM 320, SNOM 710, SNOM 720, SNOM D715, SNOM D725.
                                 </p>
-                                <p data-bind="i18n: language, key: 'To use this feature, a direct network-link between phone and PC is required.', place: 'text'">To use this feature, a direct network-link between phone and PC is required.</p>
+                                <p data-bind="i18n: language, key: 'To use this feature, a direct network-link between your phone and your PC is required.', place: 'text'">To use this feature, a direct network-link between your phone and your PC is required.</p>
                                 <p>
                                     <span data-bind="i18n: language, key: 'Activate SNOM-link:', place: 'text'">Activate SNOM-link:</span> <input type="checkbox" data-bind="checked: $root.connectSnom">
                                 </p>
                             </div>
 
                             <div role="tabpanel" class="tab-pane" id="import">
-                                <p data-bind="i18n: language, key: 'This allows you to import your company-addressbook in vCard-format (.vcf). The addressbook will be shared in your company.', place: 'text'">This allows you to import your company-addressbook in vCard-format (.vcf). The addressbook will be shared in your company.</p>
+                                <p data-bind="i18n: language, key: 'This allows you to import your company-address book in vCard-format (.vcf). All users in your company will be able to view and dial to all contacts.', place: 'text'">This allows you to import your company-address book in vCard-format (.vcf). All users in your company will be able to view and dial to all contacts.</p>
                                 <p>
                                     <span data-bind="i18n: language, key: 'All users in your company will be able to view and dial to all contacts.', place: 'text'">All users in your company will be able to view and dial to all contacts.</span>
-                                    <span data-bind="i18n: language, key: 'Uploading a new addressbook will replace the old one.', place: 'text'">Uploading a new addressbook will replace the old one.</span>
+                                    <span data-bind="i18n: language, key: 'Uploading a new address book will replace the old one.', place: 'text'">Uploading a new address book will replace the old one.</span>
                                 </p>
                                 <p><input type="file" data-bind="fileInput: $root.vcardFileData"></p>
                                 <p data-bind="text: $root.vcardUploadFeedback" />
@@ -596,14 +597,14 @@
                             <div role="tabpanel" class="tab-pane" id="crm">
                                 <p>
                                     <span data-bind="i18n: language, key: 'By activating CRM-integration, each incoming call will show a link to your CRM.', place: 'text'">By activating CRM-integration, each incoming call will show a link to your CRM.</span> 
-                                    <span data-bind="i18n: language, key: 'Provide a URL. The \'$\' will be replaced by the actual phonenumber.', place: 'text'">Provide a URL. The '$' will be replaced by the actual phonenumber.</span>
+                                    <span data-bind="i18n: language, key: 'To activate CRM-integration, please provide your CRM URL here. The \'$\' will be replaced by the actual phone number.', place: 'text'">To activate CRM-integration, please provide your CRM URL here. The '$' will be replaced by the actual phone number.</span>
                                 </p>
                                 <p>
                                     <input type="text" data-bind="value: crmUrl, valueUpdate: 'afterkeydown', i18n: language, key: 'https://crm.example.com/?search=$', place: 'placeholder'" 
                                             style="width:300px" placeholder="https://crm.example.com/?search=$">
                                 </p>
                                 <hr/>
-                                <p data-bind="i18n: language, key: 'Alternate Help-page:', place: 'text'">Alternate Help-page:</p>
+                                <p data-bind="i18n: language, key: 'Alternative Help page:', place: 'text'">Alternative Help page:</p>
                                 <p>
                                     <input type="text" data-bind="value: helpUrl, valueUpdate: 'afterkeydown', i18n: language, key: 'https://intranet.example.com/help', place: 'placeholder'" 
                                             style="width:300px" placeholder="https://intranet.example.com/help">
@@ -678,8 +679,8 @@
     <script type='text/javascript' src='node_modules/underscore/underscore-min.js'></script>
     <script type='text/javascript' src='node_modules/backbone/backbone.js'></script>
     <script type='text/javascript' src='node_modules/strophe/strophe.js'></script>
-    <script type='text/javascript' src='node_modules/i18next/i18next.min.js'></script>
-    <script type='text/javascript' src='node_modules/i18next-xhr-backend/i18nextXHRBackend.min.js'></script>
+    <script type='text/javascript' src='node_modules/i18next/i18next.js'></script>
+    <script type='text/javascript' src='node_modules/i18next-xhr-backend/i18nextXHRBackend.js'></script>
     <script type='text/javascript' src='js/lib/strophe.pubsub.js'></script>
     <script type='text/javascript' src='js/lib/knockout-file-bindings.js'></script>
     <script type='text/javascript' src='js/lib/eModal.js'></script>

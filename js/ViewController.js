@@ -178,6 +178,8 @@ function QueueListItem(id, name) {
 
     this.signInOut = ko.observable(false);
     this.membersStr = ko.observable("");
+    this.membersStrTranslation = ko.observableArray();
+    this.membersStrValues = ko.observableArray();
     this.waitingAmount = ko.observable(0);
     this.maxWaitingStartTime = ko.observable(0);
     this.pauseTime = ko.observable(0);
@@ -1162,19 +1164,33 @@ var ListingsViewModel = function(){
 
             var key = allBindings.get('key'), 
                 place = allBindings.get('place'),
-                obj = allBindings.get('obj');
+                obj = allBindings.get('obj'),
+                keytype = allBindings.get('keytype');
 
             var translation = self.gettext(key, obj);
-            if (!translation) { 
+            if (!translation && keytype !== "array") { 
                 console.log("Did not find a match for key " + key); 
                 return; 
             }
 
             switch(place){
-                case "valueandtext": element.setAttribute("value", key);    //intentional fall back to 'text'
-                case "text": element.innerHTML = translation; break;
-                case "title":
-                case "placeholder": element.setAttribute(place, translation); break;
+                case "valueandtext":    element.setAttribute("value", key);
+                case "text":            element.innerHTML = translation; break;
+                case "placeholder":     element.setAttribute(place, translation); break;
+                case "title": {
+                    if (keytype === "array") {
+                        var finalTran = "";
+                        for (i = 0; i < key.length; i++) {
+                            var tranval = self.gettext(key[i]);
+                            
+                            finalTran += tranval + " \n " + obj[i];
+                            if (i < key.length - 1) { finalTran += "\n\n" }
+                        }
+                        translation = finalTran;
+                    }
+                    
+                    element.setAttribute(place, translation);
+                }
             }
         }
     }

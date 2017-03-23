@@ -1065,6 +1065,15 @@ function hangupPhone() {
     phoneCommand("CANCEL");
 }
 
+function dialWithSnom(number) {
+    var url = ""
+    for ( var i = 0; i < number.length; i++ ) {
+        url += number.charAt(i) + ";";
+    }
+    url += "ENTER";
+    phoneCommand(url);
+}
+
 /* Add / Update the page-elements for calls */
 
 // Support functions
@@ -1089,8 +1098,12 @@ function phoneCommand(cmdString) {
 }
 
 function dialNumber(numberToCall) {
-    conn.dialNumber(numberToCall);
-    if (listingViewModel.connectedPhone()) _.delay(pickupPhone, 1000);
+    if (listingViewModel.connectedPhone()) {
+        dialWithSnom(numberToCall);
+    } else {
+        conn.dialNumber(numberToCall);
+    }
+    //if (listingViewModel.connectedPhone()) _.delay(pickupPhone, 1000);
 }
 
 function storeSettingConnectSnom(value) {

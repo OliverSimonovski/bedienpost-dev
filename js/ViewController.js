@@ -492,6 +492,12 @@ var ListingsViewModel = function(){
     self.logDownloadEnabled = ko.observable(false);
 
     self.pausedGlobally = ko.observable(false);
+    self.receivedNumberFromExtension = ko.observable(null);
+    self.receivedNumberFromExtension.subscribe(function(newValue) {
+        if (newValue) {
+            listingViewModel.showKeypadWithNumber(newValue);
+        }
+    });
 
     self.protectNumberOptions = ko.observableArray([ 
         { val: "Do not hide", text: "Do not hide" }, 
@@ -988,8 +994,24 @@ var ListingsViewModel = function(){
         $('#keypadModal').modal({
                 keyboard: true
             })
-        self.clearNumber();
-       
+        self.clearNumber();       
+    }
+
+    self.showKeypadWithNumber = function(data)
+    {
+        if (!$('.modal').is(':visible')) {
+            var rg = new RegExp(/[^\d]/g);
+            var normalized = data.replace(rg, "");
+            
+            if(normalized){
+                shortcutsActive = false;
+                keypadActive = true;
+                $('#keypadModal').modal({
+                        keyboard: true
+                    })
+                self.numericInput(normalized);
+            }
+        }
     }
 
     $('#keypadModal').on('shown.bs.modal', function () {
@@ -1191,6 +1213,20 @@ var ListingsViewModel = function(){
                     element.setAttribute(place, translation);
                 }
             }
+        }
+    }
+
+    ko.bindingHandlers.xbind = {
+        init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+            var numberChangedHandler = function() {
+                //empty the observable and set it again, since the user could click the same ph.number
+                //if setting the observable without emptying, it won't open the dialpad when clicking same ph.number 
+                self.receivedNumberFromExtension("");
+                self.receivedNumberFromExtension(element.value);
+            };
+
+            element.removeEventListener("numberchange", numberChangedHandler, false);
+            element.addEventListener("numberchange", numberChangedHandler, false);
         }
     }
 
@@ -1524,3 +1560,5 @@ $("#shortcutModal").keydown(function (e) {
 var listingViewModel = new ListingsViewModel();
 ko.applyBindings(listingViewModel);
 $('.overlay').hide();
+
+//------------------------------------

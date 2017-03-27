@@ -117,7 +117,7 @@ UserListItem.prototype.setFavorite = function (fav) {
 }
 
 UserListItem.storageKey = function() {
-    return USERNAME + "@" + DOMAIN + "_UserListFavs";
+    return "UserListFavs";
 }
 
 UserListItem.saveFavs = function(userList) {
@@ -137,7 +137,7 @@ function isFav(id, storageKey) {
     if (global[storageKey] == null) {
         // We haven't retrieved this storage-key from remote yet, let's do so now.
         global[storageKey] = {};
-        global[storageKey].deferred = remoteStorage.getItem(storageKey);
+        global[storageKey].deferred = remoteStorage.getItem(storageKey, "user", true);
         global[storageKey].favs = {};
     }
 
@@ -166,7 +166,7 @@ function saveFavs(list, storageKey) {
     var json = JSON.stringify(favIndices);
     console.log("Saving favorite ids: " + JSON.stringify(favIndices) + " for key " + storageKey);
     global[storageKey].favs = favIndices;
-    remoteStorage.setItem(storageKey, json);
+    remoteStorage.setItem(storageKey, json, "user", true);
 }
 
 
@@ -270,7 +270,7 @@ QueueListItem.saveFavs = function(queueList) {
 }
 
 QueueListItem.storageKey = function() {
-    return USERNAME + "@" + DOMAIN + "_QueueListFavs";
+    return "QueueListFavs";
 }
 
 // Set the new pause-times for the queues after one of the values has been changed.
@@ -395,6 +395,7 @@ CallListItem.prototype.stopCall = function() {
         incomingCallEntries.remove(this);
     } else {
         this.callStartTime(0);
+
         _.delay(
             function (self) {
                 return function () {
@@ -492,6 +493,12 @@ var ListingsViewModel = function(){
     self.logDownloadEnabled = ko.observable(false);
 
     self.pausedGlobally = ko.observable(false);
+    self.receivedNumberFromExtension = ko.observable(null);
+    self.receivedNumberFromExtension.subscribe(function(newValue) {
+        if (newValue) {
+            listingViewModel.showKeypadWithNumber(newValue);
+        }
+    });
 
     self.protectNumberOptions = ko.observableArray([ 
         { val: "Do not hide", text: "Do not hide" }, 
@@ -502,12 +509,12 @@ var ListingsViewModel = function(){
     self.selectedProtectNumberOption = ko.observable("Hide only last 5 digits");
 
     self.helpUrl = ko.observable("");
+    self.connectionStatus = ko.observable(true);
 
     self.language = ko.observable(null);
     self.language.subscribe(function(newValue) {
         switchLanguage(newValue);
     });
-    //self.language(navigator.language || null);
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
@@ -674,6 +681,7 @@ var ListingsViewModel = function(){
         // Some more data-structures to reset
         self.favoriteList = ko.observable(null);
         self.phoneIp("");
+        global = {};
     }
 
     self.markQueueFavorite = function(favorite)
@@ -988,8 +996,24 @@ var ListingsViewModel = function(){
         $('#keypadModal').modal({
                 keyboard: true
             })
-        self.clearNumber();
-       
+        self.clearNumber();       
+    }
+
+    self.showKeypadWithNumber = function(data)
+    {
+        if (!$('.modal[id!=keypadModal]').is(':visible')) {
+            var rg = new RegExp(/[^\d]/g);
+            var normalized = data.replace(rg, "");
+            
+            if(normalized){
+                shortcutsActive = false;
+                keypadActive = true;
+                $('#keypadModal').modal({
+                        keyboard: true
+                    })
+                self.numericInput(normalized);
+            }
+        }
     }
 
     $('#keypadModal').on('shown.bs.modal', function () {
@@ -1083,10 +1107,11 @@ var ListingsViewModel = function(){
   
     self.attendedTransfer = function()
     {
-        console.log("Attended transfer clicked").
+        console.log("Attended transfer clicked");
 
         self.callingState("transfer");
         var number = self.numericInput().replace(/\D/g,'');
+        self.clickedListItemName(number);
         attendedtransferToUser(number);
         self.dismissKeypadModal();
         self.showTransferEndModal();
@@ -1097,6 +1122,7 @@ var ListingsViewModel = function(){
         console.log("Unattended transfer clicked");
 
         var number = self.numericInput().replace(/\D/g,'');
+        self.clickedListItemName(number);
         transferToUser(number);
         self.dismissKeypadModal();
     }
@@ -1193,6 +1219,22 @@ var ListingsViewModel = function(){
             }
         }
     }
+
+    /* 
+    * Region for receiving the phone number from the plugin's content script
+    */
+    var numberChangedHandler = function(event) {
+        //empty the observable and set it again, since the user could click the same ph.number
+        //if setting the observable without emptying, it won't open the dialpad when clicking same ph.number 
+        self.receivedNumberFromExtension("");
+        self.receivedNumberFromExtension(event.target.value);
+    };
+
+    document.getElementById('hiddennumberfromext').removeEventListener("numberchange", numberChangedHandler, false);
+    document.getElementById('hiddennumberfromext').addEventListener("numberchange", numberChangedHandler, false);
+
+    /* END - Region for receiving the phone number from the plugin's content script
+    */
 
     self.gettext = function(key, obj){
         if (obj) {
@@ -1524,3 +1566,5 @@ $("#shortcutModal").keydown(function (e) {
 var listingViewModel = new ListingsViewModel();
 ko.applyBindings(listingViewModel);
 $('.overlay').hide();
+
+//------------------------------------

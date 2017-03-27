@@ -826,18 +826,22 @@ function refreshModel(model) {
     
     // Add users to interface.
     userListEntries.removeAll();
-    for (var userId in model.users) {
+    if (model) {
+        for (var userId in model.users) {
 
-        var user = model.users[userId];
-        addUser(user);
+            var user = model.users[userId];
+            addUser(user);
+        }
     }
-
+    
     // Process queues
     queueListEntries.removeAll();
-    for (var queueId in model.queues) {
+    if (model) {
+        for (var queueId in model.queues) {
 
-        var queue = model.queues[queueId];
-        addQueue(queue);
+            var queue = model.queues[queueId];
+            addQueue(queue);
+        }
     }
 }
 

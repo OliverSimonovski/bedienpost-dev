@@ -395,6 +395,7 @@ CallListItem.prototype.stopCall = function() {
         incomingCallEntries.remove(this);
     } else {
         this.callStartTime(0);
+
         _.delay(
             function (self) {
                 return function () {
@@ -513,7 +514,6 @@ var ListingsViewModel = function(){
     self.language.subscribe(function(newValue) {
         switchLanguage(newValue);
     });
-    //self.language(navigator.language || null);
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
@@ -999,7 +999,7 @@ var ListingsViewModel = function(){
 
     self.showKeypadWithNumber = function(data)
     {
-        if (!$('.modal').is(':visible')) {
+        if (!$('.modal[id!=keypadModal]').is(':visible')) {
             var rg = new RegExp(/[^\d]/g);
             var normalized = data.replace(rg, "");
             
@@ -1105,7 +1105,7 @@ var ListingsViewModel = function(){
   
     self.attendedTransfer = function()
     {
-        console.log("Attended transfer clicked").
+        console.log("Attended transfer clicked");
 
         self.callingState("transfer");
         var number = self.numericInput().replace(/\D/g,'');
@@ -1216,19 +1216,21 @@ var ListingsViewModel = function(){
         }
     }
 
-    ko.bindingHandlers.xbind = {
-        init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-            var numberChangedHandler = function() {
-                //empty the observable and set it again, since the user could click the same ph.number
-                //if setting the observable without emptying, it won't open the dialpad when clicking same ph.number 
-                self.receivedNumberFromExtension("");
-                self.receivedNumberFromExtension(element.value);
-            };
+    /* 
+    * Region for receiving the phone number from the plugin's content script
+    */
+    var numberChangedHandler = function(event) {
+        //empty the observable and set it again, since the user could click the same ph.number
+        //if setting the observable without emptying, it won't open the dialpad when clicking same ph.number 
+        self.receivedNumberFromExtension("");
+        self.receivedNumberFromExtension(event.target.value);
+    };
 
-            element.removeEventListener("numberchange", numberChangedHandler, false);
-            element.addEventListener("numberchange", numberChangedHandler, false);
-        }
-    }
+    document.getElementById('hiddennumberfromext').removeEventListener("numberchange", numberChangedHandler, false);
+    document.getElementById('hiddennumberfromext').addEventListener("numberchange", numberChangedHandler, false);
+
+    /* END - Region for receiving the phone number from the plugin's content script
+    */
 
     self.gettext = function(key, obj){
         if (obj) {

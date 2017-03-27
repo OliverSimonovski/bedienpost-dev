@@ -330,7 +330,7 @@ function connectionStatusCallback(status) {
     if (status == Strophe.Status.CONNFAIL) {
     } else if (status == Strophe.Status.DISCONNECTED) {
     } else if (status == Strophe.Status.AUTHFAIL) {
-        listingViewModel.authError(true);
+	    listingViewModel.authError(true);
         alert("Inloggen mislukt. Voer uw login en wachtwoord opnieuw in, en probeer het nog een keer.");
         $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
     }

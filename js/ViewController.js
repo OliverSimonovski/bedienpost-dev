@@ -177,7 +177,8 @@ function QueueListItem(id, name) {
     this.name = ko.observable(name                        || "");
 
     this.signInOut = ko.observable(false);
-    this.membersStr = ko.observable("");
+    this.membersStrTranslation = ko.observableArray();
+    this.membersStrValues = ko.observableArray();
     this.waitingAmount = ko.observable(0);
     this.maxWaitingStartTime = ko.observable(0);
     this.pauseTime = ko.observable(0);
@@ -356,8 +357,8 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
         var result = this.name();
         var call = this.thisCallOrOriginalCall(this.id());
 
-        if (call && call.userHasChanged) result = "[terugval] " + result; //FIXME: Icon
-        if (this.finished()) result += " - finished";
+        if (call && call.userHasChanged) result = "[" + i18next.t("fallback") + "] " + result; //FIXME: Icon
+        if (this.finished()) result +=  i18next.t(" - finished");
 
         return result;
     }, this);
@@ -394,6 +395,7 @@ CallListItem.prototype.stopCall = function() {
         incomingCallEntries.remove(this);
     } else {
         this.callStartTime(0);
+
         _.delay(
             function (self) {
                 return function () {
@@ -412,7 +414,7 @@ CallListItem.prototype.stopCall = function() {
 CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
     this.isAutoPause(true);
     this.finished(false);
-    this.name("Afhandeltijd voor: " + queue.name);
+    this.name(i18next.t("Roundup time") + ": " + queue.name);
     this.callStartTime(currentTime().valueOf() / 1000 + pauseTime);
     this.autoPauseQueue = queue;
     queue.autoPauseItem = this;
@@ -491,11 +493,28 @@ var ListingsViewModel = function(){
     self.logDownloadEnabled = ko.observable(false);
 
     self.pausedGlobally = ko.observable(false);
+    self.receivedNumberFromExtension = ko.observable(null);
+    self.receivedNumberFromExtension.subscribe(function(newValue) {
+        if (newValue) {
+            listingViewModel.showKeypadWithNumber(newValue);
+        }
+    });
 
-    self.protectNumberOptions = ["Niet verbergen", "Verberg laatste 5 nummers", "Volledig verbergen"];
-    self.selectedProtectNumberOption = ko.observable("Verberg laatste 5 nummers");
+    self.protectNumberOptions = ko.observableArray([ 
+        { val: "Do not hide", text: "Do not hide" }, 
+        { val: "Hide only last 5 digits", text: "Hide only last 5 digits" },
+        { val: "Hide entire number", text: "Hide entire number" }
+    ]);
+
+    self.selectedProtectNumberOption = ko.observable("Hide only last 5 digits");
+
     self.helpUrl = ko.observable("");
     self.connectionStatus = ko.observable(true);
+
+    self.language = ko.observable(null);
+    self.language.subscribe(function(newValue) {
+        switchLanguage(newValue);
+    });
 
     self.phoneAuthAvailable = ko.computed(function(){
         return ((self.phoneIp() != ""));
@@ -648,7 +667,7 @@ var ListingsViewModel = function(){
     self.mailTo = function(incomingCall)
     {
         self.incomingCallMailTo(incomingCall);
-        var mailtoUrl = "mailto:?Subject=Terugbelverzoek: " + incomingCall.descriptionWithNumber();
+        var mailtoUrl = "mailto:?Subject=" + i18next.t("Call-back request") + ": " + incomingCall.descriptionWithNumber();
         $('<iframe src="'+mailtoUrl+'">').appendTo('body').css("display", "none");
     }
 
@@ -688,7 +707,7 @@ var ListingsViewModel = function(){
             dialNumber(numberToCall);
         } else {
             console.log("Can't call user without extension.");
-            alert("Can't call user without extension.");
+            alert( i18next.t("Can't call user without extension.") );
         }
         self.dismissCallModal();
     }
@@ -977,10 +996,26 @@ var ListingsViewModel = function(){
         $('#keypadModal').modal({
                 keyboard: true
             })
-        self.clearNumber();
-       
+        self.clearNumber();       
     }
-    
+
+    self.showKeypadWithNumber = function(data)
+    {
+        if (!$('.modal[id!=keypadModal]').is(':visible')) {
+            var rg = new RegExp(/[^\d]/g);
+            var normalized = data.replace(rg, "");
+            
+            if(normalized){
+                shortcutsActive = false;
+                keypadActive = true;
+                $('#keypadModal').modal({
+                        keyboard: true
+                    })
+                self.numericInput(normalized);
+            }
+        }
+    }
+
     $('#keypadModal').on('shown.bs.modal', function () {
        $("#keypadInputField").focus();
     })
@@ -1148,6 +1183,66 @@ var ListingsViewModel = function(){
         }
     };
     
+    ko.bindingHandlers.i18n = {
+        update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+            var lang = self.language(); //need to use the  self.language(), so that update fires on change of it
+
+            var key = allBindings.get('key'), 
+                place = allBindings.get('place'),
+                obj = allBindings.get('obj'),
+                keytype = allBindings.get('keytype');
+
+            var translation = self.gettext(key, obj);
+            if (!translation && keytype !== "array") { 
+                console.log("Did not find a match for key " + key); 
+                return; 
+            }
+
+            switch(place){
+                case "valueandtext":    element.setAttribute("value", key);
+                case "text":            element.innerHTML = translation; break;
+                case "placeholder":     element.setAttribute(place, translation); break;
+                case "title": {
+                    if (keytype === "array") {
+                        var finalTran = "";
+                        for (i = 0; i < key.length; i++) {
+                            var tranval = self.gettext(key[i]);
+                            
+                            finalTran += tranval + " \n " + obj[i];
+                            if (i < key.length - 1) { finalTran += "\n\n" }
+                        }
+                        translation = finalTran;
+                    }
+                    
+                    element.setAttribute(place, translation);
+                }
+            }
+        }
+    }
+
+    /* 
+    * Region for receiving the phone number from the plugin's content script
+    */
+    var numberChangedHandler = function(event) {
+        //empty the observable and set it again, since the user could click the same ph.number
+        //if setting the observable without emptying, it won't open the dialpad when clicking same ph.number 
+        self.receivedNumberFromExtension("");
+        self.receivedNumberFromExtension(event.target.value);
+    };
+
+    document.getElementById('hiddennumberfromext').removeEventListener("numberchange", numberChangedHandler, false);
+    document.getElementById('hiddennumberfromext').addEventListener("numberchange", numberChangedHandler, false);
+
+    /* END - Region for receiving the phone number from the plugin's content script
+    */
+
+    self.gettext = function(key, obj){
+        if (obj) {
+            return i18next.t(key, obj);
+        }
+        return i18next.t(key);
+    }
+
     self.setSearch = function(searchParam)
     {
         self.search(searchParam);
@@ -1471,3 +1566,5 @@ $("#shortcutModal").keydown(function (e) {
 var listingViewModel = new ListingsViewModel();
 ko.applyBindings(listingViewModel);
 $('.overlay').hide();
+
+//------------------------------------

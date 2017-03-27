@@ -18,7 +18,6 @@ var phoneIp = "";
 var phoneUser = "";
 var phonePass = "";
 var loggedIn = false;
-var reconnecting = 0;
 var serverNotExpected = false;
 
 var restUrl = "";
@@ -62,7 +61,6 @@ function init() {
     phoneUser = "";
     phonePass = "";
     loggedIn = false;
-    reconnecting = 0;
     serverNotExpected = false;
     restUrl = "";
     userIdToUserObservable = [];
@@ -143,14 +141,14 @@ function connect(connectServer, connectPort) {
     // Setup logging and status messages.
     conn.logging.setCallback(function(msg) {
         console.log(msg);
-        if ((serverNotExpected == false) &&
+        /*if ((serverNotExpected == false) &&
             (msg.indexOf("request") != -1) &&
             (msg.indexOf("error") != -1) &&
             (msg.indexOf("happened") != -1)) {
             alert( i18next.t("Server not responding as expected. Please check the server and try again. Is your internet connection working?") );
             $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
             serverNotExpected = true;
-        }
+        }*/
     });
 
     // Setup connection-status callback.
@@ -178,6 +176,10 @@ function connect(connectServer, connectPort) {
     conn.connect(LOGINDATA.bosh_server, LOGINDATA.jid, PASS);
 
     listingViewModel.numericInput("");
+
+    Lisa.Connection.model.pingSuccessObservable.addObserver(function (newValue) {
+       listingViewModel.connectionStatus(newValue);
+    });
 }
 
 /*
@@ -197,7 +199,7 @@ function getPhoneAuthFromCompass(user, server, pass) {
         var companyReceived = function(response) {
             //console.log(response);
             phoneUser = response.shortname;
-            if (companySettings.connectSnomSetting === true) {
+            if (companySettings && (companySettings.connectSnomSetting === true)) {
                 getPhoneStatus();
             } else {
                 listingViewModel.phoneIp("");
@@ -327,21 +329,10 @@ function checkSnomConnected() {
 function connectionStatusCallback(status) {
     if (status == Strophe.Status.CONNFAIL) {
     } else if (status == Strophe.Status.DISCONNECTED) {
-        // Reconnect
-        if (loggedIn) {
-            console.log("Connection lost, reconnecting...");
-            reconnecting += 1;
-            tryAutoLogin();
-        }
     } else if (status == Strophe.Status.AUTHFAIL) {
-        if ((reconnecting == 0) || (reconnecting > 10)) {
-            listingViewModel.authError(true);
-            alert( i18next.t("Login failed. Re-enter your login and password, and try again." ));
-            $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
-        } else {
-            reconnecting += 1;
-            tryAutoLogin();
-        }
+	    listingViewModel.authError(true);
+        alert("Inloggen mislukt. Voer uw login en wachtwoord opnieuw in, en probeer het nog een keer.");
+        $("#loginSubmitBtn").prop("disabled",false); // FIXME: Not in the model!
     }
 }
 
@@ -381,7 +372,6 @@ function gotModel(newmodel) {
 
     // Show interface
     loggedIn = true;
-    reconnecting = 0;
     serverNotExpected = false;
     var loginInfo = {};
     loginInfo.loggedIn = true;
@@ -396,8 +386,8 @@ function gotModel(newmodel) {
     refreshModel(model);
     
     // Listen for added or removed users or queues, which requires to redraw the whole structure.
-    model.userListObservable.addObserver(refreshModel);
-    model.queueListObservable.addObserver(refreshModel);
+    model.userListObservable.addObserver(_.debounce(function() {refreshModel(model)}, 1000));
+    model.queueListObservable.addObserver(_.debounce(function() {refreshModel(model)}, 1000));
 
    closeLoginModal();
 }
@@ -412,13 +402,13 @@ function retrieveCompanySettingsNew() {
         return;
     }
 
-    remoteStorage.getItem("company_settings", "", COMPANYID)
+    remoteStorage.getItem("company_settings", "companyAdmin", true)
         .done(function(response) {
             if (response != null) {
                 console.log("Retrieved company settings: " + response);
                 // Make sure that these are clones. If they point to the same object, we can't see whether values have changed.
-                companySettings = JSON.parse(response);
-                companySettingsOnServer = JSON.parse(response);
+                companySettings = JSON.parse(response) || {};
+                companySettingsOnServer = JSON.parse(response) || {};
                 processRetrievedCompanySettings();
             }
 
@@ -500,9 +490,6 @@ function selectedProtectNumberOptionFromObfuscateNumber() {
 
     listingViewModel.obfuscateNumber(companySettings.obfuscateNumber);
     listingViewModel.obfuscateWholeNumber(companySettings.obfuscateWholeNumber);
-
-    //console.log(companySettings.obfuscateNumber);
-    //console.log(companySettings.obfuscateWholeNumber)
 
     if (companySettings.obfuscateNumber === false) {
         listingViewModel.selectedProtectNumberOption.serverUpdate("Do not hide");
@@ -805,8 +792,9 @@ function queueToClientModel(queue, queueObj) {
 
     // Calls
     var callCount = 1;
-    for (var callKey in queue.calls) {
-        var call = queue.calls[callKey];
+
+    for (var callKey in queue.callsOrdered) {
+        var call = queue.callsOrdered[callKey];
         var callInfo = getCallInfo(call, null);
         var curCallStr = callCount++ + ". " + callInfo.description + "\n";
         callsStr += curCallStr;
@@ -826,13 +814,15 @@ function refreshModel(model) {
     
     // Add users to interface.
     userListEntries.removeAll();
+
     if (model) {
         for (var userId in model.users) {
-
             var user = model.users[userId];
             addUser(user);
         }
     }
+
+    getContactListData(USERNAME, DOMAIN, PASS, COMPANYID);
     
     // Process queues
     queueListEntries.removeAll();
@@ -849,11 +839,17 @@ var userListEntriesArray = [];
 
 /* Add / Update page for users */
 function addUser(user) {
-    console.log("Adding user " + user);
     if (user.name == "") {
         console.log("User has no name, not adding");
         return;
     }
+
+    if (userIdToUserObservable[user.id]) {
+        console.log("User " + user.name + " has already been added, not adding again.");
+        return;
+    }
+
+    console.log("Adding user " + user);
 
     if (user.observable)
         user.observable.addObserver(updateUser);
@@ -1101,6 +1097,15 @@ function hangupPhone() {
     phoneCommand("CANCEL");
 }
 
+function dialWithSnom(number) {
+    var url = ""
+    for ( var i = 0; i < number.length; i++ ) {
+        url += number.charAt(i) + ";";
+    }
+    url += "ENTER";
+    phoneCommand(url);
+}
+
 /* Add / Update the page-elements for calls */
 
 // Support functions
@@ -1125,8 +1130,12 @@ function phoneCommand(cmdString) {
 }
 
 function dialNumber(numberToCall) {
-    conn.dialNumber(numberToCall);
-    if (listingViewModel.connectedPhone()) _.delay(pickupPhone, 1000);
+    if (listingViewModel.connectedPhone()) {
+        dialWithSnom(numberToCall);
+    } else {
+        conn.dialNumber(numberToCall);
+    }
+    //if (listingViewModel.connectedPhone()) _.delay(pickupPhone, 1000);
 }
 
 function storeSettingConnectSnom(value) {
@@ -1179,7 +1188,7 @@ function storeCompanySettings() {
         // Update on server.
         var settingsStr = JSON.stringify(companySettings);
         console.log("Storing company-settings: " + settingsStr);
-        remoteStorage.setItem("company_settings", settingsStr, "", COMPANYID);
+        remoteStorage.setItem("company_settings", settingsStr, "companyAdmin", true);
 
         // Update companySettingsOnServer
         companySettingsOnServer = JSON.parse(settingsStr);
@@ -1191,7 +1200,7 @@ function storeCompanySettings() {
 
 function getUserNoteModel() {
     console.log("Retrieving user-note model from server.")
-    var deferred =  remoteStorage.getItem("company_userNoteModel", "", COMPANYID);
+    var deferred =  remoteStorage.getItem("company_userNoteModel", "company", true);
     deferred.done(function (val) {
         console.log("retrieved: " + val);
 
@@ -1246,7 +1255,7 @@ function storeUserNote(userId, note) {
                 }
                 console.log("Pushing user-note model to server.")
                 console.log(userNoteModel);
-                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "", COMPANYID);
+                remoteStorage.setItem("company_userNoteModel", JSON.stringify(userNoteModel), "company", true);
             }
         }
     }(userId, note));

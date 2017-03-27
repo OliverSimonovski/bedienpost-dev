@@ -631,7 +631,6 @@
         </div>
         </div>
 
-
         <div class="modal fade" id="userNoteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-bg">
                 <div class="modal-content">
@@ -662,6 +661,13 @@
         </div>
         
         <input id="hiddennumberfromext" type="text" class="hidden">
+
+        <div class="pingfailed-overlay"  data-bind="attr: { style: ($root.connectionStatus() ? 'display:none' : '') }">
+            <div class="pingfailed-connection-status"  title="connection status">
+                <i class="disconnected fa fa-spinner fa-spin fa-5x"></i>
+                <div class="connectingText">Verbinden...</div>
+            </div>
+        </div>
     </body>
 
     <!-- build:js js/libs.js -->
@@ -691,7 +697,7 @@
     <script type='text/javascript' src='js/translate.js'></script>
     <script type='text/javascript' src='js/dataModel.js'></script>
     <script type='text/javascript' src='js/ViewController.js'></script>
-    <script type='text/javascript' src="js/RemoteStorage.js"></script>
+    <script type='text/javascript' src="js/RemoteStorage-new.js"></script>
     <script type='text/javascript' src="js/ModelController.js"></script>
 
     <script type='text/javascript' src="js/DnsResolvJs/DnsResolv.js"></script>

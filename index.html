@@ -666,9 +666,9 @@
         <input id="hiddennumberfromext" type="text" class="hidden">
 
         <div class="pingfailed-overlay"  data-bind="attr: { style: ($root.connectionStatus() ? 'display:none' : '') }">
-            <div class="pingfailed-connection-status"  title="connection status">
+            <div class="pingfailed-connection-status"  title="connection status" data-bind="i18n: language, key: 'connection status', place: 'title'">
                 <i class="disconnected fa fa-spinner fa-spin fa-5x"></i>
-                <div class="connectingText">Verbinden...</div>
+                <div class="connectingText"><span data-bind="i18n: language, key: 'Connecting', place: 'text'">Connecting</span>...</div>
             </div>
         </div>
     </body>

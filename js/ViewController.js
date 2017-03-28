@@ -316,9 +316,17 @@ function CallListItem(id, name, startTime, directionIsOut, descriptionWithNumber
     this.number = ko.observable(number);
     this.callObj = ko.observable(callObj);
 
+    this.htmlid = ko.computed(function() {
+        return id.replace(/[^a-z0-9]/gi, '');
+    });
+
     this.callDuration = ko.computed(function() {
         if (this.callStartTime() == 0) {
             return 0;
+        }
+
+        if (this.finished()){
+            return this.callDuration();
         }
 
         var callStart = moment.utc(this.callStartTime() * 1000.);
@@ -388,13 +396,37 @@ CallListItem.prototype.thisCallOrOriginalCall = function(id) {
 
 CallListItem.prototype.stopCall = function() {
 
+    function animateWidth(elem) {
+        var width = 100;
+        var id = setInterval(frame, 60);
+        function frame() {
+            if (width == 0 || !elem) {
+                clearInterval(id);
+            } else {
+                width--; 
+                elem.style.width = width + '%'; 
+            }
+        }
+    }
+
     this.finished(true);
 
     // Don't show 'finished' for queue-calls.
     if ((this.originalCallModel.queueCallForCall != null) && (this.originalCallModel.queueCallForCall != "")) { // Is this a queue-call?
         incomingCallEntries.remove(this);
     } else {
-        this.callStartTime(0);
+        //initiate background progress bar
+
+        animateWidth( document.getElementById( this.htmlid() ) );
+
+        //delayed setting of callStartTime(0), so that row is removed
+        _.delay(
+            function (self) {
+                return function () {
+                    self.callStartTime(0);
+                }
+            }(this)
+            , 5000);
 
         _.delay(
             function (self) {

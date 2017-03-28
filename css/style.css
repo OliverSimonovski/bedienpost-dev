@@ -285,6 +285,26 @@ body {
     z-index:2;
 }
 
+.noborder {
+    border: 0 none !important;
+}
+
+.marginleft {
+    margin-left: 5px;
+}
+
+.progress-bar-badge-light {
+    background: #afafaf !important;
+    padding: 0 !important;
+}
+
+.progress-bar-badge-dark {
+    width: 100%;
+    background-color: #999 !important;
+    margin-left: 0 !important;
+    float: left;
+}
+
 .selectnumber button + h5 {
     margin-top: 0px;
     margin-bottom: 5px;

@@ -109,15 +109,18 @@
                         <div class="list-group queuelist">
                             <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
                                             css: { 'queue_1':true }">
-                                <li>
-                                    <span class="badge pull-right" data-bind="text: entry.timeConnected"></span>
+                                <li class="noborder">
+                                    <span class="badge pull-right progress-bar-badge-light">
+                                        <span data-bind="text: entry.timeConnected, attr: { id: entry.htmlid }" class="badge progress-bar-badge-dark"></span>
+                                    </span>
+
                                     <div class="options">
                                         <i class="fa fa-link" data-bind="click: crmClicked"></i>
                                     </div>
                                     <div class="options">
                                         <i class="fa fa-envelope-o" data-bind="click: $root.mailTo"></i>
                                     </div>
-                                    <label>
+                                    <label class="marginleft">
                                         <h5 class="list-group-item-heading">
                                             <span data-bind="text: entry.toDisplay"></span>
                                             <!-- <span data-bind="text: entry.isAutoPause() ? '' :  entry.directionIsOut() ? ' [uitgaand]' : ' [inkomend]' "></span> -->

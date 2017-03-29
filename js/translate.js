@@ -34,6 +34,7 @@ function switchLanguage(lang) {
     }
 }
 
+//Logic for determining language
 function getLanguage() {
     var langFromUrl = getParameterByName("lang");
     var langFromLocal = localStorage.getItem("lang");

@@ -139,7 +139,7 @@
                             <ul data-bind="foreach: { data: filterWaitingQueue, as: 'entry' },
                                                 css: { 'queue_2':true }">
                                 <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry.signInOut())}, i18n: language, key: entry.membersStrTranslation(), place: 'title', keytype: 'array', obj: entry.membersStrValues()">
-                                    <span class="badge time pull-right" data-bind="text: entry.maxWaitingTime">"></span>
+                                    <span class="badge time pull-right" data-bind="text: entry.maxWaitingTime"></span>
                                     <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
                                     <div class="options">
                                         <i data-bind="click: $root.signInOut, attr: { class: $root.signInOutCssClass(entry.signInOut()) }"></i>

@@ -77,7 +77,8 @@
     "VCard import ready.. Reload Bedienpost to see the imported contacts.": "VCard import Klaar.. Herlaad de bedienpost om de geimporteerde contacten te zien.",
     "VCard upload failed. More information is available in the debugging console browser.": "VCard-upload mislukt. Meer informatie beschikbaar in de debugging console van de browser.",
     "Call-back request": "Terugbelverzoek",
-    "Roundup time": "Afhandeltijd voor",
+    "Roundup time:": "Afhandeltijd voor:",
+    "Roundup time": "Afhandeltijd",
     "fallback": "terugval",
     "PC Bedienpost": "PC Bedienpost",
     "connected": "gekoppeld",
@@ -99,5 +100,6 @@
     "pause automatically for": "pauzeer automatisch voor",
     "seconds.": "seconden.",
     "Connecting": "Verbinden",
-    "connection status": "Verbinding maken"
+    "connection status": "Verbinding maken",
+    "Login failed, please try again.": "Inloggen mislukt. Voer uw login en wachtwoord opnieuw in, en probeer het nog een keer."
 }

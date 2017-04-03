@@ -446,7 +446,7 @@ CallListItem.prototype.stopCall = function() {
 CallListItem.prototype.makeAutoPause = function(queue, pauseTime) {
     this.isAutoPause(true);
     this.finished(false);
-    this.name(i18next.t("Roundup time") + ": " + queue.name);
+    this.name(i18next.t("Roundup time:") + queue.name);
     this.callStartTime(currentTime().valueOf() / 1000 + pauseTime);
     this.autoPauseQueue = queue;
     queue.autoPauseItem = this;

@@ -77,6 +77,7 @@
     "VCard import ready.. Reload Bedienpost to see the imported contacts.": "VCard import ready.. Reload Bedienpost to see the imported contacts.",
     "VCard upload failed. More information is available in the debugging console browser.": "VCard upload failed. More information is available in the debugging console browser.",
     "Call-back request": "Call-back request",
+    "Roundup time:": "Roundup time:",
     "Roundup time": "Roundup time",
     "fallback": "fallback",
     "PC Bedienpost": "PC Bedienpost",
@@ -99,5 +100,6 @@
     "pause automatically for": "pause automatically for",
     "seconds.": "seconds.",
     "Connecting": "Connecting",
-    "connection status": "connection status"
+    "connection status": "connection status",
+    "Login failed, please try again.": "Login failed, please try again."
 }

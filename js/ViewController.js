@@ -1600,3 +1600,7 @@ ko.applyBindings(listingViewModel);
 $('.overlay').hide();
 
 //------------------------------------
+//This name is used by the web extension in order to track down all bedienpost tabs in the browser
+//please do not remove/change this string, otherwise web extension won't be able to redirect calls
+window.name = "bedienpost-app";
+//------------------------------------

@@ -398,7 +398,7 @@ CallListItem.prototype.stopCall = function() {
 
     function animateWidth(elem) {
         var width = 100;
-        var id = setInterval(frame, 60);
+        var id = setInterval(frame, 50);
         function frame() {
             if (width == 0 || !elem) {
                 clearInterval(id);
@@ -426,7 +426,7 @@ CallListItem.prototype.stopCall = function() {
                     self.callStartTime(0);
                 }
             }(this)
-            , 5000);
+            , 4200);
 
         _.delay(
             function (self) {

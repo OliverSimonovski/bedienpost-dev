@@ -294,14 +294,14 @@ body {
 }
 
 .progress-bar-badge-light {
-    background: #afafaf !important;
-    padding: 0 !important;
+    background: #afafaf;
+    padding: 0;
 }
 
-.progress-bar-badge-dark {
+.queue_1 li .badge .progress-bar-badge-dark {
     width: 100%;
-    background-color: #999 !important;
-    margin-left: 0 !important;
+    background-color: #999;
+    margin-left: 0;
     float: left;
 }
 
